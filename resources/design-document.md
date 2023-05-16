@@ -12,7 +12,7 @@ U1. As a user, I want to add a medical device to an inventory, including device 
 
 U2. As a user, I want to update an active medical device's inventory record to correct any errors or provide new information (i.e. correct the serial number, or change the assigned department).
 
-U3. As a user, I want to inactivate/retire a medical device in the inventory (soft delete), in the event that it has been taken out of service by the facility/customer (i.e. if it has been replaced with newer technology, or if it was a rental device that has now been returned, etc.), so that I can still view related information, but will know that it does not actively need routine preventative maintenance performed.
+U3. As a user, I want to inactivate/retire a medical device in the inventory (soft delete), in the event that it has been taken out of service by the facility/customer (i.e. if it has been replaced with newer technology, or if it was a rental device that has now been returned, etc.), so that I can still view related information, but will know that it does not actively need routine preventative maintenance performed. Note: any open work orders for the device must first be closed.
 
 U4. As a user, I want to reactivate a medical device in the inventory, in the event that it has been returned to service (i.e. it was a previous rental and is being rented again).
 
@@ -74,3 +74,7 @@ U25. As a user, I want to complete/close a work order so that it can no longer b
 - Listing or sorting inventory by device type (i.e. IV pumps)
 - Listing open work orders
 - Administrative features/access
+- Numerical tracking of a device's failure count (i.e. number of work orders with a type of 'repair', vs. a PM or Acceptance work order)
+
+## 4. UML Class Diagram
+
