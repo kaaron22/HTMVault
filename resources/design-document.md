@@ -66,7 +66,7 @@ U25. As a user, I want to complete/close a work order so that it can no longer b
 - Sorting facility inventory lists by manufacturer/model or department
 - Device RFID locators and current precise location information/integration
 - Viewing a list of inactive/retired devices (note: individual inactive devices can be viewed)
-- Inventory record end-of-life information as dictated by a device manufacturer (i.e. date the device no longer supported by the manufacturer, potentially meaning repair parts can no longer be acquired, manufacturer technical support and/or documentation no longer provided, customer notification, etc.)
+- Inventory record end-of-life information as dictated by a device manufacturer (i.e. date the device no longer supported by the manufacturer, potentially meaning repair parts can no longer be acquired, manufacturer technical support and/or documentation no longer provided, customer notification needed so they can plan/budget for replacement, etc.)
 - Integration of work order with patient incident investigation workflows (i.e. when device involved in patient harm)
 - Retirement reasons (i.e. device lost/stolen, rental returned, etc.)
 - Auto-generating acceptance testing work orders (i.e. upon addition of device to inventory or upon reactivating an existing retired device)
@@ -74,7 +74,7 @@ U25. As a user, I want to complete/close a work order so that it can no longer b
 - Listing or sorting inventory by device type (i.e. IV pumps)
 - Listing open work orders
 - Administrative features/access
-- Numerical tracking of a device's failure count (i.e. number of work orders with a type of 'repair', vs. a PM or Acceptance work order)
+- Numerical tracking of a device's failure count (i.e. number of work orders with a type of 'repair', as opposed to a PM or Acceptance work order)
 
 ## 4. UML Class Diagram
 
