@@ -57,3 +57,20 @@ U23. As a user, I want to add a test device used to an open work order, includin
 U24. As a user, I want to delete a 'test device used' entry from an open work order (i.e. if it was added in error).
 
 U25. As a user, I want to complete/close a work order so that it can no longer be modified and becomes a permanent record.
+
+## 3. Out of Scope / Stretch Goals
+
+- Billing details/integration (i.e. device coverage levels, such as 'full service with parts', or 'preventive maintenance no parts', which dictate rules for what labor and parts are billable/non-billable, along with applicable fields within a work order and labor/part entries)
+- Electronic customer signatures for work orders
+- Printing (i.e. inventory records, inventory lists, work orders)
+- Sorting facility inventory lists by manufacturer/model or department
+- Device RFID locators and current precise location information/integration
+- Viewing a list of inactive/retired devices (note: individual inactive devices can be viewed)
+- Inventory record end-of-life information as dictated by a device manufacturer (i.e. date the device no longer supported by the manufacturer, potentially meaning repair parts can no longer be acquired, manufacturer technical support and/or documentation no longer provided, customer notification, etc.)
+- Integration of work order with patient incident investigation workflows (i.e. when device involved in patient harm)
+- Retirement reasons (i.e. device lost/stolen, rental returned, etc.)
+- Auto-generating acceptance testing work orders (i.e. upon addition of device to inventory or upon reactivating an existing retired device)
+- Auto-generating PM work orders (i.e. when a PM is due)
+- Listing or sorting inventory by device type (i.e. IV pumps)
+- Listing open work orders
+- Administrative features/access
