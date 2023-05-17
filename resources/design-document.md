@@ -93,7 +93,6 @@ Enum manufacturer;
 Enum model;
 LocalDate manufactureDate;
 Enum serviceStatus;
-Enum assetType;
 Enum facilityName;
 Enum assignedDepartment;
 LocalDate complianceThroughDate;
@@ -118,7 +117,6 @@ String controlNumber;
 String serialNumber;
 Enum manufacturer;
 Enum model;
-Enum assetType;
 Enum facilityName;
 Enum assignedDepartment;
 String createdById;
@@ -182,6 +180,22 @@ boolean isComplete;
 ```
 
 ### 5.2 Add Device Endpoint
+- Accepts ```POST``` request to ```/devices```
+- Accepts data to create a new device and add it to the inventory, with the following information provided in the request body:
+  - control number (numeric characters only)
+  - serial number (alphanumeric characters and dashes only)
+  - manufacturer
+  - model
+  - date of manufacture (optional)
+  - facility name
+  - assigned department
+  - maintenance frequency (whole numbers only)
+  - notes (optional)
+- Returns the new device inventory record, including an empty list of work orders, the compliance through date, the last PM completion date, the next PM due date, the service status, the add date, as well as the id and name of the person that added it
+- We will confirm the non-optional fields provided are not empty and have the correct format; additionally we will confirm the date of manufacture, if provided, has the correct format (YYYY-MM-DD)
+  - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
+
+
 
 ## 6. Tables
 
