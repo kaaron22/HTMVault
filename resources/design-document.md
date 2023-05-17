@@ -226,6 +226,23 @@ boolean isComplete;
   - If the device is not found, a ```DeviceRecordNotFoundException``` will be thrown
 - Returns the updated device inventory record, with a service status of "In Service"
 
+### 5.6 Search Devices By Control Number Endpoint
+- Accepts ```GET``` request to ```/devices/controlNumber```
+  - If the device is not found, a ```DeviceRecordNotFoundException``` will be thrown
+- Returns the device record for this control number
+
+### 5.7 Search Devices By Serial Number Endpoint
+- Accepts ```GET``` request to ```/devices/serialNumber```
+  - If the device is not found, a ```DeviceRecordNotFoundException``` will be thrown
+- Returns the device record for this serial number
+
+### 5.8 View Devices At Facility Endpoint
+- Accepts ```GET``` request to ```/devices/facility/sort```
+- Returns a list of device records for this facility, sorted by control number in the order specified (ascending or descending)
+  - If no sort order provided, defaults to ascending
+
+
+
 ## 6. Tables
 
 ### 6.1 `devices`
