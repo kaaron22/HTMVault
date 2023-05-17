@@ -294,6 +294,12 @@ boolean isComplete;
 - Returns the updated work order record.
 - We will confirm the non-optional fields provided are not empty and have the correct format
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
+  - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
+
+### 5.17 Close Work Order Endpoint
+- Accepts ```PUT``` request to ```/workOrders/close/workOrderId```
+- Returns the updated work order record, with a completion status of "closed"
+  - If the required fields are not complete, a "WorkOrderNotCompleteException" will be thrown
 
 ## 6. Tables
 
