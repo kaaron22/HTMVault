@@ -210,8 +210,16 @@ boolean isComplete;
 - Returns the updated device inventory record, including the updated compliance through date and the next PM due date, if the maintenance frequency has changed
 - We will confirm the provided non-optional fields are not empty and have the correct format; additionally, we will confirm the date of manufacture, if provided, has the correct format (YYYY-MM-DD)
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
+- We will also confirm the device has a service status of "In Service" before allowing changes
+  - If the device's service status is "Retired", a ```DeviceRetiredException``` will be thrown
 
-### 5.4 
+### 5.4 Inactivate Device Endpoint
+- Accepts ```DELETE``` request to ```devices/controlNumber```
+- Returns the updated device inventory record, with a service status of "Retired"
+- We will confirm that there are no work orders in the device's list that have a status of "Open".
+  - If any of the device's work orders are open, a ```OpenWorkOrdersExistException``` will be thrown
+
+### 5.5 
 
 ## 6. Tables
 
