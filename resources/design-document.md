@@ -325,9 +325,30 @@ notes // string
 workOrders // string list
 ```
 
+
+
 ### 6.2 `work_orders`
 ```
 workOrderId // string, partition key
+workOrderType // string
+completionStatus // string
+awaitStatus // string
+controlNumber // string
+serialNumber // string
+manufacturer // string
+model // string
+facilityName // string
+assignedDepartment // string
+createdById // string
+createdByName // string
+dateCreated // string
+closedById // string
+closedByName // string
+dateClosed // string
+problemReported // string
+problemFound // string
+summary // string
+completionDateTime // string
 ```
 
 ## 7. UML Class Diagram
