@@ -246,12 +246,25 @@ boolean isComplete;
 - Returns a list of device records for this facility, matching the specified department, and sorted by control number in the order specified (ascending or descending)
   - If no sort order provided, defaults to ascending
 
-### 5.10 View Devices At Facility With Manufacturer And Model
+### 5.10 View Devices At Facility With Manufacturer And Model Endpoint
 - Accepts ```GET``` request to ```/devices/facility/manufacturer/model/sort```
 - Returns a list of device records for this facility, matching the specified manufacturer and model, sorted by control number in the order specified (ascending or descending)
   - If no sort order provided, defaults to ascending
 
+### 5.11 View Past Due Devices At Facility Endpoint
+- Accepts ```GET``` request to ```/devices/facility/pastdue/sort```
+- Returns a list of device records for this facility, with a past due PM (prior to current month), sorted by control number in the order specified (ascending or descending)
+  - If no sort order provided, defaults to ascending
 
+### 5.12 View Devices At Facility Due In Current Month Endpoint
+- Accepts ```GET``` requsst to ```/devices/facility/duenow/sort```
+- Returns a list of device records for this facility, with a PM due in the current month, sorted by control number in the order specified (ascending or descending)
+  - If no sort order provided, defaults to ascending
+
+### 5.13 View Devices At Facility Due Next Month Endpoint
+- Accepts ```GET``` requsst to ```/devices/facility/duesoon/sort```
+- Returns a list of device records for this facility, with a PM due next month, sorted by control number in the order specified (ascending or descending)
+  - If no sort order provided, defaults to ascending
 
 ## 6. Tables
 
