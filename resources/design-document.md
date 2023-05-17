@@ -305,6 +305,31 @@ boolean isComplete;
 
 ### 6.1 `devices`
 
+```
+controlNumber // partition key, string
+serialNumber // string
+manufacturer // string
+model // string
+manufactureDate // string
+serviceStatus // string
+facilityName // string
+assignedDepartment // string
+complianceThroughDate // string
+lastPmCompletionDate // string
+nextPmDueDate // string
+pmFrequencyInMonths // number
+inventoryAddDate // string
+addedById // string
+addedByName // string
+notes // string
+workOrders // string list
+```
+
+### 6.2 `work_orders`
+```
+workOrderId // string, partition key
+```
+
 ## 7. UML Class Diagram
 
 ## 8. Front-end Mockups
