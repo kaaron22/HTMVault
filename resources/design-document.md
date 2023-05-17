@@ -325,7 +325,9 @@ notes // string
 workOrders // string list
 ```
 
-
+- ```FacilityNameAndAssignedDepartmentIndex``` includes control number, manufacturer, model, assignedDepartment, and nextPmDueDate
+- ```FacilityNameAndManufacturerModelIndex``` includes includes control number, manufacturer, model, assignedDepartment, and nextPmDueDate
+- ```FacilityNameAndPmDueDate``` includes control number, manufacturer, model, assignedDepartment, and nextPmDueDate
 
 ### 6.2 `work_orders`
 ```
