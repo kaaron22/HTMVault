@@ -79,5 +79,18 @@ U26. As a user, I want to complete/close a work order so that it can no longer b
 - Numerical tracking of a device's failure count (i.e. number of work orders with a type of 'repair', as opposed to a PM or Acceptance work order)
 - Parts ordering system integration
 
-## 4. UML Class Diagram
+## 4. Proposed Architecture Overview
 
+## 5. API
+
+### 5.1 Public Models
+
+### 5.2 Add Device Endpoint
+
+## 6. Tables
+
+### 6.1 `devices`
+
+## 7. UML Class Diagram
+
+## 8. Front-end Mockups
