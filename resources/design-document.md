@@ -267,7 +267,7 @@ boolean isComplete;
   - If no sort order provided, defaults to ascending
 
 ### 5.14 Create Work Order Endpoint
-- Accepts ```POST``` request to ```/devices/controlNumber/workOrder```
+- Accepts ```POST``` request to ```/workOrders```
 - Accepts data to create a new work order for the specified device and adds it to the device's list of work orders, as well as the work_orders table, with the following information provided in the request body:
   - work order type (Acceptance Testing, Preventative Maintenance, Repair)
   - control number (numeric characters only)
@@ -278,7 +278,22 @@ boolean isComplete;
   - If the control number entered is not found, a ```DeviceRecordNotFoundException``` will be thrown
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
 
+### 5.15 View Work Order Endpoint
+- Accepts ```GET``` request to ```/workOrders/workOrderId```
+- Returns the work order record specified by the work order id
+  - If no work order found, a ```WorkOrderNotFoundException``` will be thrown
 
+### 5.16 Update Work Order Endpoint
+- Accepts ```PUT``` request to ```/workOrders/workOrderId```
+- Accepts data to update a work order in the work_orders table, with the following information provided in the request body:
+  - await status
+  - problem reported
+  - problem found
+  - summary
+  - completion date and time
+- Returns the updated work order record.
+- We will confirm the non-optional fields provided are not empty and have the correct format
+  - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
 
 ## 6. Tables
 
