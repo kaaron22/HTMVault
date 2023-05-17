@@ -75,7 +75,7 @@ U26. As a user, I want to complete/close a work order so that it can no longer b
 - Auto-generating PM work orders (i.e. when a PM is due)
 - Listing or sorting inventory by device type (i.e. IV pumps)
 - Listing open work orders
-- Administrative features/access
+- Administrative features/access (i.e. adding new facilities, departments, or manufacturers/models, etc.)
 - Numerical tracking of a device's failure count (i.e. number of work orders with a type of 'repair', as opposed to a PM or Acceptance work order)
 - Parts ordering system integration
 
@@ -84,6 +84,28 @@ U26. As a user, I want to complete/close a work order so that it can no longer b
 ## 5. API
 
 ### 5.1 Public Models
+```
+// DeviceModel
+
+String controlNumber;
+String serialNumber;
+Enum manufacturer;
+Enum model;
+String manufactureDate;
+Enum serviceStatus;
+Enum assetType;
+Enum facility;
+Enum assignedDepartment;
+LocalDate complianceThroughDate;
+LocalDate lastPmCompleteDate;
+LocalDate nextPmDueDate;
+Enum pmFrequencyInMonths;
+String addDate;
+String addedByID;
+String addedByName;
+String notes;
+List<Work Order> workOrders;
+```
 
 ### 5.2 Add Device Endpoint
 
