@@ -241,6 +241,16 @@ boolean isComplete;
 - Returns a list of device records for this facility, sorted by control number in the order specified (ascending or descending)
   - If no sort order provided, defaults to ascending
 
+### 5.9 View Devices At Facility In Department Endpoint
+- Accepts ```GET``` request to ```/devices/facility/department/sort```
+- Returns a list of device records for this facility, matching the specified department, and sorted by control number in the order specified (ascending or descending)
+  - If no sort order provided, defaults to ascending
+
+### 5.10 View Devices At Facility With Manufacturer And Model
+- Accepts ```GET``` request to ```/devices/facility/manufacturer/model/sort```
+- Returns a list of device records for this facility, matching the specified manufacturer and model, sorted by control number in the order specified (ascending or descending)
+  - If no sort order provided, defaults to ascending
+
 
 
 ## 6. Tables
