@@ -104,7 +104,7 @@ String inventoryAddDate;
 String addedByID;
 String addedByName;
 String notes;
-List<Work Order> workOrders;
+List<WorkOrderModel> workOrders;
 ```
 
 ```
@@ -130,11 +130,55 @@ LocalDate dateClosed;
 Enum failureType;
 String problemReported;
 String problemFound;
-List<Check> checklist;
+List<PerformanceCheckModel> checklist;
 String summary;
-List<Labor> laborEntries;
-List<Part> partsUsed;
-List<TestDevice> testDevicesUsed;
+List<LaborModel> laborEntries;
+List<PartModel> partsUsed;
+List<TestDeviceModel> testDevicesUsed;
+```
+
+```
+// LaborModel
+
+String entryId;
+String workOrderId;
+String employeeId;
+String employeeName;
+LocalDateTime startDateTime;
+LocalDateTime endDateTime;
+Double totalTime;
+String notes;
+```
+
+```
+// PartModel
+
+String entryId;
+String workOrderId;
+Enum partNumber;
+Enum partDescription;
+int quantity;
+```
+
+```
+// TestDeviceModel
+
+Enum deviceId;
+String serialNumber;
+Enum manufacturer;
+Enum model;
+LocalDate lastAccuracyCheck;
+LocalDate nextDueAccuracyCheck;
+boolean inCompliance;
+```
+
+```
+// PerformanceCheckModel
+
+String description;
+String limit;
+String result;
+boolean isComplete;
 ```
 
 ### 5.2 Add Device Endpoint
