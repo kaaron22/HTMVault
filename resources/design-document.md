@@ -16,53 +16,55 @@ U3. As a user, I want to inactivate/retire a medical device in the inventory (so
 
 U4. As a user, I want to reactivate a medical device in the inventory, in the event that it has been returned to service (i.e. it was a previous rental and is being rented again).
 
-U5. As a user, I want to view a medical device's inventory record, including its PM compliance status (i.e. the last PM date, the next PM due date, and whether it is past due or not), as well as the list of work orders attached to it, sorted by completion date (ascending or descending). Note: open work orders without a completion date to show up first in a list sorted in descending order.
+U5. As a user, I want to search for a device's inventory record by its control sticker number or serial number.
 
-U6. As a user, I want to view a list of medical devices at a facility, sorted by control sticker number (ascending or descending), showing manufacturer/model, assigned department, and the PM due date.
+U6. As a user, I want to view a medical device's inventory record, including its PM compliance status (i.e. the last PM date, the next PM due date, and whether it is past due or not), as well as the list of work orders attached to it, sorted by completion date (ascending or descending). Note: open work orders without a completion date to show up first in a list sorted in descending order.
 
-U7. As a user, I want to view a list of active medical devices at a facility, matching a specific department, sorted by control number (ascending or descending), showing manufacturer/model, assigned department, and the PM due date.
+U7. As a user, I want to view a list of medical devices at a facility, sorted by control sticker number (ascending or descending), showing manufacturer/model, assigned department, and the PM due date.
 
-U8. As a user, I want to view a list of active medical devices at a facility, matching a specific manufacturer and model, sorted by control number (ascending or descending), showing manufacturer/model, assigned department, and the PM due date.
+U8. As a user, I want to view a list of active medical devices at a facility, matching a specific department, sorted by control number (ascending or descending), showing manufacturer/model, assigned department, and the PM due date.
 
-U9. As a user, I want to view a list of active, past due medical devices at a facility, sorted by control number (ascending or descending), showing manufacturer/model, assigned department, and the PM due date.
+U9. As a user, I want to view a list of active medical devices at a facility, matching a specific manufacturer and model, sorted by control number (ascending or descending), showing manufacturer/model, assigned department, and the PM due date.
 
-U10. As a user, I want to view a list of active medical devices at a facility due for PM in the current month, sorted by control number (ascending or descending), showing manufacturer/model, assigned department, and the PM due date.
+U10. As a user, I want to view a list of active, past due medical devices at a facility, sorted by control number (ascending or descending), showing manufacturer/model, assigned department, and the PM due date.
 
-U11. As a user, I want to view a list of active medical devices at a facility due for PM next month, sorted by control number (ascending or descending), showing manufacturer/model, assigned department, and the PM due date.
+U11. As a user, I want to view a list of active medical devices at a facility due for PM in the current month, sorted by control number (ascending or descending), showing manufacturer/model, assigned department, and the PM due date.
 
-U12. As a user, I want to create a new work order for an active medical device, in order to document the related maintenance activity (i.e. initial acceptance testing, preventative maintenance, and repairs), including details of the technician(s) involved, the device, the problem reported, the problem diagnosis, the current status (i.e. awaiting parts), and the work performed (i.e. actions and testing).
+U12. As a user, I want to view a list of active medical devices at a facility due for PM next month, sorted by control number (ascending or descending), showing manufacturer/model, assigned department, and the PM due date.
 
-U13. As a user, I want to view a work order, including a list of its labor entries (sorted by entry ID), parts replaced entries (sorted by entry ID), and test equipment used entries (sorted by equipment ID).
+U13. As a user, I want to create a new work order for an active medical device, in order to document the related maintenance activity (i.e. initial acceptance testing, preventative maintenance, and repairs), including details of the technician(s) involved, the device, the problem reported, the problem diagnosis, the current status (i.e. awaiting parts), and the work performed (i.e. actions and testing).
 
-U14. As a user, I want to update an existing work order while it is in an open/ongoing status (i.e. it was created, the initial diagnosis was performed and documented, and parts have been ordered; then, several days later the parts arrived and repairs were completed/documented, before finally closing the work order).
+U14. As a user, I want to view a work order, including a list of its labor entries (sorted by entry ID), parts replaced entries (sorted by entry ID), and test equipment used entries (sorted by equipment ID).
 
-U15. As a user, I want to add labor entries to an open work order, including technician ID/name, start and end dates/times, and notes. Additionally, the total time for the labor entry should be auto-calculated and populated, based on the start and end dates/times.
+U15. As a user, I want to update an existing work order while it is in an open/ongoing status (i.e. it was created, the initial diagnosis was performed and documented, and parts have been ordered; then, several days later the parts arrived and repairs were completed/documented, before finally closing the work order).
 
-U16. As a user, I want to update/correct the start and end date/time for a labor entry on an open work order.
+U16. As a user, I want to add labor entries to an open work order, including technician ID/name, start and end dates/times, and notes. Additionally, the total time for the labor entry should be auto-calculated and populated, based on the start and end dates/times.
 
-U17. As a user, I want to view a labor entry on a work order.
+U17. As a user, I want to update/correct the start and end date/time for a labor entry on an open work order.
 
-U18. As a user, I want to delete a labor entry on an open work order (i.e. if a duplicate entry was added in error).
+U18. As a user, I want to view a labor entry on a work order.
 
-U19. As a user, I want to add a part replaced to an open work order, including part ID, description, and quantity.
+U19. As a user, I want to delete a labor entry on an open work order (i.e. if a duplicate entry was added in error).
 
-U20. As a user, I want to update a 'part replaced' entry on an open work order (i.e. to correct the quantity or the part)
+U20. As a user, I want to add a part replaced to an open work order, including part ID, description, and quantity.
 
-U21. As a user, I want to view a 'part replaced' entry on a work order.
+U21. As a user, I want to update a 'part replaced' entry on an open work order (i.e. to correct the quantity or the part)
 
-U22. As a user, I want to delete a 'part replaced' entry on an open work order (i.e. if it was added in error).
+U22. As a user, I want to view a 'part replaced' entry on a work order.
 
-U23. As a user, I want to add a test device used to an open work order, including its identifiers and compliance status (i.e. the manufacturer, model, serial number, and ID of an electrical safety tester, along with a 'compliance through date' of January 2024, at which point it will need to be checked for accuracy before it can continue to be used)
+U23. As a user, I want to delete a 'part replaced' entry on an open work order (i.e. if it was added in error).
 
-U24. As a user, I want to delete a 'test device used' entry from an open work order (i.e. if it was added in error).
+U24. As a user, I want to add a test device used to an open work order, including its identifiers and compliance status (i.e. the manufacturer, model, serial number, and ID of an electrical safety tester, along with a 'compliance through date' of January 2024, at which point it will need to be checked for accuracy before it can continue to be used)
 
-U25. As a user, I want to complete/close a work order so that it can no longer be modified and becomes a permanent record.
+U25. As a user, I want to delete a 'test device used' entry from an open work order (i.e. if it was added in error).
+
+U26. As a user, I want to complete/close a work order so that it can no longer be modified and becomes a permanent record.
 
 ## 3. Out of Scope / Stretch Goals
 
 - Billing details/integration (i.e. device coverage levels, such as 'full service with parts', or 'preventive maintenance no parts', which dictate rules for what labor and parts are billable/non-billable, along with applicable fields within a work order and labor/part entries)
 - Electronic customer signatures for work orders
-- Printing (i.e. inventory records, inventory lists, work orders)
+- Printer friendly formatting (i.e. of inventory records, inventory lists, work orders)
 - Sorting facility inventory lists by manufacturer/model or department
 - Device RFID locators and current precise location information/integration
 - Viewing a list of inactive/retired devices (note: individual inactive devices can be viewed)
@@ -75,6 +77,7 @@ U25. As a user, I want to complete/close a work order so that it can no longer b
 - Listing open work orders
 - Administrative features/access
 - Numerical tracking of a device's failure count (i.e. number of work orders with a type of 'repair', as opposed to a PM or Acceptance work order)
+- Parts ordering system integration
 
 ## 4. UML Class Diagram
 
