@@ -197,6 +197,7 @@ boolean isComplete;
 
 ### 5.3 Update Device Endpoint
 - Accepts ```PUT``` request to ```/devices/controlNumber```
+  - If the device is not found, a ```DeviceRecordNotFoundException``` will be thrown
 - Accepts data to update a device in the inventory, with the following information provided in the request body:
   - control number (numeric characters only)
   - serial number (alphanumeric characters and dashes only)
@@ -214,12 +215,16 @@ boolean isComplete;
   - If the device's service status is "Retired", a ```DeviceRetiredException``` will be thrown
 
 ### 5.4 Inactivate Device Endpoint
-- Accepts ```DELETE``` request to ```devices/controlNumber```
+- Accepts ```DELETE``` request to ```/devices/controlNumber```
+  - If the device is not found, a ```DeviceRecordNotFoundException``` will be thrown
 - Returns the updated device inventory record, with a service status of "Retired"
 - We will confirm that there are no work orders in the device's list that have a status of "Open".
-  - If any of the device's work orders are open, a ```OpenWorkOrdersExistException``` will be thrown
+  - If any of the device's work orders are open, an ```OpenWorkOrderExistsException``` will be thrown
 
-### 5.5 
+### 5.5 Reactivate Device Endpoint
+- Accepts ```PUT``` request to ```/devices/reactivate/controlNumber```
+  - If the device is not found, a ```DeviceRecordNotFoundException``` will be thrown
+- Returns the updated device inventory record, with a service status of "In Service"
 
 ## 6. Tables
 
