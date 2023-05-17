@@ -125,11 +125,11 @@ LocalDate dateCreated;
 String closedById;
 String closedByName;
 LocalDate dateClosed;
-Enum failureType;
 String problemReported;
 String problemFound;
 List<PerformanceCheckModel> checklist;
 String summary;
+LocalDateTime completionDateTime;
 List<LaborModel> laborEntries;
 List<PartModel> partsUsed;
 List<TestDeviceModel> testDevicesUsed;
@@ -257,14 +257,28 @@ boolean isComplete;
   - If no sort order provided, defaults to ascending
 
 ### 5.12 View Devices At Facility Due In Current Month Endpoint
-- Accepts ```GET``` requsst to ```/devices/facility/duenow/sort```
+- Accepts ```GET``` request to ```/devices/facility/duenow/sort```
 - Returns a list of device records for this facility, with a PM due in the current month, sorted by control number in the order specified (ascending or descending)
   - If no sort order provided, defaults to ascending
 
 ### 5.13 View Devices At Facility Due Next Month Endpoint
-- Accepts ```GET``` requsst to ```/devices/facility/duesoon/sort```
+- Accepts ```GET``` request to ```/devices/facility/duesoon/sort```
 - Returns a list of device records for this facility, with a PM due next month, sorted by control number in the order specified (ascending or descending)
   - If no sort order provided, defaults to ascending
+
+### 5.14 Create Work Order Endpoint
+- Accepts ```POST``` request to ```/devices/controlNumber/workOrder```
+- Accepts data to create a new work order for the specified device and adds it to the device's list of work orders, as well as the work_orders table, with the following information provided in the request body:
+  - work order type (Acceptance Testing, Preventative Maintenance, Repair)
+  - control number (numeric characters only)
+  - problem reported
+  - problem found (optional at creation)
+- Returns the new work order record, including a unique work order id, an "open" completion status, an empty await status, device information including control number, serial number, manufacturer, model, facility name, and assigned department, the ID and name of the technician that created it, the creation date, an empty summary, empty lists of labor entries, parts used, and test devices used.
+- We will confirm the non-optional fields provided are not empty and have the correct format
+  - If the control number entered is not found, a ```DeviceRecordNotFoundException``` will be thrown
+  - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
+
+
 
 ## 6. Tables
 
