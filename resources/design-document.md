@@ -16,9 +16,9 @@ U3. As a user, I want to inactivate/retire a medical device in the inventory (so
 
 U4. As a user, I want to reactivate a medical device in the inventory, in the event that it has been returned to service (i.e. it was a previous rental and is being rented again).
 
-U5. As a user, I want to search for a device's inventory record by its control sticker number or serial number.
+U5. As a user, I want to retrieve a device's inventory record by its control sticker number or serial number.
 
-U6. As a user, I want to view a medical device's inventory record, including its PM compliance status (i.e. the last PM date, the next PM due date, and whether it is past due or not), as well as the list of work orders attached to it, sorted by completion date (ascending or descending). Note: open work orders without a completion date to show up first in a list sorted in descending order.
+U6. As a user, I want to view a medical device's inventory record, including its PM compliance status (i.e. the last PM date, the next PM due date, and whether it is past due or not), as well as a summary view of the list of work orders attached to it, sorted by completion date (ascending or descending). The summary work order view will contain the work order id, the work order type, the completion status, the date created, and the completion date/time, if applicable. Note: open work orders without a completion date time to show up first in a list sorted in descending order.
 
 U7. As a user, I want to view a list of medical devices at a facility, sorted by control sticker number (ascending or descending), showing manufacturer/model, assigned department, and the PM due date.
 
@@ -103,7 +103,7 @@ String inventoryAddDate;
 String addedByID;
 String addedByName;
 String notes;
-List<WorkOrderModel> workOrders;
+List<WorkOrderSummaryModel> workOrders;
 ```
 
 ```
@@ -121,10 +121,10 @@ Enum facilityName;
 Enum assignedDepartment;
 String createdById;
 String createdByName;
-LocalDate dateCreated;
+LocalDateTime dateTimeCreated;
 String closedById;
 String closedByName;
-LocalDate dateClosed;
+LocalDateTime dateTimeClosed;
 String problemReported;
 String problemFound;
 List<PerformanceCheckModel> checklist;
@@ -133,6 +133,16 @@ LocalDateTime completionDateTime;
 List<LaborModel> laborEntries;
 List<PartModel> partsUsed;
 List<TestDeviceModel> testDevicesUsed;
+```
+
+```
+// WorkOrderSummaryModel
+
+String workOrderId;
+Enum workOrderType;
+Enum completionStatus
+LocalDateTime dateTimeCreated;
+LocalDateTime completionDateTime;
 ```
 
 ```
@@ -226,12 +236,12 @@ boolean isComplete;
   - If the device is not found, a ```DeviceRecordNotFoundException``` will be thrown
 - Returns the updated device inventory record, with a service status of "In Service"
 
-### 5.6 Search Devices By Control Number Endpoint
+### 5.6 Retrieve Device By Control Number Endpoint
 - Accepts ```GET``` request to ```/devices/controlNumber```
   - If the device is not found, a ```DeviceRecordNotFoundException``` will be thrown
 - Returns the device record for this control number
 
-### 5.7 Search Devices By Serial Number Endpoint
+### 5.7 Retrieve Device By Serial Number Endpoint
 - Accepts ```GET``` request to ```/devices/serialNumber```
   - If the device is not found, a ```DeviceRecordNotFoundException``` will be thrown
 - Returns the device record for this serial number
@@ -257,12 +267,12 @@ boolean isComplete;
   - If no sort order provided, defaults to ascending
 
 ### 5.12 View Devices At Facility Due In Current Month Endpoint
-- Accepts ```GET``` request to ```/devices/facility/duenow/sort```
+- Accepts ```GET``` request to ```/devices/facility/duethismonth/sort```
 - Returns a list of device records for this facility, with a PM due in the current month, sorted by control number in the order specified (ascending or descending)
   - If no sort order provided, defaults to ascending
 
 ### 5.13 View Devices At Facility Due Next Month Endpoint
-- Accepts ```GET``` request to ```/devices/facility/duesoon/sort```
+- Accepts ```GET``` request to ```/devices/facility/duenextmonth/sort```
 - Returns a list of device records for this facility, with a PM due next month, sorted by control number in the order specified (ascending or descending)
   - If no sort order provided, defaults to ascending
 
@@ -273,7 +283,7 @@ boolean isComplete;
   - control number (numeric characters only)
   - problem reported
   - problem found (optional at creation)
-- Returns the new work order record, including a unique work order id, an "open" completion status, an empty await status, device information including control number, serial number, manufacturer, model, facility name, and assigned department, the ID and name of the technician that created it, the creation date, an empty summary, empty lists of labor entries, parts used, and test devices used.
+- Returns the new work order record, including a unique work order id, an "open" completion status, an empty await status, device information including control number, serial number, manufacturer, model, facility name, and assigned department, the ID and name of the technician that created it, the creation date, an empty summary, a performance checklist, empty lists of labor entries, parts used, and test devices used.
 - We will confirm the non-optional fields provided are not empty and have the correct format
   - If the control number entered is not found, a ```DeviceRecordNotFoundException``` will be thrown
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
@@ -343,10 +353,10 @@ facilityName // string
 assignedDepartment // string
 createdById // string
 createdByName // string
-dateCreated // string
+dateTimeCreated // string
 closedById // string
 closedByName // string
-dateClosed // string
+dateTimeClosed // string
 problemReported // string
 problemFound // string
 summary // string
