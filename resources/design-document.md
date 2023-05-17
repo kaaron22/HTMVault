@@ -107,6 +107,36 @@ String notes;
 List<Work Order> workOrders;
 ```
 
+```
+// WorkOrderModel
+
+String workOrderId;
+Enum workOrderType;
+Enum completionStatus;
+Enum awaitStatus;
+String controlNumber;
+String serialNumber;
+Enum manufacturer;
+Enum model;
+Enum assetType;
+Enum facilityName;
+Enum assignedDepartment;
+String createdById;
+String createdByName;
+LocalDate dateCreated;
+String closedById;
+String closedByName;
+LocalDate dateClosed;
+Enum failureType;
+String problemReported;
+String problemFound;
+List<Check> checklist;
+String summary;
+List<Labor> laborEntries;
+List<Part> partsUsed;
+List<TestDevice> testDevicesUsed;
+```
+
 ### 5.2 Add Device Endpoint
 
 ## 6. Tables
