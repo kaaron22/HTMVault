@@ -192,10 +192,26 @@ boolean isComplete;
   - maintenance frequency (whole numbers only)
   - notes (optional)
 - Returns the new device inventory record, including an empty list of work orders, the compliance through date, the last PM completion date, the next PM due date, the service status, the add date, as well as the id and name of the person that added it
-- We will confirm the non-optional fields provided are not empty and have the correct format; additionally we will confirm the date of manufacture, if provided, has the correct format (YYYY-MM-DD)
+- We will confirm the non-optional fields provided are not empty and have the correct format; additionally, we will confirm the date of manufacture, if provided, has the correct format (YYYY-MM-DD)
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
 
+### 5.3 Update Device Endpoint
+- Accepts ```PUT``` request to ```/devices/controlNumber```
+- Accepts data to update a device in the inventory, with the following information provided in the request body:
+  - control number (numeric characters only)
+  - serial number (alphanumeric characters and dashes only)
+  - manufacturer
+  - model
+  - date of manufacture (optional)
+  - facility name
+  - assigned department
+  - maintenance frequency (whole numbers only)
+  - notes (optional)
+- Returns the updated device inventory record, including the updated compliance through date and the next PM due date, if the maintenance frequency has changed
+- We will confirm the provided non-optional fields are not empty and have the correct format; additionally, we will confirm the date of manufacture, if provided, has the correct format (YYYY-MM-DD)
+  - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
 
+### 5.4 
 
 ## 6. Tables
 
