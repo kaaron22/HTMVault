@@ -432,4 +432,7 @@ completionDateTime // string
 
 ## 7. UML Class Diagram
 
+### 7.1 Add Device
+![](images/htm-vault-add-device-CD.png)
+
 ## 8. Front-end Mockups
