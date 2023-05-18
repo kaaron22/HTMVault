@@ -329,18 +329,43 @@ boolean isComplete;
 - Accepts ```DELETE``` request to ```/labor/entryId```
 - Removes the labor entry from the associated work order
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
+  - If the labor entry is not found, a ```LaborEntryNotFoundException``` will be thrown
 
 ### 5.21 Add Part Replaced To Work Order Endpoint
+- Accepts ```POST``` request to ```/workOrders/workOrderId/parts```
+- Accepts data to create a new part entry and add it to an open work order, including the part number, description, and quantity.
+- We will confirm the non-optional fields provided are not empty and have the correct format
+  - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
+  - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
 
 ### 5.22 Update Part Replaced Endpoint
+- Accepts ```PUT``` request to ```/parts/entryId```
+- Accepts data to update a part entry, including the part number, description, and quantity.
+- We will confirm the non-optional fields provided are not empty and have the correct format
+  - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
+  - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
 
 ### 5.23 View Part Replaced Endpoint
+- Accepts ```GET``` request to ```/parts/entryId```
+- Returns the part replaced entry record for this entryId
+- If the part replaced entry is not found, a ```PartReplacedEntryNotFoundException``` will be thrown
 
 ### 5.24 Delete Part Replaced Endpoint
+- Accepts ```DELETE``` request to ```/parts/entryId```
+- Removes the part replaced entry from the associated work order
+  - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
 
 ### 5.25 Add Test Device To Work Order Endpoint
+- Accepts ```POST``` request to ```/workOrders/workOrderId/testDevices```
+- Accepts data to add a test device to an open work order with the test device ID. The manufacturer and model will be populated based on the provided ID.
+- We will confirm the non-optional fields provided are not empty and have the correct format
+  - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
+  - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
+  - If the test device is not found, a ```TestDeviceNotFoundException``` will be thrown
 
 ### 5.26 Delete Test Device From Work Order Endpoint
+- Accepts ```DELETE``` request to ```/workOrders/workOrderId/testDevices/id```
+- Removes the test device used from the work order specified
 
 ### 5.27 Close Work Order Endpoint
 - Accepts ```PUT``` request to ```/workOrders/close/workOrderId```
