@@ -78,6 +78,8 @@ U26. As a user, I want to complete/close a work order so that it can no longer b
 - Administrative features/access (i.e. adding new facilities, departments, or manufacturers/models, etc.)
 - Numerical tracking of a device's failure count (i.e. number of work orders with a type of 'repair', as opposed to a PM or Acceptance work order)
 - Parts ordering system integration
+- Adding new manufacturers/models to select from when adding new device
+- Adding test devices to select from when adding to work order
 
 ## 4. Proposed Architecture Overview
 
