@@ -504,3 +504,26 @@ models // string list
 ![](images/htm-vault-add-device-CD.png)
 
 ## 8. Front-end Mockups
+![Home / Retrieve Device Record page](images/wireframe1.jpg)
+
+![Add New Device page](images/wireframe2.jpg)
+
+![New Work Order page](images/wireframe3.jpg)
+
+![Work Order Details page](images/wireframe4.jpg)
+
+![Performance Checklist page](images/wireframe5.jpg)
+
+![Add Labor Entry page](images/wireframe6.jpg)
+
+![View Labor Entry page](images/wireframe7.jpg)
+
+![Add Part page](images/wireframe8.jpg)
+
+![View Part page](images/wireframe9.jpg)
+
+![Add Test Equipment page](images/wireframe10.jpg)
+
+![View Test Equipment page](images/wireframe11.jpg)
+
+![Active Devices page](images/wireframe12.jpg)
