@@ -342,7 +342,7 @@ boolean isComplete;
 
 ### 5.26 Delete Test Device From Work Order Endpoint
 
-### 5. Close Work Order Endpoint
+### 5.27 Close Work Order Endpoint
 - Accepts ```PUT``` request to ```/workOrders/close/workOrderId```
 - Returns the updated work order record, with a completion status of "closed"
   - If the required fields are not complete, a "WorkOrderNotCompleteException" will be thrown
@@ -398,6 +398,12 @@ problemFound // string
 summary // string
 completionDateTime // string
 ```
+
+### 6.3 `labor_entries`
+
+### 6.4 `parts_replaced`
+
+### 6.5 `test_equipment`
 
 ## 7. UML Class Diagram
 
