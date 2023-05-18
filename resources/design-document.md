@@ -306,24 +306,41 @@ boolean isComplete;
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
 
-### 5.17 Add Labor Endpoint
+### 5.17 Add Labor To Work Order Endpoint
 - Accepts ```POST``` request to ```/workOrders/workOrderId/addLabor```
 - Accepts data to create a new labor entry and add it to an open work order, including the start and end dates and times, as well as optional notes. Generates and adds an entry ID, the employee ID and name, and calculates/populates the total time for the labor based on the inputs.
 - We will confirm the non-optional fields provided are not empty and have the correct format
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
 
-### 5.18 Edit Labor Entry Endpoint
+### 5.18 Edit Work Order Labor Entry Endpoint
 - Accepts ```PUT``` request to ```/labor/entryId```
 - Accepts data to update a labor entry, including the start and end dates and times, as well as optional notes. Updates the total time for labor based on the updated inputs.
 - We will confirm the non-optional fields provided are not empty and have the correct format
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
 
-### 5.19 View Labor Entry Endpoint
+### 5.19 View Work Order Labor Entry Endpoint
 - Accepts ```GET``` request to ```/labor/entryId```
 - Returns the labor entry record for this entryId
   - If the labor entry is not found, a ```LaborEntryNotFoundException``` will be thrown
+
+### 5.20 Delete Work Order Labor Entry Endpoint
+- Accepts ```DELETE``` request to ```/labor/entryId```
+- Removes the labor entry from the associated work order
+  - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
+
+### 5.21 Add Part Replaced To Work Order Endpoint
+
+### 5.22 Update Part Replaced Endpoint
+
+### 5.23 View Part Replaced Endpoint
+
+### 5.24 Delete Part Replaced Endpoint
+
+### 5.25 Add Test Device To Work Order Endpoint
+
+### 5.26 Delete Test Device From Work Order Endpoint
 
 ### 5. Close Work Order Endpoint
 - Accepts ```PUT``` request to ```/workOrders/close/workOrderId```
