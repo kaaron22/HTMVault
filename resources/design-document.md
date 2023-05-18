@@ -498,32 +498,45 @@ manufacturer // string, partition key
 models // string list
 ```
 
-## 7. UML Class Diagram
+## 7. UML Class Diagrams
 
-### 7.1 Add Device
+### 7.1 Add Device Class Diagram
 ![](images/htm-vault-add-device-CD.png)
 
 ## 8. Front-end Mockups
+
+### 8.1 Home / Retrieve Device Record page
 ![Home / Retrieve Device Record page](images/wireframe1.jpg)
 
-![Add New Device page](images/wireframe2.jpg)
+### 8.2 Add New Device To Inventory page
+![Add New Device To Inventory page](images/wireframe2.jpg)
 
-![New Work Order page](images/wireframe3.jpg)
+### 8.3 New Work Order For Device page
+![New Work Order For Device page](images/wireframe3.jpg)
 
+### 8.4 Work Order Details page
 ![Work Order Details page](images/wireframe4.jpg)
 
-![Performance Checklist page](images/wireframe5.jpg)
+### 8.5 Performance Checklist For Work Order page
+![Performance Checklist For Work Order page](images/wireframe5.jpg)
 
-![Add Labor Entry page](images/wireframe6.jpg)
+### 8.6 Add Labor Entry To Work Order page
+![Add Labor Entry To Work Order page](images/wireframe6.jpg)
 
-![View Labor Entry page](images/wireframe7.jpg)
+### 8.7 View Labor Entry For Work Order page
+![View Labor Entry For Work Order page](images/wireframe7.jpg)
 
-![Add Part page](images/wireframe8.jpg)
+### 8.8 Add Part To Work Order page
+![Add Part To Work Order page](images/wireframe8.jpg)
 
+### 8.9 View Part page
 ![View Part page](images/wireframe9.jpg)
 
-![Add Test Equipment page](images/wireframe10.jpg)
+### 8.10 Add Test Device To Work Order Page
+![Add Test Device To Work Order page](images/wireframe10.jpg)
 
-![View Test Equipment page](images/wireframe11.jpg)
+### 8.11 View Test Device Used Page
+![View Test Device Used page](images/wireframe11.jpg)
 
+### 8.12 Active Devices page
 ![Active Devices page](images/wireframe12.jpg)
