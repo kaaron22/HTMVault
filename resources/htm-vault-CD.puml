@@ -2,6 +2,7 @@
 skinparam linetype ortho
 left to right direction
 
+newpage
 abstract class LambdaActivityRunner<TRequest, TResult> {
     - ServiceComponent service
 
