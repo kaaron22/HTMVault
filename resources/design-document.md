@@ -429,6 +429,7 @@ workOrders // string list
 - ```FacilityNameAndPmDueDate``` includes control number, manufacturer, model, assignedDepartment, and nextPmDueDate
 
 ### 6.2 `work_orders`
+
 ```
 workOrderId // string, partition key
 workOrderType // string
@@ -450,13 +451,52 @@ problemReported // string
 problemFound // string
 summary // string
 completionDateTime // string
+laborEntries // string list
+partsUsed // string list
+testDevicesUsed // string list
 ```
 
 ### 6.3 `labor_entries`
 
+```
+entryId // string, partition key
+workOrderId // string
+employeeId // string
+employeeName // string
+startDateTime // string
+endDateTime // string
+totalTime // number
+notes // string
+```
+
 ### 6.4 `parts_replaced`
 
+```
+entryId // string, partition key
+workOrderId // string
+partNumber // string
+partDescription // string
+quantity // number
+```
+
 ### 6.5 `test_equipment`
+
+```
+deviceId // string, partition key
+serialNumber // string
+manufacturer // string
+model // string
+lastAccuracyCheck // string
+nextDueAccuracyCheck // string
+inCompliance // boolean
+```
+
+### 6.6 `manufacturer_models`
+
+```
+manufacturer // string, partition key
+models // string list
+```
 
 ## 7. UML Class Diagram
 
