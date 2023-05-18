@@ -130,9 +130,9 @@ String problemFound;
 List<PerformanceCheckModel> checklist;
 String summary;
 LocalDateTime completionDateTime;
-List<LaborModel> laborEntries;
-List<PartModel> partsUsed;
-List<TestDeviceModel> testDevicesUsed;
+List<LaborSummaryModel> laborEntries;
+List<PartSummaryModel> partsUsed;
+List<TestDeviceSummaryModel> testDevicesUsed;
 ```
 
 ```
@@ -159,12 +159,30 @@ String notes;
 ```
 
 ```
+// LaborSummaryModel
+
+String entryId;
+String employeeId;
+LocalDateTime startDateTime;
+LocalDateTime endDateTime;
+Double totalTime;
+```
+
+```
 // PartModel
 
 String entryId;
 String workOrderId;
 Enum partNumber;
 Enum partDescription;
+int quantity;
+```
+
+```
+// PartSummaryModel
+
+String entryId;
+Enum partNumber;
 int quantity;
 ```
 
@@ -178,6 +196,14 @@ Enum model;
 LocalDate lastAccuracyCheck;
 LocalDate nextDueAccuracyCheck;
 boolean inCompliance;
+```
+
+```
+// TestDeviceSummaryModel
+
+Enum deviceId;
+Enum manufacturer;
+Enum model;
 ```
 
 ```
