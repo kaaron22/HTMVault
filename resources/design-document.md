@@ -306,7 +306,26 @@ boolean isComplete;
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
 
-### 5.17 Close Work Order Endpoint
+### 5.17 Add Labor Endpoint
+- Accepts ```POST``` request to ```/workOrders/workOrderId/addLabor```
+- Accepts data to create a new labor entry and add it to an open work order, including the start and end dates and times, as well as optional notes. Generates and adds an entry ID, the employee ID and name, and calculates/populates the total time for the labor based on the inputs.
+- We will confirm the non-optional fields provided are not empty and have the correct format
+  - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
+  - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
+
+### 5.18 Edit Labor Entry Endpoint
+- Accepts ```PUT``` request to ```/labor/entryId```
+- Accepts data to update a labor entry, including the start and end dates and times, as well as optional notes. Updates the total time for labor based on the updated inputs.
+- We will confirm the non-optional fields provided are not empty and have the correct format
+  - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
+  - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
+
+### 5.19 View Labor Entry Endpoint
+- Accepts ```GET``` request to ```/labor/entryId```
+- Returns the labor entry record for this entryId
+  - If the labor entry is not found, a ```LaborEntryNotFoundException``` will be thrown
+
+### 5. Close Work Order Endpoint
 - Accepts ```PUT``` request to ```/workOrders/close/workOrderId```
 - Returns the updated work order record, with a completion status of "closed"
   - If the required fields are not complete, a "WorkOrderNotCompleteException" will be thrown
