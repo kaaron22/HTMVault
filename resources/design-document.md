@@ -62,7 +62,7 @@ U26. As a user, I want to complete/close a work order so that it can no longer b
 
 ## 3. Out of Scope / Stretch Goals
 
-- Billing details/integration (i.e. device coverage levels, such as 'full service with parts', or 'preventive maintenance no parts', which dictate rules for what labor and parts are billable/non-billable, along with applicable fields within a work order and labor/part entries)
+- Billing details/integration (i.e. device coverage levels, such as 'full service with parts', or 'preventive maintenance no parts', as well as work order failure tags, such as physical damage, or electronic failure, which dictate rules for what labor and parts are billable/non-billable, along with applicable fields within a work order and labor/part entries)
 - Electronic customer signatures for work orders
 - Printer friendly formatting (i.e. of inventory records, inventory lists, work orders)
 - Sorting facility inventory lists by manufacturer/model or department
@@ -80,6 +80,7 @@ U26. As a user, I want to complete/close a work order so that it can no longer b
 - Parts ordering system integration
 - Adding new manufacturers/models to select from when adding new device
 - Adding test devices to select from when adding to work order
+- Work order action taken tags, which would assist in verification of, for example, whether at least one piece of test equipment needed to be added before closing the record (i.e. we flag the action taken as PM Complete, or Electrical Safety Inspection, and the app safeguards against case closure until a test device is attached)
 
 ## 4. Proposed Architecture Overview
 
@@ -355,6 +356,7 @@ boolean isComplete;
 - We will confirm the non-optional fields provided are not empty and have the correct format
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
+  - If the labor entry is not found, a ```LaborEntryNotFoundException``` will be thrown
 
 ### 5.19 View Work Order Labor Entry Endpoint
 - Accepts ```GET``` request to ```/labor/entryId```
@@ -380,16 +382,18 @@ boolean isComplete;
 - We will confirm the non-optional fields provided are not empty and have the correct format
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
+  - If the part replaced entry is not found, a ```PartReplacedEntryNotFoundException``` will be thrown
 
 ### 5.23 View Part Replaced Endpoint
 - Accepts ```GET``` request to ```/parts/entryId```
 - Returns the part replaced entry record for this entryId
-- If the part replaced entry is not found, a ```PartReplacedEntryNotFoundException``` will be thrown
+  - If the part replaced entry is not found, a ```PartReplacedEntryNotFoundException``` will be thrown
 
 ### 5.24 Delete Part Replaced Endpoint
 - Accepts ```DELETE``` request to ```/parts/entryId```
 - Removes the part replaced entry from the associated work order
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
+  - If the part replaced entry is not found, a ```PartReplacedEntryNotFoundException``` will be thrown
 
 ### 5.25 Add Test Device To Work Order Endpoint
 - Accepts ```POST``` request to ```/workOrders/workOrderId/testDevices```
@@ -397,16 +401,18 @@ boolean isComplete;
 - We will confirm the non-optional fields provided are not empty and have the correct format
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
-  - If the test device is not found, a ```TestDeviceNotFoundException``` will be thrown
+  - If the test device is not found for the provided ID, a ```TestDeviceNotFoundException``` will be thrown
 
 ### 5.26 Delete Test Device From Work Order Endpoint
 - Accepts ```DELETE``` request to ```/workOrders/workOrderId/testDevices/id```
 - Removes the test device used from the work order specified
+  - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
+  - If the test device entry is not found, a ```TestDeviceEntryNotFoundException``` will be thrown
 
 ### 5.27 Close Work Order Endpoint
 - Accepts ```PUT``` request to ```/workOrders/close/workOrderId```
 - Returns the updated work order record, with a completion status of "closed"
-  - If the required fields are not complete, a "WorkOrderNotCompleteException" will be thrown
+  - If the required fields are not complete, including the performance checklist, and at least one labor entry, a ```WorkOrderNotCompleteException``` will be thrown
 
 ## 6. Tables
 
