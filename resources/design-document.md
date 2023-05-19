@@ -277,31 +277,39 @@ boolean isComplete;
 ### 5.8 View Devices At Facility Endpoint
 - Accepts ```GET``` request to ```/devices/facility/sort```
 - Returns a list of device records for this facility, sorted by control number in the order specified (ascending or descending)
+  - If the facility is not found, a ```FacilityNotFoundException``` will be thrown
   - If no sort order provided, defaults to ascending
 
 ### 5.9 View Devices At Facility In Department Endpoint
 - Accepts ```GET``` request to ```/devices/facility/department/sort```
 - Returns a list of device records for this facility, matching the specified department, and sorted by control number in the order specified (ascending or descending)
+  - If the facility is not found, a ```FacilityNotFoundException``` will be thrown
+  - If the department at this facility is not found, a ```DepartmentNotFoundException``` will be thrown
   - If no sort order provided, defaults to ascending
 
 ### 5.10 View Devices At Facility With Manufacturer And Model Endpoint
 - Accepts ```GET``` request to ```/devices/facility/manufacturer/model/sort```
 - Returns a list of device records for this facility, matching the specified manufacturer and model, sorted by control number in the order specified (ascending or descending)
+  - If the facility is not found, a ```FacilityNotFoundException``` will be thrown
+  - If the manufacturer/model combination is not found, a ```ManufacturerModelNotFoundException``` will be thrown
   - If no sort order provided, defaults to ascending
 
 ### 5.11 View Past Due Devices At Facility Endpoint
 - Accepts ```GET``` request to ```/devices/facility/pastdue/sort```
 - Returns a list of device records for this facility, with a past due PM (prior to current month), sorted by control number in the order specified (ascending or descending)
+  - If the facility is not found, a ```FacilityNotFoundException``` will be thrown
   - If no sort order provided, defaults to ascending
 
 ### 5.12 View Devices At Facility Due In Current Month Endpoint
 - Accepts ```GET``` request to ```/devices/facility/duethismonth/sort```
 - Returns a list of device records for this facility, with a PM due in the current month, sorted by control number in the order specified (ascending or descending)
+  - If the facility is not found, a ```FacilityNotFoundException``` will be thrown
   - If no sort order provided, defaults to ascending
 
 ### 5.13 View Devices At Facility Due Next Month Endpoint
 - Accepts ```GET``` request to ```/devices/facility/duenextmonth/sort```
 - Returns a list of device records for this facility, with a PM due next month, sorted by control number in the order specified (ascending or descending)
+  - If the facility is not found, a ```FacilityNotFoundException``` will be thrown
   - If no sort order provided, defaults to ascending
 
 ### 5.14 Create Work Order Endpoint
