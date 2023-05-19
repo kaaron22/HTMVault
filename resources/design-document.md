@@ -402,6 +402,7 @@ boolean isComplete;
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
   - If the test device is not found for the provided ID, a ```TestDeviceNotFoundException``` will be thrown
+  - If the test device is out of compliance, a ```TestDeviceOutOfComplianceException``` will be thrown
 
 ### 5.26 Delete Test Device From Work Order Endpoint
 - Accepts ```DELETE``` request to ```/workOrders/workOrderId/testDevices/id```
