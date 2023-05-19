@@ -465,6 +465,7 @@ problemReported // string
 problemFound // string
 summary // string
 completionDateTime // string
+performanceChecks // string list
 laborEntries // string list
 partsUsed // string list
 testDevicesUsed // string list
