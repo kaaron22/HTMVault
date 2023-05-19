@@ -1,0 +1,11 @@
+@startuml
+actor Client
+
+participant "Website Add Device page"
+
+
+database devices
+
+Client -> "Website Add Device page": Submit add device form
+
+@enduml
