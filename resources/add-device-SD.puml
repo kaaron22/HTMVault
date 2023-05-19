@@ -1,11 +1,12 @@
 @startuml
+
 actor Client
-
 participant "Website Add Device page"
-
-
+participant "Add Device Activity"
 database devices
 
 Client -> "Website Add Device page": Submit add device form
+"Website Add Device page" -> "Add Device Activity": Send add device request
+"Add Device Activity" -> devices: Save new device
 
 @enduml
