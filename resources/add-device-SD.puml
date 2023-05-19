@@ -1,5 +1,7 @@
 @startuml
 
+title "Add Device"
+
 actor Client
 participant "Website Add Device page"
 participant "Add Device Activity"

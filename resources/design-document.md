@@ -234,6 +234,8 @@ boolean isComplete;
 - We will confirm the non-optional fields provided are not empty and have the correct format; additionally, we will confirm the date of manufacture, if provided, has the correct format (YYYY-MM-DD)
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
 
+![Add Device Sequence Diagram](images/add-device-SD.png)
+
 ### 5.3 Update Device Endpoint
 - Accepts ```PUT``` request to ```/devices/controlNumber```
   - If the device is not found, a ```DeviceRecordNotFoundException``` will be thrown
