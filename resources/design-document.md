@@ -237,7 +237,7 @@ boolean isComplete;
 ![Add Device Sequence Diagram](images/add-device-SD.png)
 
 ### 5.3 Update Device Endpoint
-- Accepts ```PUT``` request to ```/devices/controlNumber```
+- Accepts ```PUT``` request to ```/devices/{controlNumber}```
   - If the device is not found, a ```DeviceRecordNotFoundException``` will be thrown
 - Accepts data to update a device in the inventory, with the following information provided in the request body:
   - control number (numeric characters only)
@@ -256,61 +256,61 @@ boolean isComplete;
   - If the device's service status is "Retired", a ```DeviceRetiredException``` will be thrown
 
 ### 5.4 Inactivate Device Endpoint
-- Accepts ```DELETE``` request to ```/devices/controlNumber```
+- Accepts ```DELETE``` request to ```/devices/{controlNumber}```
   - If the device is not found, a ```DeviceRecordNotFoundException``` will be thrown
 - Returns the updated device inventory record, with a service status of "Retired"
 - We will confirm that there are no work orders in the device's list that have a status of "Open".
   - If any of the device's work orders are open, an ```OpenWorkOrderExistsException``` will be thrown
 
 ### 5.5 Reactivate Device Endpoint
-- Accepts ```PUT``` request to ```/devices/reactivate/controlNumber```
+- Accepts ```PUT``` request to ```/devices/reactivate/{controlNumber}```
   - If the device is not found, a ```DeviceRecordNotFoundException``` will be thrown
 - Returns the updated device inventory record, with a service status of "In Service"
 
 ### 5.6 Retrieve Device By Control Number Endpoint
-- Accepts ```GET``` request to ```/devices/controlNumber```
+- Accepts ```GET``` request to ```/devices?controlNumber={controlNumber}```
   - If the device is not found, a ```DeviceRecordNotFoundException``` will be thrown
 - Returns the device record for this control number
 
 ### 5.7 Retrieve Device By Serial Number Endpoint
-- Accepts ```GET``` request to ```/devices/serialNumber```
+- Accepts ```GET``` request to ```/devices?serialNumber={serialNumber}```
   - If the device is not found, a ```DeviceRecordNotFoundException``` will be thrown
 - Returns the device record for this serial number
 
 ### 5.8 View Devices At Facility Endpoint
-- Accepts ```GET``` request to ```/devices/facility/sort```
+- Accepts ```GET``` request to ```/devices?facility={facility}&sortOrder={sortOrder}```
 - Returns a list of device records for this facility, sorted by control number in the order specified (ascending or descending)
   - If the facility is not found, a ```FacilityNotFoundException``` will be thrown
   - If no sort order provided, defaults to ascending
 
 ### 5.9 View Devices At Facility In Department Endpoint
-- Accepts ```GET``` request to ```/devices/facility/department/sort```
+- Accepts ```GET``` request to ```/devices?facility={facility}&department={department}&sortOrder={sortOrder}```
 - Returns a list of device records for this facility, matching the specified department, and sorted by control number in the order specified (ascending or descending)
   - If the facility is not found, a ```FacilityNotFoundException``` will be thrown
   - If the department at this facility is not found, a ```DepartmentNotFoundException``` will be thrown
   - If no sort order provided, defaults to ascending
 
 ### 5.10 View Devices At Facility With Manufacturer And Model Endpoint
-- Accepts ```GET``` request to ```/devices/facility/manufacturer/model/sort```
+- Accepts ```GET``` request to ```/devices?facility={facility}&manufacturer={manufacturer}&model={model}&sortOrder={sortOrder}```
 - Returns a list of device records for this facility, matching the specified manufacturer and model, sorted by control number in the order specified (ascending or descending)
   - If the facility is not found, a ```FacilityNotFoundException``` will be thrown
   - If the manufacturer/model combination is not found, a ```ManufacturerModelNotFoundException``` will be thrown
   - If no sort order provided, defaults to ascending
 
 ### 5.11 View Past Due Devices At Facility Endpoint
-- Accepts ```GET``` request to ```/devices/facility/pastdue/sort```
+- Accepts ```GET``` request to ```/devices?facility={facility}&endDate={endDate}&sortOrder={sortOrder}```
 - Returns a list of device records for this facility, with a past due PM (prior to current month), sorted by control number in the order specified (ascending or descending)
   - If the facility is not found, a ```FacilityNotFoundException``` will be thrown
   - If no sort order provided, defaults to ascending
 
 ### 5.12 View Devices At Facility Due In Current Month Endpoint
-- Accepts ```GET``` request to ```/devices/facility/duethismonth/sort```
+- Accepts ```GET``` request to ```/devices?facility={facility}&startDate={startDate}&endDate={endDate}&sortOrder={sortOrder}```
 - Returns a list of device records for this facility, with a PM due in the current month, sorted by control number in the order specified (ascending or descending)
   - If the facility is not found, a ```FacilityNotFoundException``` will be thrown
   - If no sort order provided, defaults to ascending
 
 ### 5.13 View Devices At Facility Due Next Month Endpoint
-- Accepts ```GET``` request to ```/devices/facility/duenextmonth/sort```
+- Accepts ```GET``` request to ```/devices?facility={facility}&startDate={startDate}&sortOrder={sortOrder}```
 - Returns a list of device records for this facility, with a PM due next month, sorted by control number in the order specified (ascending or descending)
   - If the facility is not found, a ```FacilityNotFoundException``` will be thrown
   - If no sort order provided, defaults to ascending
@@ -328,12 +328,12 @@ boolean isComplete;
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
 
 ### 5.15 View Work Order Endpoint
-- Accepts ```GET``` request to ```/workOrders/workOrderId```
+- Accepts ```GET``` request to ```/workOrders/{workOrderId}```
 - Returns the work order record specified by the work order id
   - If no work order found, a ```WorkOrderNotFoundException``` will be thrown
 
 ### 5.16 Update Work Order Endpoint
-- Accepts ```PUT``` request to ```/workOrders/workOrderId```
+- Accepts ```PUT``` request to ```/workOrders/{workOrderId}```
 - Accepts data to update a work order in the work_orders table, with the following information provided in the request body:
   - await status
   - problem reported
@@ -346,14 +346,14 @@ boolean isComplete;
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
 
 ### 5.17 Add Labor To Work Order Endpoint
-- Accepts ```POST``` request to ```/workOrders/workOrderId/addLabor```
+- Accepts ```POST``` request to ```/workOrders/{workOrderId}/addLabor```
 - Accepts data to create a new labor entry and add it to an open work order, including the start and end dates and times, as well as optional notes. Generates and adds an entry ID, the employee ID and name, and calculates/populates the total time for the labor based on the inputs.
 - We will confirm the non-optional fields provided are not empty and have the correct format
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
 
 ### 5.18 Edit Work Order Labor Entry Endpoint
-- Accepts ```PUT``` request to ```/labor/entryId```
+- Accepts ```PUT``` request to ```/labor/{entryId}```
 - Accepts data to update a labor entry, including the start and end dates and times, as well as optional notes. Updates the total time for labor based on the updated inputs.
 - We will confirm the non-optional fields provided are not empty and have the correct format
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
@@ -361,25 +361,25 @@ boolean isComplete;
   - If the labor entry is not found, a ```LaborEntryNotFoundException``` will be thrown
 
 ### 5.19 View Work Order Labor Entry Endpoint
-- Accepts ```GET``` request to ```/labor/entryId```
+- Accepts ```GET``` request to ```/labor/{entryId}```
 - Returns the labor entry record for this entryId
   - If the labor entry is not found, a ```LaborEntryNotFoundException``` will be thrown
 
 ### 5.20 Delete Work Order Labor Entry Endpoint
-- Accepts ```DELETE``` request to ```/labor/entryId```
+- Accepts ```DELETE``` request to ```/labor/{entryId}```
 - Removes the labor entry from the associated work order
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
   - If the labor entry is not found, a ```LaborEntryNotFoundException``` will be thrown
 
 ### 5.21 Add Part Replaced To Work Order Endpoint
-- Accepts ```POST``` request to ```/workOrders/workOrderId/parts```
+- Accepts ```POST``` request to ```/workOrders/{workOrderId}/addPart```
 - Accepts data to create a new part entry and add it to an open work order, including the part number, description, and quantity.
 - We will confirm the non-optional fields provided are not empty and have the correct format
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
 
 ### 5.22 Update Part Replaced Endpoint
-- Accepts ```PUT``` request to ```/parts/entryId```
+- Accepts ```PUT``` request to ```/parts/{entryId}```
 - Accepts data to update a part entry, including the part number, description, and quantity.
 - We will confirm the non-optional fields provided are not empty and have the correct format
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
@@ -387,18 +387,18 @@ boolean isComplete;
   - If the part replaced entry is not found, a ```PartReplacedEntryNotFoundException``` will be thrown
 
 ### 5.23 View Part Replaced Endpoint
-- Accepts ```GET``` request to ```/parts/entryId```
+- Accepts ```GET``` request to ```/parts/{entryId}```
 - Returns the part replaced entry record for this entryId
   - If the part replaced entry is not found, a ```PartReplacedEntryNotFoundException``` will be thrown
 
 ### 5.24 Delete Part Replaced Endpoint
-- Accepts ```DELETE``` request to ```/parts/entryId```
+- Accepts ```DELETE``` request to ```/parts/{entryId}```
 - Removes the part replaced entry from the associated work order
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
   - If the part replaced entry is not found, a ```PartReplacedEntryNotFoundException``` will be thrown
 
 ### 5.25 Add Test Device To Work Order Endpoint
-- Accepts ```POST``` request to ```/workOrders/workOrderId/testDevices```
+- Accepts ```POST``` request to ```/workOrders/{workOrderId}/testDevice```
 - Accepts data to add a test device to an open work order with the test device ID. The manufacturer and model will be populated based on the provided ID.
 - We will confirm the non-optional fields provided are not empty and have the correct format
   - If the data provided does not meet these requirements, an ```InvalidAttributeValueException``` will be thrown
@@ -407,13 +407,13 @@ boolean isComplete;
   - If the test device is out of compliance, a ```TestDeviceOutOfComplianceException``` will be thrown
 
 ### 5.26 Delete Test Device From Work Order Endpoint
-- Accepts ```DELETE``` request to ```/workOrders/workOrderId/testDevices/id```
+- Accepts ```DELETE``` request to ```/workOrders/{workOrderId}/testDevice/{id}```
 - Removes the test device used from the work order specified
   - If the work order completion status is "closed", a ```WorkOrderClosedException``` will be thrown
   - If the test device entry is not found, a ```TestDeviceEntryNotFoundException``` will be thrown
 
 ### 5.27 Close Work Order Endpoint
-- Accepts ```PUT``` request to ```/workOrders/close/workOrderId```
+- Accepts ```PUT``` request to ```/workOrders/close/{workOrderId}```
 - Returns the updated work order record, with a completion status of "closed"
   - If the required fields are not complete, including the performance checklist, and at least one labor entry, a ```WorkOrderNotCompleteException``` will be thrown
 
