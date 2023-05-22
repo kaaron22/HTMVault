@@ -1,0 +1,143 @@
+@startuml
+skinparam linetype ortho
+left to right direction
+
+newpage
+abstract class LambdaActivityRunner<TRequest, TResult> {
+    - ServiceComponent service
+
+    # runActivity(Supplier<TRequest> requestSupplier, BiFunction<TRequest, ServiceComponent, TResult> handleRequest) : LambdaResponse
+    - getService() : ServiceComponent
+}
+
+class LambdaRequest<T> extends APIGatewayProxyRequestEvent {
+    - {static} final ObjectMapper MAPPER
+
+    + fromBody(Class<T> requestClass) : T
+    + fromQuery(Function<Map<String, String>, T> converter) : T
+    + fromPath(Function<Map<String, String>, T> converter) : T
+    + fromPathAndQuery(BiFunction<Map<String, String>, Map<String, String>, T> converter) : T
+}
+
+class LambdaResponse extends APIGatewayProxyRequestEvent {
+    - {static} final ObjectMapper MAPPER
+
+    + {static} success(Object payload) : LambdaResponse
+    + {static} success() : LambdaResponse
+    + {static} notFound() : LambdaResponse
+    + {static} error(String message) : LambdaResponse
+    + {static} error(Exception e) : LambdaResponse
+}
+
+class AddDeviceLambda extends LambdaActivityRunner implements RequestHandler {
+    + handleRequest(LambdaRequest<AddDeviceRequest> input, Context context) : LambdaResponse
+}
+
+class AddDeviceRequest {
+    - String controlNumber
+    - String serialNumber
+    - String manufacturer
+    - String model
+    - LocalDate manufactureDate
+    - String facilityName
+    - String assignedDepartment
+    - int maintenanceCycleInMonths
+    - String notes
+}
+
+class AddDeviceActivity {
+    - Logger log
+    - DeviceDao deviceDao
+
+    + handleRequest(AddDeviceRequest addDeviceRequest) : AddDeviceResult
+}
+
+class DeviceDao {
+    - DynamoDBMapper dynamoDBMapper
+    - MetricsPublisher metricsPublisher
+
+    + getDeviceByControlNumber(String controlNumber) : Device
+    + getDeviceBySerialNumber(String serialNumber) : Device
+    + getDevicesAtFacility(String facility) : List<Device>
+    + saveDevice(Device device) : Device
+}
+
+interface ServiceComponent {
+    + provideAddDeviceActivity() : AddDeviceActivity
+}
+
+class DynamoDbClientProvider {
+    + {static} getDynamoDBClient() : AmazonDynamoDB
+    + {static} getDynamoDBClient(Region region) : AmazonDynamoDB
+}
+
+class DaoModule {
+    + provideDynamoDbMapper() : DynamoDBMapper
+}
+
+class AddDeviceResult {
+    - DeviceModel deviceModel
+}
+
+class ModelConverter {
+    + toDeviceModel(Device device) : DeviceModel
+}
+
+class DeviceModel {
+    - String controlNumber
+    - String serialNumber
+    - Enum manufacturer
+    - Enum model
+    - LocalDate manufactureDate
+    - Enum serviceStatus
+    - Enum facilityName
+    - Enum assignedDepartment
+    - LocalDate complianceThroughDate
+    - LocalDate lastPmCompletionDate
+    - LocalDate nextPmDueDate
+    - int pmFrequencyInMonths
+    - LocalDate inventoryAddDate
+    - String addedById
+    - String addedByName
+    - String notes
+    - List<WorkOrderSummaryModel> workOrders
+}
+
+class Device {
+    - String controlNumber
+    - String serialNumber
+    - Enum manufacturer
+    - Enum model
+    - LocalDate manufactureDate
+    - Enum serviceStatus
+    - Enum facilityName
+    - Enum assignedDepartment
+    - LocalDate complianceThroughDate
+    - LocalDate lastPmCompletionDate
+    - LocalDate nextPmDueDate
+    - int pmFrequencyInMonths
+    - LocalDate inventoryAddDate
+    - String addedById
+    - String addedByName
+    - String notes
+    - List<String> workOrderIds
+}
+
+AddDeviceLambda o-- LambdaRequest
+AddDeviceLambda o-- LambdaResponse
+AddDeviceLambda o-- AddDeviceRequest
+AddDeviceLambda o-- AddDeviceActivity
+
+AddDeviceActivity o-- DeviceDao
+AddDeviceActivity o-- AddDeviceResult
+AddDeviceActivity o-- ModelConverter
+AddDeviceActivity o-- DeviceModel
+
+DeviceDao o-- Device
+DeviceDao o-- DaoModule
+
+LambdaActivityRunner o-- ServiceComponent
+
+DaoModule o-- DynamoDbClientProvider
+
+@enduml
