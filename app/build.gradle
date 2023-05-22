@@ -11,21 +11,9 @@ defaultTasks 'clean', 'build'
 
 repositories {
     mavenCentral()
-    maven {
-        url = uri("https://maven.pkg.github.com/NSS-Software-Engineering/shared-java")
-        credentials {
-            username = project.findProperty('GH_PACKAGE_REG_READ_USER') ?: System.getenv('GH_PACKAGE_REG_READ_USER')
-            password = project.findProperty('GH_PACKAGE_REG_READ_PASS') ?: System.getenv('GH_PACKAGE_REG_READ_PASS')
-        }
-    }
 }
 
 dependencies {
-    implementation 'com.nashss.se.shared-java:test-infrastructure:1.+'
-    implementation 'com.nashss.se.shared-java:nss-resources:1.+'
-    implementation 'com.nashss.se.shared-java:lesson-plan-resources:1.+'
-    implementation 'com.nashss.se.shared-java:java-project-resources:1.+'
-
     implementation 'org.apache.commons:commons-text:1.9'
     implementation 'org.apache.logging.log4j:log4j-core:2.18.0'
 
