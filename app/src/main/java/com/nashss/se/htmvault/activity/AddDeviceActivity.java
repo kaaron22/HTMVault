@@ -19,6 +19,8 @@ public class AddDeviceActivity {
     }
 
     public AddDeviceResult handleRequest(final AddDeviceRequest addDeviceRequest) {
+        log.info("Received AddDeviceRequest {}", addDeviceRequest);
+
 
     }
 
