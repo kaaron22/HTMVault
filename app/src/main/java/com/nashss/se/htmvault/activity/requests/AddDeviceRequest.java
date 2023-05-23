@@ -1,6 +1,7 @@
 package com.nashss.se.htmvault.activity.requests;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 @JsonDeserialize(builder = AddDeviceRequest.Builder.class)
 public class AddDeviceRequest {
@@ -27,5 +28,80 @@ public class AddDeviceRequest {
         this.assignedDepartment = assignedDepartment;
         this.maintenanceFrequencyInMonths = maintenanceFrequencyInMonths;
         this.notes = notes;
+    }
+
+    public String getControlNumber() {
+        return controlNumber;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public String getManufactureDate() {
+        return manufactureDate;
+    }
+
+    public String getFacilityName() {
+        return facilityName;
+    }
+
+    public String getAssignedDepartment() {
+        return assignedDepartment;
+    }
+
+    public int getMaintenanceFrequencyInMonths() {
+        return maintenanceFrequencyInMonths;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    @Override
+    public String toString() {
+        return "AddDeviceRequest{" +
+                "controlNumber='" + controlNumber + '\'' +
+                ", serialNumber='" + serialNumber + '\'' +
+                ", manufacturer='" + manufacturer + '\'' +
+                ", model='" + model + '\'' +
+                ", manufactureDate='" + manufactureDate + '\'' +
+                ", facilityName='" + facilityName + '\'' +
+                ", assignedDepartment='" + assignedDepartment + '\'' +
+                ", maintenanceFrequencyInMonths=" + maintenanceFrequencyInMonths +
+                ", notes='" + notes + '\'' +
+                '}';
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    @JsonPOJOBuilder
+    public static class Builder {
+        private String controlNumber;
+        private String serialNumber;
+        private String manufacturer;
+        private String model;
+        private String manufactureDate;
+        private String facilityName;
+        private String assignedDepartment;
+        private int maintenanceFrequencyInMonths;
+        private String notes;
+
+        Builder withControlNumber(String controlNumber) {
+            this.controlNumber = controlNumber;
+            return this;
+        }
+
+
     }
 }
