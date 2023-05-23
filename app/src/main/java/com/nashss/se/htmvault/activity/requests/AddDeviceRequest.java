@@ -5,15 +5,27 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(builder = AddDeviceRequest.Builder.class)
 public class AddDeviceRequest {
 
-    private String controlNumber;
-    private String serialNumber;
-    private String manufacturer;
-    private String model;
-    private String manufactureDate;
-    private String facilityName;
-    private String assignedDepartment;
-    private int maintenanceFrequencyInMonths;
-    private String notes;
+    private final String controlNumber;
+    private final String serialNumber;
+    private final String manufacturer;
+    private final String model;
+    private final String manufactureDate;
+    private final String facilityName;
+    private final String assignedDepartment;
+    private final int maintenanceFrequencyInMonths;
+    private final String notes;
 
-    private AddDeviceRequest()
+    public AddDeviceRequest(String controlNumber, String serialNumber, String manufacturer, String model,
+                            String manufactureDate, String facilityName, String assignedDepartment,
+                            int maintenanceFrequencyInMonths, String notes) {
+        this.controlNumber = controlNumber;
+        this.serialNumber = serialNumber;
+        this.manufacturer = manufacturer;
+        this.model = model;
+        this.manufactureDate = manufactureDate;
+        this.facilityName = facilityName;
+        this.assignedDepartment = assignedDepartment;
+        this.maintenanceFrequencyInMonths = maintenanceFrequencyInMonths;
+        this.notes = notes;
+    }
 }
