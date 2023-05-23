@@ -18,6 +18,26 @@ public class AddDeviceLambda
      */
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<AddDeviceRequest> input, Context context) {
-        return null;
+        return super.runActivity(
+                () -> {
+                    AddDeviceRequest unauthenticatedRequest = input.fromBody(AddDeviceRequest.class);
+                    return input.fromUserClaims(claims ->
+                            AddDeviceRequest.builder()
+                                    .withControlNumber(unauthenticatedRequest.getControlNumber())
+                                    .withSerialNumber(unauthenticatedRequest.getSerialNumber())
+                                    .withManufacturer(unauthenticatedRequest.getManufacturer())
+                                    .withModel(unauthenticatedRequest.getModel())
+                                    .withManufactureDate(unauthenticatedRequest.getManufactureDate())
+                                    .withFacilityName(unauthenticatedRequest.getFacilityName())
+                                    .withAssignedDepartment(unauthenticatedRequest.getAssignedDepartment())
+                                    .withMaintenanceFrequencyInMonths(unauthenticatedRequest.getMaintenanceFrequencyInMonths())
+                                    .withNotes(unauthenticatedRequest.getNotes())
+                                    .withCustomerId(claims.get("email"))
+                                    .withCustomerName(claims.get("name"))
+                                    .build());
+                },
+                (request, serviceComponent) ->
+                        serviceComponent.provideAddDeviceActivity().handleRequest(request)
+        );
     }
 }
