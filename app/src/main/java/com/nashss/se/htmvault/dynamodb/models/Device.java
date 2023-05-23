@@ -23,6 +23,141 @@ public class Device {
     private String addedById;
     private String addedByName;
     private String notes;
-    List<WorkOrderSummaryModel> workOrders;
+    private List<WorkOrderSummaryModel> workOrders;
 
+    public String getControlNumber() {
+        return controlNumber;
+    }
+
+    public void setControlNumber(String controlNumber) {
+        this.controlNumber = controlNumber;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public LocalDate getManufactureDate() {
+        return manufactureDate;
+    }
+
+    public void setManufactureDate(LocalDate manufactureDate) {
+        this.manufactureDate = manufactureDate;
+    }
+
+    public String getServiceStatus() {
+        return serviceStatus;
+    }
+
+    public void setServiceStatus(String serviceStatus) {
+        this.serviceStatus = serviceStatus;
+    }
+
+    public String getFacilityName() {
+        return facilityName;
+    }
+
+    public void setFacilityName(String facilityName) {
+        this.facilityName = facilityName;
+    }
+
+    public String getAssignedDepartment() {
+        return assignedDepartment;
+    }
+
+    public void setAssignedDepartment(String assignedDepartment) {
+        this.assignedDepartment = assignedDepartment;
+    }
+
+    public LocalDate getComplianceThroughDate() {
+        return complianceThroughDate;
+    }
+
+    public void setComplianceThroughDate(LocalDate complianceThroughDate) {
+        this.complianceThroughDate = complianceThroughDate;
+    }
+
+    public LocalDate getLastPmCompletionDate() {
+        return lastPmCompletionDate;
+    }
+
+    public void setLastPmCompletionDate(LocalDate lastPmCompletionDate) {
+        this.lastPmCompletionDate = lastPmCompletionDate;
+    }
+
+    public LocalDate getNextPmDueDate() {
+        return nextPmDueDate;
+    }
+
+    public void setNextPmDueDate(LocalDate nextPmDueDate) {
+        this.nextPmDueDate = nextPmDueDate;
+    }
+
+    public Integer getMaintenanceFrequencyInMonths() {
+        return maintenanceFrequencyInMonths;
+    }
+
+    public void setMaintenanceFrequencyInMonths(Integer maintenanceFrequencyInMonths) {
+        this.maintenanceFrequencyInMonths = maintenanceFrequencyInMonths;
+    }
+
+    public LocalDate getInventoryAddDate() {
+        return inventoryAddDate;
+    }
+
+    public void setInventoryAddDate(LocalDate inventoryAddDate) {
+        this.inventoryAddDate = inventoryAddDate;
+    }
+
+    public String getAddedById() {
+        return addedById;
+    }
+
+    public void setAddedById(String addedById) {
+        this.addedById = addedById;
+    }
+
+    public String getAddedByName() {
+        return addedByName;
+    }
+
+    public void setAddedByName(String addedByName) {
+        this.addedByName = addedByName;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public List<WorkOrderSummaryModel> getWorkOrders() {
+        return workOrders;
+    }
+
+    public void setWorkOrders(List<WorkOrderSummaryModel> workOrders) {
+        this.workOrders = workOrders;
+    }
 }
