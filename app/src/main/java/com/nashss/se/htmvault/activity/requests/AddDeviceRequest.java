@@ -97,11 +97,54 @@ public class AddDeviceRequest {
         private int maintenanceFrequencyInMonths;
         private String notes;
 
-        Builder withControlNumber(String controlNumber) {
+        public Builder withControlNumber(String controlNumber) {
             this.controlNumber = controlNumber;
             return this;
         }
 
+        public Builder withSerialNumber(String serialNumber) {
+            this.serialNumber = serialNumber;
+            return this;
+        }
 
+        public Builder withManufacturer(String manufacturer) {
+            this.manufacturer = manufacturer;
+            return this;
+        }
+
+        public Builder withModel(String model) {
+            this.model = model;
+            return this;
+        }
+
+        public Builder withManufactureDate(String manufactureDate) {
+            this.manufactureDate = manufactureDate;
+            return this;
+        }
+
+        public Builder withFacilityName(String facilityName) {
+            this.facilityName = facilityName;
+            return this;
+        }
+
+        public Builder withAssignedDepartment(String assignedDepartment) {
+            this.assignedDepartment = assignedDepartment;
+            return this;
+        }
+
+        public Builder withMaintenanceFrequencyInMonths(int maintenanceFrequencyInMonths) {
+            this.maintenanceFrequencyInMonths = maintenanceFrequencyInMonths;
+            return this;
+        }
+
+        public Builder withNotes(String notes) {
+            this.notes = notes;
+            return this;
+        }
+
+        public AddDeviceRequest builder() {
+            return new AddDeviceRequest(controlNumber, serialNumber, manufacturer, model, manufactureDate, facilityName,
+                    assignedDepartment, maintenanceFrequencyInMonths, notes);
+        }
     }
 }
