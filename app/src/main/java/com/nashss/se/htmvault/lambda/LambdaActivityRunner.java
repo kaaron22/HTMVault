@@ -1,7 +1,7 @@
 package com.nashss.se.htmvault.lambda;
 
-import com.nashss.se.musicplaylistservice.dependency.DaggerServiceComponent;
-import com.nashss.se.musicplaylistservice.dependency.ServiceComponent;
+import com.nashss.se.htmvault.dependency.DaggerServiceComponent;
+import com.nashss.se.htmvault.dependency.ServiceComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
