@@ -1,6 +1,8 @@
 package com.nashss.se.htmvault.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.nashss.se.htmvault.dynamodb.models.Device;
+import com.nashss.se.htmvault.metrics.MetricsPublisher;
 
 import javax.inject.Singleton;
 
