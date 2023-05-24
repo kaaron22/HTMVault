@@ -1,9 +1,6 @@
 package com.nashss.se.htmvault.dynamodb.models;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.nashss.se.htmvault.converters.LocalDateConverter;
 import com.nashss.se.htmvault.converters.WorkOrderSummaryListConverter;
 
@@ -13,6 +10,10 @@ import java.util.Objects;
 
 @DynamoDBTable(tableName = "devices")
 public class Device {
+
+    public static final String FACILITY_DEPARTMENT_INDEX = "FacilityNameAndAssignedDepartmentIndex";
+    public static final String FACILITY_MANUFACTURER_MODEL_INDEX = "FacilityNameAndManufacturerModelIndex";
+    public static final String FACILITY_PM_DUE_DATE_INDEX = "FacilityNameAndPmDueDateIndex";
 
     private String controlNumber;
     private String serialNumber;
@@ -88,6 +89,8 @@ public class Device {
     }
 
     @DynamoDBAttribute(attributeName = "facilityName")
+    @DynamoDBIndexHashKey(globalSecondaryIndexNames = {FACILITY_DEPARTMENT_INDEX, FACILITY_MANUFACTURER_MODEL_INDEX,
+            FACILITY_PM_DUE_DATE_INDEX})
     public String getFacilityName() {
         return facilityName;
     }
@@ -97,6 +100,7 @@ public class Device {
     }
 
     @DynamoDBAttribute(attributeName = "assignedDepartment")
+    @DynamoDBIndexRangeKey(globalSecondaryIndexName = FACILITY_DEPARTMENT_INDEX)
     public String getAssignedDepartment() {
         return assignedDepartment;
     }
@@ -127,6 +131,7 @@ public class Device {
 
     @DynamoDBTypeConverted(converter = LocalDateConverter.class)
     @DynamoDBAttribute(attributeName = "nextPmDueDate")
+    @DynamoDBIndexRangeKey(globalSecondaryIndexName = FACILITY_PM_DUE_DATE_INDEX)
     public LocalDate getNextPmDueDate() {
         return nextPmDueDate;
     }
