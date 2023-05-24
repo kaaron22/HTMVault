@@ -3,6 +3,7 @@ package com.nashss.se.htmvault.dynamodb.models;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @DynamoDBTable(tableName = "devices")
 public class Device {
@@ -23,7 +24,7 @@ public class Device {
     private String addedById;
     private String addedByName;
     private String notes;
-    private List<WorkOrderSummaryModel> workOrders;
+    private List<WorkOrderSummary> workOrders;
 
     public String getControlNumber() {
         return controlNumber;
@@ -153,11 +154,11 @@ public class Device {
         this.notes = notes;
     }
 
-    public List<WorkOrderSummaryModel> getWorkOrders() {
+    public List<WorkOrderSummary> getWorkOrders() {
         return workOrders;
     }
 
-    public void setWorkOrders(List<WorkOrderSummaryModel> workOrders) {
+    public void setWorkOrders(List<WorkOrderSummary> workOrders) {
         this.workOrders = workOrders;
     }
 }
