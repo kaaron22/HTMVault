@@ -1,5 +1,8 @@
 package com.nashss.se.htmvault.utils;
 
+import com.nashss.se.htmvault.exceptions.InvalidAttributeException;
+
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -7,6 +10,21 @@ import java.util.function.Supplier;
  */
 public class NullUtils {
     private NullUtils() { }
+
+    /**
+     * Checks a map of attribute name & value pairs associated with a request that are required to be provided. If any
+     * of the attributes required were not provided (i.e. the value is null), throws an InvalidAttributeException.
+     * @param requiredRequestParameterValues the map of attribute name & value pairs
+     *
+     */
+    public static void ifNull(Map<String, String> requiredRequestParameterValues) {
+        for (Map.Entry<String, String> entry : requiredRequestParameterValues.entrySet()) {
+            if (null == entry.getValue()) {
+                throw new InvalidAttributeException(String.format("The %s must be provided", entry.getKey()));
+            }
+        }
+
+    }
 
     /**
      * If obj is null, return valIfNull, otherwise return obj.
