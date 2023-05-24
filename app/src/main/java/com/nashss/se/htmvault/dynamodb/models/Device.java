@@ -1,5 +1,7 @@
 package com.nashss.se.htmvault.dynamodb.models;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 import java.time.LocalDate;
@@ -26,6 +28,7 @@ public class Device {
     private String notes;
     private List<WorkOrderSummary> workOrders;
 
+    @DynamoDBHashKey(attributeName = "controlNumber")
     public String getControlNumber() {
         return controlNumber;
     }
@@ -34,6 +37,7 @@ public class Device {
         this.controlNumber = controlNumber;
     }
 
+    @DynamoDBAttribute(attributeName = "serialNumber")
     public String getSerialNumber() {
         return serialNumber;
     }
@@ -42,6 +46,7 @@ public class Device {
         this.serialNumber = serialNumber;
     }
 
+    @DynamoDBAttribute(attributeName = "manufacturer")
     public String getManufacturer() {
         return manufacturer;
     }
@@ -50,6 +55,7 @@ public class Device {
         this.manufacturer = manufacturer;
     }
 
+    @DynamoDBAttribute(attributeName = "model")
     public String getModel() {
         return model;
     }
@@ -57,6 +63,7 @@ public class Device {
     public void setModel(String model) {
         this.model = model;
     }
+
 
     public LocalDate getManufactureDate() {
         return manufactureDate;
