@@ -9,6 +9,7 @@ import com.nashss.se.htmvault.converters.WorkOrderSummaryListConverter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @DynamoDBTable(tableName = "devices")
 public class Device {
@@ -188,5 +189,36 @@ public class Device {
 
     public void setWorkOrders(List<WorkOrderSummary> workOrders) {
         this.workOrders = workOrders;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Device device = (Device) o;
+        return Objects.equals(controlNumber, device.controlNumber) &&
+                Objects.equals(serialNumber, device.serialNumber) &&
+                Objects.equals(manufacturer, device.manufacturer) &&
+                Objects.equals(model, device.model) &&
+                Objects.equals(manufactureDate, device.manufactureDate) &&
+                Objects.equals(serviceStatus, device.serviceStatus) &&
+                Objects.equals(facilityName, device.facilityName) &&
+                Objects.equals(assignedDepartment, device.assignedDepartment) &&
+                Objects.equals(complianceThroughDate, device.complianceThroughDate) &&
+                Objects.equals(lastPmCompletionDate, device.lastPmCompletionDate) &&
+                Objects.equals(nextPmDueDate, device.nextPmDueDate) &&
+                Objects.equals(maintenanceFrequencyInMonths, device.maintenanceFrequencyInMonths) &&
+                Objects.equals(inventoryAddDate, device.inventoryAddDate) &&
+                Objects.equals(addedById, device.addedById) &&
+                Objects.equals(addedByName, device.addedByName) &&
+                Objects.equals(notes, device.notes) &&
+                Objects.equals(workOrders, device.workOrders);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(controlNumber, serialNumber, manufacturer, model, manufactureDate, serviceStatus,
+                facilityName, assignedDepartment, complianceThroughDate, lastPmCompletionDate, nextPmDueDate,
+                maintenanceFrequencyInMonths, inventoryAddDate, addedById, addedByName, notes, workOrders);
     }
 }

@@ -70,7 +70,11 @@ public class WorkOrderSummary {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WorkOrderSummary that = (WorkOrderSummary) o;
-        return Objects.equals(workOrderId, that.workOrderId) && Objects.equals(workOrderType, that.workOrderType) && Objects.equals(completionStatus, that.completionStatus) && Objects.equals(dateTimeCreated, that.dateTimeCreated) && Objects.equals(completionDateTime, that.completionDateTime);
+        return Objects.equals(workOrderId, that.workOrderId) &&
+                Objects.equals(workOrderType, that.workOrderType) &&
+                Objects.equals(completionStatus, that.completionStatus) &&
+                Objects.equals(dateTimeCreated, that.dateTimeCreated) &&
+                Objects.equals(completionDateTime, that.completionDateTime);
     }
 
     @Override
