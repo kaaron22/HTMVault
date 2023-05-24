@@ -2,6 +2,7 @@ package com.nashss.se.htmvault.dynamodb.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.nashss.se.htmvault.converters.LocalDateConverter;
+import com.nashss.se.htmvault.converters.ManufacturerModelConverter;
 import com.nashss.se.htmvault.converters.WorkOrderSummaryListConverter;
 
 import java.time.LocalDate;
