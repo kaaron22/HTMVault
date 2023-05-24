@@ -17,8 +17,7 @@ public class Device {
 
     private String controlNumber;
     private String serialNumber;
-    private String manufacturer;
-    private String model;
+    private ManufacturerModel manufacturerModel;
     private LocalDate manufactureDate;
     private String serviceStatus;
     private String facilityName;
@@ -51,22 +50,14 @@ public class Device {
         this.serialNumber = serialNumber;
     }
 
-    @DynamoDBAttribute(attributeName = "manufacturer")
-    public String getManufacturer() {
-        return manufacturer;
+    @DynamoDBTypeConverted(converter = ManufacturerModelConverter.class)
+    @DynamoDBAttribute(attributeName = "manufacturerModel")
+    public ManufacturerModel getManufacturerModel() {
+        return manufacturerModel;
     }
 
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
-    @DynamoDBAttribute(attributeName = "model")
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
+    public void setManufacturerModel(ManufacturerModel manufacturerModel) {
+        this.manufacturerModel = manufacturerModel;
     }
 
     @DynamoDBTypeConverted(converter = LocalDateConverter.class)
@@ -203,8 +194,7 @@ public class Device {
         Device device = (Device) o;
         return Objects.equals(controlNumber, device.controlNumber) &&
                 Objects.equals(serialNumber, device.serialNumber) &&
-                Objects.equals(manufacturer, device.manufacturer) &&
-                Objects.equals(model, device.model) &&
+                Objects.equals(manufacturerModel, device.manufacturerModel) &&
                 Objects.equals(manufactureDate, device.manufactureDate) &&
                 Objects.equals(serviceStatus, device.serviceStatus) &&
                 Objects.equals(facilityName, device.facilityName) &&
@@ -222,7 +212,7 @@ public class Device {
 
     @Override
     public int hashCode() {
-        return Objects.hash(controlNumber, serialNumber, manufacturer, model, manufactureDate, serviceStatus,
+        return Objects.hash(controlNumber, serialNumber, manufacturerModel, manufactureDate, serviceStatus,
                 facilityName, assignedDepartment, complianceThroughDate, lastPmCompletionDate, nextPmDueDate,
                 maintenanceFrequencyInMonths, inventoryAddDate, addedById, addedByName, notes, workOrders);
     }

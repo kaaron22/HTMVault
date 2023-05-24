@@ -4,7 +4,6 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
-import java.util.List;
 import java.util.Objects;
 
 @DynamoDBTable(tableName = "manufacturer_models")
@@ -27,7 +26,7 @@ public class ManufacturerModel {
         return model;
     }
 
-    public void setModels(List<String> models) {
+    public void setModel(String model) {
         this.model = model;
     }
 
