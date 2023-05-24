@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import com.nashss.se.htmvault.converters.LocalDateTimeConverter;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -44,6 +45,7 @@ public class WorkOrderSummary {
         this.completionStatus = completionStatus;
     }
 
+    @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
     @DynamoDBAttribute(attributeName = "dateTimeCreated")
     public LocalDateTime getDateTimeCreated() {
         return dateTimeCreated;
@@ -59,7 +61,6 @@ public class WorkOrderSummary {
         return completionDateTime;
     }
 
-    @DynamoDBTypeConverted(converter = LocalDateTimeConverter.class)
     public void setCompletionDateTime(LocalDateTime completionDateTime) {
         this.completionDateTime = completionDateTime;
     }
