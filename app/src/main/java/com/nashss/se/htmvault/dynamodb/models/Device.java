@@ -3,6 +3,9 @@ package com.nashss.se.htmvault.dynamodb.models;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import com.nashss.se.htmvault.converters.LocalDateConverter;
+import com.nashss.se.htmvault.converters.WorkOrderSummaryListConverter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -64,7 +67,8 @@ public class Device {
         this.model = model;
     }
 
-
+    @DynamoDBTypeConverted(converter = LocalDateConverter.class)
+    @DynamoDBAttribute(attributeName = "manufactureDate")
     public LocalDate getManufactureDate() {
         return manufactureDate;
     }
@@ -73,6 +77,7 @@ public class Device {
         this.manufactureDate = manufactureDate;
     }
 
+    @DynamoDBAttribute(attributeName = "serviceStatus")
     public String getServiceStatus() {
         return serviceStatus;
     }
@@ -81,6 +86,7 @@ public class Device {
         this.serviceStatus = serviceStatus;
     }
 
+    @DynamoDBAttribute(attributeName = "facilityName")
     public String getFacilityName() {
         return facilityName;
     }
@@ -89,6 +95,7 @@ public class Device {
         this.facilityName = facilityName;
     }
 
+    @DynamoDBAttribute(attributeName = "assignedDepartment")
     public String getAssignedDepartment() {
         return assignedDepartment;
     }
@@ -97,6 +104,8 @@ public class Device {
         this.assignedDepartment = assignedDepartment;
     }
 
+    @DynamoDBTypeConverted(converter = LocalDateConverter.class)
+    @DynamoDBAttribute(attributeName = "complianceThroughDate")
     public LocalDate getComplianceThroughDate() {
         return complianceThroughDate;
     }
@@ -105,6 +114,8 @@ public class Device {
         this.complianceThroughDate = complianceThroughDate;
     }
 
+    @DynamoDBTypeConverted(converter = LocalDateConverter.class)
+    @DynamoDBAttribute(attributeName = "lastPmCompletionDate")
     public LocalDate getLastPmCompletionDate() {
         return lastPmCompletionDate;
     }
@@ -113,6 +124,8 @@ public class Device {
         this.lastPmCompletionDate = lastPmCompletionDate;
     }
 
+    @DynamoDBTypeConverted(converter = LocalDateConverter.class)
+    @DynamoDBAttribute(attributeName = "nextPmDueDate")
     public LocalDate getNextPmDueDate() {
         return nextPmDueDate;
     }
@@ -121,6 +134,7 @@ public class Device {
         this.nextPmDueDate = nextPmDueDate;
     }
 
+    @DynamoDBAttribute(attributeName = "maintenanceFrequencyInMonths")
     public Integer getMaintenanceFrequencyInMonths() {
         return maintenanceFrequencyInMonths;
     }
@@ -129,6 +143,8 @@ public class Device {
         this.maintenanceFrequencyInMonths = maintenanceFrequencyInMonths;
     }
 
+    @DynamoDBTypeConverted(converter = LocalDateConverter.class)
+    @DynamoDBAttribute(attributeName = "inventoryAddDate")
     public LocalDate getInventoryAddDate() {
         return inventoryAddDate;
     }
@@ -137,6 +153,7 @@ public class Device {
         this.inventoryAddDate = inventoryAddDate;
     }
 
+    @DynamoDBAttribute(attributeName = "addedById")
     public String getAddedById() {
         return addedById;
     }
@@ -145,6 +162,7 @@ public class Device {
         this.addedById = addedById;
     }
 
+    @DynamoDBAttribute(attributeName = "addedByName")
     public String getAddedByName() {
         return addedByName;
     }
@@ -153,6 +171,7 @@ public class Device {
         this.addedByName = addedByName;
     }
 
+    @DynamoDBAttribute(attributeName = "notes")
     public String getNotes() {
         return notes;
     }
@@ -161,6 +180,8 @@ public class Device {
         this.notes = notes;
     }
 
+    @DynamoDBTypeConverted(converter = WorkOrderSummaryListConverter.class)
+    @DynamoDBAttribute(attributeName = "workOrders")
     public List<WorkOrderSummary> getWorkOrders() {
         return workOrders;
     }
