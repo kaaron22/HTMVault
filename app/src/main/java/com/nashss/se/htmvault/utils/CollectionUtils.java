@@ -2,7 +2,7 @@ package com.nashss.se.htmvault.utils;
 
 import java.util.*;
 
-import static com.nashss.se.musicplaylistservice.utils.NullUtils.ifNotNull;
+import static com.nashss.se.htmvault.utils.NullUtils.ifNotNull;
 
 /**
  * Various helpful utilities for converting collections.
