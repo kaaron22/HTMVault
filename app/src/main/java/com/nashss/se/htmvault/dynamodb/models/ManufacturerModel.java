@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Objects;
 
 @DynamoDBTable(tableName = "manufacturer_models")
-public class ManufacturerModels {
+public class ManufacturerModel {
 
     private String manufacturer;
-    private List<String> models;
+    private String model;
 
     @DynamoDBHashKey(attributeName = "manufacturer")
     public String getManufacturer() {
@@ -22,25 +22,25 @@ public class ManufacturerModels {
         this.manufacturer = manufacturer;
     }
 
-    @DynamoDBAttribute(attributeName = "models")
-    public List<String> getModels() {
-        return models;
+    @DynamoDBAttribute(attributeName = "model")
+    public String getModel() {
+        return model;
     }
 
     public void setModels(List<String> models) {
-        this.models = models;
+        this.model = model;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ManufacturerModels that = (ManufacturerModels) o;
-        return Objects.equals(manufacturer, that.manufacturer) && Objects.equals(models, that.models);
+        ManufacturerModel that = (ManufacturerModel) o;
+        return Objects.equals(manufacturer, that.manufacturer) && Objects.equals(model, that.model);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(manufacturer, models);
+        return Objects.hash(manufacturer, model);
     }
 }
