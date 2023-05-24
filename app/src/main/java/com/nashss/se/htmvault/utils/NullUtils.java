@@ -23,7 +23,6 @@ public class NullUtils {
                 throw new InvalidAttributeException(String.format("The %s must be provided", entry.getKey()));
             }
         }
-
     }
 
     /**

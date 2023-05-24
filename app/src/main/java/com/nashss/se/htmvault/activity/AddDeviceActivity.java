@@ -33,7 +33,7 @@ public class AddDeviceActivity {
         requiredRequestParameterValues.put("Facility Name", addDeviceRequest.getFacilityName());
         requiredRequestParameterValues.put("Assigned Department", addDeviceRequest.getAssignedDepartment());
 
-        // ensure required values were provided in request
+        // ensures required values were provided in request; if any  not, an InvalidAttributeException is thrown
         NullUtils.ifNull((requiredRequestParameterValues));
 
         // ensure required values in request are not empty

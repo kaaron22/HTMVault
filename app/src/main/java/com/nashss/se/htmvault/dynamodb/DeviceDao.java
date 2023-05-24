@@ -19,6 +19,7 @@ public class DeviceDao {
     }
 
     public Device saveDevice(Device device) {
-
+        dynamoDBMapper.save(device);
+        return device;
     }
 }
