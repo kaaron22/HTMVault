@@ -1,7 +1,7 @@
 package com.nashss.se.htmvault.dynamodb.models;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 import java.util.Objects;
@@ -21,7 +21,7 @@ public class ManufacturerModel {
         this.manufacturer = manufacturer;
     }
 
-    @DynamoDBAttribute(attributeName = "model")
+    @DynamoDBRangeKey(attributeName = "model")
     public String getModel() {
         return model;
     }
