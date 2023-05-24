@@ -53,6 +53,7 @@ public class Device {
 
     @DynamoDBTypeConverted(converter = ManufacturerModelConverter.class)
     @DynamoDBAttribute(attributeName = "manufacturerModel")
+    @DynamoDBIndexRangeKey(globalSecondaryIndexName = FACILITY_MANUFACTURER_MODEL_INDEX)
     public ManufacturerModel getManufacturerModel() {
         return manufacturerModel;
     }
