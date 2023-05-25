@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.nashss.se.htmvault.converters.LocalDateConverter;
 import com.nashss.se.htmvault.converters.ManufacturerModelConverter;
 import com.nashss.se.htmvault.converters.WorkOrderSummaryListConverter;
+import com.nashss.se.htmvault.models.ServiceStatus;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,7 +21,7 @@ public class Device {
     private String serialNumber;
     private ManufacturerModel manufacturerModel;
     private LocalDate manufactureDate;
-    private String serviceStatus;
+    private ServiceStatus serviceStatus;
     private String facilityName;
     private String assignedDepartment;
     private LocalDate complianceThroughDate;
@@ -72,12 +73,13 @@ public class Device {
         this.manufactureDate = manufactureDate;
     }
 
+    @DynamoDBTypeConvertedEnum
     @DynamoDBAttribute(attributeName = "serviceStatus")
-    public String getServiceStatus() {
+    public ServiceStatus getServiceStatus() {
         return serviceStatus;
     }
 
-    public void setServiceStatus(String serviceStatus) {
+    public void setServiceStatus(ServiceStatus serviceStatus) {
         this.serviceStatus = serviceStatus;
     }
 
