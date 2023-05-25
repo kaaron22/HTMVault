@@ -336,7 +336,7 @@ Resources:
         - AttributeName: "workOrderId"
           AttributeType: "S"
       KeySchema:
-        - AttributeName: "controlNumber"
+        - AttributeName: "workOrderId"
           KeyType: "HASH"
       BillingMode: "PAY_PER_REQUEST"
       TableName: "work_order_summaries"
