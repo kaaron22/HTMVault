@@ -29,6 +29,12 @@ public class AddDeviceActivity {
     public AddDeviceResult handleRequest(final AddDeviceRequest addDeviceRequest) {
         log.info("Received AddDeviceRequest {}", addDeviceRequest);
 
+        checkValidRequiredRequestParameters(addDeviceRequest);
+
+
+    }
+
+    private void checkValidRequiredRequestParameters(AddDeviceRequest addDeviceRequest) {
         Map<String, String> requiredRequestParameterValues = new HashMap<>();
         requiredRequestParameterValues.put("Control Number", addDeviceRequest.getControlNumber());
         requiredRequestParameterValues.put("Serial Number", addDeviceRequest.getSerialNumber());
@@ -61,10 +67,5 @@ public class AddDeviceActivity {
         }
 
         metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
-
-
-
-
-
     }
 }
