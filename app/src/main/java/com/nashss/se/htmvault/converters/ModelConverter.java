@@ -33,7 +33,8 @@ public class ModelConverter {
     }
 
     /**
-     * Private helper method to convert list of WorkOrderSummary objects to list of string lists
+     * Private helper method to convert list of WorkOrderSummary objects to list of string lists, with each string list
+     * containing the individual attributes of a WorkOrderSummary.
      * @param workOrderSummaries the list of WorkOrderSummary objects
      * @return the converted list
      */
