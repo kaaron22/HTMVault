@@ -240,7 +240,7 @@ Resources:
                 Action: dynamodb:*
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/manufacturer_models"
 
-        - PolicyName: 'AccessManufacturerModelTable'
+        - PolicyName: 'AccessFacilityDepartmentsTable'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
