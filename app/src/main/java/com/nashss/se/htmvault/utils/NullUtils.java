@@ -13,7 +13,8 @@ public class NullUtils {
 
     /**
      * Checks a map of attribute name & value pairs associated with a request that are required to be provided. If any
-     * of the attributes required were not provided (i.e. the value is null), throws an InvalidAttributeException.
+     * of the attributes required were not provided (i.e. the value is null), throws an InvalidAttributeException, with
+     * a message specifying the attribute that was not provided.
      * @param requiredRequestParameterValues the map of attribute name & value pairs
      *
      */

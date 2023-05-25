@@ -37,7 +37,7 @@ public class AddDeviceActivity {
         // ensures required values were provided in request; if any were not, an InvalidAttributeException is thrown
         NullUtils.ifNull((requiredRequestParameterValues));
 
-        // ensure required values in request are not empty or blank; if any are, an InvalidAttributeException is thrown
+        // ensures required values in request are not empty or blank; if any are, an InvalidAttributeException is thrown
         HTMVaultServiceUtils.ifEmptyOrBlank(requiredRequestParameterValues);
 
 
