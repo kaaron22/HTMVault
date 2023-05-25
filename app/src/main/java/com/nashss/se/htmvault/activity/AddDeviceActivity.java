@@ -2,22 +2,28 @@ package com.nashss.se.htmvault.activity;
 
 import com.nashss.se.htmvault.activity.requests.AddDeviceRequest;
 import com.nashss.se.htmvault.activity.results.AddDeviceResult;
+import com.nashss.se.htmvault.converters.LocalDateConverter;
+import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.FacilityDepartmentDao;
 import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
+import com.nashss.se.htmvault.dynamodb.models.WorkOrderSummary;
 import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeException;
 import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
+import com.nashss.se.htmvault.models.ServiceStatus;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 import com.nashss.se.htmvault.utils.NullUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 public class AddDeviceActivity {
@@ -27,6 +33,7 @@ public class AddDeviceActivity {
     private final FacilityDepartmentDao facilityDepartmentDao;
     private final Logger log = LogManager.getLogger();
     private final MetricsPublisher metricsPublisher;
+    private static final int MAX_MAINTENANCE_FREQUENCY = 24;
 
     @Inject
     public AddDeviceActivity(DeviceDao deviceDao, ManufacturerModelDao manufacturerModelDao,
@@ -45,7 +52,29 @@ public class AddDeviceActivity {
         Device device = new Device();
         device.setControlNumber(addDeviceRequest.getControlNumber());
         device.setSerialNumber(addDeviceRequest.getSerialNumber());
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer(addDeviceRequest.getManufacturer());
+        manufacturerModel.setModel(addDeviceRequest.getModel());
+        device.setManufacturerModel(manufacturerModel);
+        device.setManufactureDate(new LocalDateConverter().unconvert(addDeviceRequest.getManufactureDate()));
+        device.setServiceStatus(ServiceStatus.IN_SERVICE);
+        device.setFacilityName(addDeviceRequest.getFacilityName());
+        device.setAssignedDepartment(addDeviceRequest.getAssignedDepartment());
+        device.setComplianceThroughDate(null);
+        device.setLastPmCompletionDate(null);
+        device.setNextPmDueDate(addDeviceRequest.getMaintenanceFrequencyInMonths() == 0 ? null : LocalDate.now());
+        device.setMaintenanceFrequencyInMonths(addDeviceRequest.getMaintenanceFrequencyInMonths());
+        device.setInventoryAddDate(LocalDate.now());
+        device.setAddedById(addDeviceRequest.getCustomerId());
+        device.setAddedByName(addDeviceRequest.getCustomerName());
+        device.setNotes(null == addDeviceRequest.getNotes() ? "" : addDeviceRequest.getNotes());
+        device.setWorkOrders(new ArrayList<>());
 
+        Device savedDevice = deviceDao.saveDevice(device);
+
+        return new AddDeviceResult.Builder()
+                .withDeviceModel(new ModelConverter().toDeviceModel(savedDevice))
+                .build();
     }
 
     private void checkValidRequiredRequestParameters(AddDeviceRequest addDeviceRequest) {
@@ -82,9 +111,20 @@ public class AddDeviceActivity {
             // check the facility-department combination against the database to ensure it exists
             facilityDepartmentDao.getFacilityDepartment(addDeviceRequest.getFacilityName(),
                     addDeviceRequest.getAssignedDepartment());
+
+            // ensure the optional manufacture date, if provided, has the correct format
+            if (null != addDeviceRequest.getManufactureDate()) {
+                new LocalDateConverter().unconvert(addDeviceRequest.getManufactureDate());
+            }
+
+            // ensure the maintenance frequency provided is non-negative and is no larger than the maximum frequency
+            // allowed
+            HTMVaultServiceUtils.allowedMaintenanceFrequencyRange(0, MAX_MAINTENANCE_FREQUENCY,
+                    addDeviceRequest.getMaintenanceFrequencyInMonths());
         } catch (InvalidAttributeException |
                  ManufacturerModelNotFoundException |
-                 FacilityDepartmentNotFoundException e) {
+                 FacilityDepartmentNotFoundException |
+                 DateTimeParseException e) {
             metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             throw new InvalidAttributeException(e.getMessage());
         }

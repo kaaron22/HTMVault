@@ -57,4 +57,11 @@ public class HTMVaultServiceUtils {
             }
         }
     }
+
+    public static void allowedMaintenanceFrequencyRange(int min, int max, int actual) {
+        if (actual < min || actual > max) {
+            throw new InvalidAttributeException(String.format("The maintenance frequency provided (%s) is outside of " +
+                    "the acceptable range of %s-%s", actual, min, max));
+        }
+    }
 }
