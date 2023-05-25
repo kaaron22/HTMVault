@@ -329,6 +329,50 @@ Resources:
           Projection:
             ProjectionType: "ALL"
 
+  WorkOrderSummariesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "workOrderId"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "controlNumber"
+          KeyType: "HASH"
+      BillingMode: "PAY_PER_REQUEST"
+      TableName: "work_order_summaries"
+
+  ManufacturerModelsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "manufacturer"
+          AttributeType: "S"
+        - AttributeName: "model"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "manufacturer"
+          KeyType: "HASH"
+        - AttributeName: "model"
+          KeyType: "RANGE"
+      BillingMode: "PAY_PER_REQUEST"
+      TableName: "manufacturer_models"
+
+  FacilityDepartmentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "facility"
+          AttributeType: "S"
+        - AttributeName: "department"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "facility"
+          KeyType: "HASH"
+        - AttributeName: "department"
+          KeyType: "RANGE"
+      BillingMode: "PAY_PER_REQUEST"
+      TableName: "devices"
+
 #-----------------------------------------------------
 # The outputs defined below will be printed
 #  to the screen after a successful deploy
