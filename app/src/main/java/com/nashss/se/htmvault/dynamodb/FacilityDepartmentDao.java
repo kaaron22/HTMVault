@@ -6,12 +6,17 @@ import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class FacilityDepartmentDao {
 
     private final DynamoDBMapper dynamoDBMapper;
 
     private final MetricsPublisher metricsPublisher;
 
+    @Inject
     public FacilityDepartmentDao(DynamoDBMapper dynamoDBMapper, MetricsPublisher metricsPublisher) {
         this.dynamoDBMapper = dynamoDBMapper;
         this.metricsPublisher = metricsPublisher;
