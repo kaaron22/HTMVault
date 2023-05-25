@@ -283,34 +283,51 @@ Resources:
   #-----------------------------------------------------
   # DynamoDB Configuration
   #-----------------------------------------------------
-  
-  PlaylistsTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      AttributeDefinitions:
-        - AttributeName: "id"
-          AttributeType: "S"
-      KeySchema:
-        - AttributeName: "id"
-          KeyType: "HASH"
-      BillingMode: "PAY_PER_REQUEST"
-      TableName: "playlists"
 
-  AlbumTracksTable:
+  DevicesTable:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-        - AttributeName: "asin"
+        - AttributeName: "controlNumber"
           AttributeType: "S"
-        - AttributeName: "track_number"
-          AttributeType: "N"
+        - AttributeName: "manufacturerModel"
+          AttributeType: "S"
+        - AttributeName: "facilityName"
+          AttributeType: "S"
+        - AttributeName: "assignedDepartment"
+          AttributeType: "S"
+        - AttributeName: "nextPmDueDate"
+          AttributeType: "S"
       KeySchema:
-        - AttributeName: "asin"
+        - AttributeName: "controlNumber"
           KeyType: "HASH"
-        - AttributeName: "track_number"
-          KeyType: "RANGE"
       BillingMode: "PAY_PER_REQUEST"
-      TableName: "album_tracks"
+      TableName: "devices"
+      GlobalSecondaryIndexes:
+        - IndexName: "FacilityNameAndAssignedDepartmentIndex"
+          KeySchema:
+            - AttributeName: "facilityName"
+              KeyType: "HASH"
+            - AttributeName: "assignedDepartment"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+        - IndexName: "FacilityNameAndManufacturerModelIndex"
+          KeySchema:
+            - AttributeName: "facilityName"
+              KeyType: "HASH"
+            - AttributeName: "manufacturerModel"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+        - IndexName: "FacilityNameAndPmDueDateIndex"
+          KeySchema:
+            - AttributeName: "facilityName"
+              KeyType: "HASH"
+            - AttributeName: "nextPmDueDate"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
 
 #-----------------------------------------------------
 # The outputs defined below will be printed
