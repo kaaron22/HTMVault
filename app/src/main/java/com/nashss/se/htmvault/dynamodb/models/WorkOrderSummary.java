@@ -1,10 +1,9 @@
 package com.nashss.se.htmvault.dynamodb.models;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.nashss.se.htmvault.converters.LocalDateTimeConverter;
+import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
+import com.nashss.se.htmvault.models.WorkOrderType;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -13,8 +12,8 @@ import java.util.Objects;
 public class WorkOrderSummary {
 
     private String workOrderId;
-    private String workOrderType;
-    private String completionStatus;
+    private WorkOrderType workOrderType;
+    private WorkOrderCompletionStatus completionStatus;
     private LocalDateTime dateTimeCreated;
     private LocalDateTime completionDateTime;
 
@@ -27,21 +26,23 @@ public class WorkOrderSummary {
         this.workOrderId = workOrderId;
     }
 
+    @DynamoDBTypeConvertedEnum
     @DynamoDBAttribute(attributeName = "workOrderType")
-    public String getWorkOrderType() {
+    public WorkOrderType getWorkOrderType() {
         return workOrderType;
     }
 
-    public void setWorkOrderType(String workOrderType) {
+    public void setWorkOrderType(WorkOrderType workOrderType) {
         this.workOrderType = workOrderType;
     }
 
+    @DynamoDBTypeConvertedEnum
     @DynamoDBAttribute(attributeName = "completionStatus")
-    public String getCompletionStatus() {
+    public WorkOrderCompletionStatus getCompletionStatus() {
         return completionStatus;
     }
 
-    public void setCompletionStatus(String completionStatus) {
+    public void setCompletionStatus(WorkOrderCompletionStatus completionStatus) {
         this.completionStatus = completionStatus;
     }
 
