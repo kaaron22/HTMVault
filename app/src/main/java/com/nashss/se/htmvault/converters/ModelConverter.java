@@ -33,9 +33,9 @@ public class ModelConverter {
     }
 
     /**
-     * Private helper method to convert list of WorkOrderSummary objects to
-     * @param workOrderSummaries
-     * @return
+     * Private helper method to convert list of WorkOrderSummary objects to list of string lists
+     * @param workOrderSummaries the list of WorkOrderSummary objects
+     * @return the converted list
      */
     private List<List<String>> convertWorkOrderSummaries(List<WorkOrderSummary> workOrderSummaries) {
         List<List<String>> convertedWorkOrderSummaries = new ArrayList<>();
@@ -55,6 +55,12 @@ public class ModelConverter {
         return convertedWorkOrderSummaries;
     }
 
+    /**
+     * Private helper method to format a LocalDateTime object to a String containing a LocalDate and LocalTime,
+     * separated by a space
+     * @param localDateTime the LocalDateTime to format as a String
+     * @return the formatted String containing the date and time
+     */
     private String formatLocalDateTime(LocalDateTime localDateTime) {
         return localDateTime.toLocalDate().toString() + " " + localDateTime.toLocalTime().toString();
     }
