@@ -4,6 +4,7 @@ import com.nashss.se.htmvault.activity.requests.AddDeviceRequest;
 import com.nashss.se.htmvault.activity.results.AddDeviceResult;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeException;
+import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 import com.nashss.se.htmvault.utils.NullUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,22 +37,9 @@ public class AddDeviceActivity {
         // ensures required values were provided in request; if any were not, an InvalidAttributeException is thrown
         NullUtils.ifNull((requiredRequestParameterValues));
 
-        // ensure required values in request are not empty
-        if (addDeviceRequest.getControlNumber().isEmpty() ||
-                addDeviceRequest.getSerialNumber().isEmpty() ||
-                addDeviceRequest.getManufacturer().isEmpty() ||
-                addDeviceRequest.getModel().isEmpty() ||
-                addDeviceRequest.getFacilityName().isEmpty() ||
-                addDeviceRequest.getAssignedDepartment().isEmpty()) {
-            throw new InvalidAttributeException("Values provided cannot be empty for:\n" +
-                    "Control Number\n" +
-                    "Serial Number\n" +
-                    "Manufacturer\n" +
-                    "Model\n" +
-                    "Facility Name\n" +
-                    "Assigned Department\n" +
-                    addDeviceRequest);
-        }
-    }
+        // ensure required values in request are not empty or blank; if any are, an InvalidAttributeException is thrown
+        HTMVaultServiceUtils.ifEmptyOrBlank(requiredRequestParameterValues);
 
+
+    }
 }
