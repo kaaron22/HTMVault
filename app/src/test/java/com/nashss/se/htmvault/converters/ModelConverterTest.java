@@ -7,6 +7,7 @@ import com.nashss.se.htmvault.models.DeviceModel;
 import com.nashss.se.htmvault.models.ServiceStatus;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderType;
+import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -148,10 +149,10 @@ class ModelConverterTest {
                     deviceModel.getWorkOrderSummaries().get(i).get(1));
             assertEquals(workOrders.get(i).getCompletionStatus().toString(),
                     deviceModel.getWorkOrderSummaries().get(i).get(2));
-            assertEquals(ModelConverter.formatLocalDateTime(workOrders.get(i).getDateTimeCreated()),
+            assertEquals(HTMVaultServiceUtils.formatLocalDateTime(workOrders.get(i).getDateTimeCreated()),
                     deviceModel.getWorkOrderSummaries().get(i).get(3));
             assertEquals(null == workOrders.get(i).getCompletionDateTime() ? "" :
-                    ModelConverter.formatLocalDateTime(workOrders.get(i).getCompletionDateTime()),
+                    HTMVaultServiceUtils.formatLocalDateTime(workOrders.get(i).getCompletionDateTime()),
                     deviceModel.getWorkOrderSummaries().get(i).get(4));
         }
     }

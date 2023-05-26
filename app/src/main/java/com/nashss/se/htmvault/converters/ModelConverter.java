@@ -4,9 +4,10 @@ import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrderSummary;
 import com.nashss.se.htmvault.models.DeviceModel;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.nashss.se.htmvault.utils.HTMVaultServiceUtils.formatLocalDateTime;
 
 public class ModelConverter {
 
@@ -58,13 +59,4 @@ public class ModelConverter {
         return convertedWorkOrderSummaries;
     }
 
-    /**
-     * Private helper method to format a LocalDateTime object to a String containing a LocalDate and LocalTime,
-     * separated by a space
-     * @param localDateTime the LocalDateTime to format as a String
-     * @return the formatted String containing the date and time
-     */
-    public static String formatLocalDateTime(LocalDateTime localDateTime) {
-        return localDateTime.toLocalDate().toString() + " " + localDateTime.toLocalTime().toString();
-    }
 }

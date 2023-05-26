@@ -2,6 +2,7 @@ package com.nashss.se.htmvault.utils;
 
 import com.nashss.se.htmvault.exceptions.InvalidAttributeException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -64,4 +65,15 @@ public class HTMVaultServiceUtils {
                     "the acceptable range of %s-%s", actual, min, max));
         }
     }
+
+    /**
+     * Formats a LocalDateTime object to a String containing a LocalDate and LocalTime,
+     * separated by a space
+     * @param localDateTime the LocalDateTime to format as a String
+     * @return the formatted String containing the date and time
+     */
+    public static String formatLocalDateTime(LocalDateTime localDateTime) {
+        return localDateTime.toLocalDate().toString() + " " + localDateTime.toLocalTime().toString();
+    }
+
 }
