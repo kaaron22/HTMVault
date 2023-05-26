@@ -9,9 +9,10 @@ import DataStore from '../util/DataStore';
 class CreatePlaylist extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['mount', 'submit', 'redirectToViewPlaylist'], this);
+        this.bindClassMethods(['mount', 'submit'], this);
+        //this.bindClassMethods(['mount', 'submit', 'redirectToViewPlaylist'], this);
         this.dataStore = new DataStore();
-        this.dataStore.addChangeListener(this.redirectToViewPlaylist);
+        //this.dataStore.addChangeListener(this.redirectToViewPlaylist);
         this.header = new Header(this.dataStore);
     }
 
@@ -41,22 +42,39 @@ class CreatePlaylist extends BindingClass {
         const origButtonText = createButton.innerText;
         createButton.innerText = 'Loading...';
 
-        const playlistName = document.getElementById('playlist-name').value;
-        const tagsText = document.getElementById('tags').value;
+        const deviceControlNumber = document.getElementById('control-number').value;
+        const deviceSerialNumber = document.getElementById('serial-number').value;
+        const deviceManufacturer = document.getElementById('manufacturer').value;
+        const deviceModel = document.getElementById('model').value;
+        const deviceFacilityName = document.getElementById('facility-name').value;
+        //console.log("DeviceFacilityName is: {}", deviceFacilityName);
+        const deviceAssignedDepartment = document.getElementById('assigned-department').value;
+        const deviceMaintenanceFrequency = document.getElementById('maintenance-frequency').value;
+        const deviceManufactureDate = document.getElementById('manufacture-date').value;
+        const deviceNotes = document.getElementById('notes').value;
 
-        let tags;
-        if (tagsText.length < 1) {
-            tags = null;
+        let manufactureDate;
+        if (deviceManufactureDate.length < 1) {
+            manufactureDate = null;
         } else {
-            tags = tagsText.split(/\s*,\s*/);
+            manufactureDate = deviceManufactureDate;
         }
 
-        const playlist = await this.client.createPlaylist(playlistName, tags, (error) => {
+        let notes;
+        if (deviceNotes.length < 1) {
+            notes = null;
+        } else {
+            notes = deviceNotes;
+        }
+
+        const device = await this.client.addDevice(deviceControlNumber, deviceSerialNumber, deviceManufacturer,
+         deviceModel, deviceFacilityName, deviceAssignedDepartment, deviceMaintenanceFrequency, manufactureDate, notes,
+          (error) => {
             createButton.innerText = origButtonText;
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');
         });
-        this.dataStore.set('playlist', playlist);
+        this.dataStore.set('device', device);
     }
 
     /**
