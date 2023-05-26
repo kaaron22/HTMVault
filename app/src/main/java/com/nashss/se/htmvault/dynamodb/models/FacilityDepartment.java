@@ -9,7 +9,7 @@ import java.util.Objects;
 public class FacilityDepartment {
 
     private String facilityName;
-    private String department;
+    private String assignedDepartment;
 
     @DynamoDBHashKey(attributeName = "facilityName")
     public String getFacilityName() {
@@ -20,13 +20,13 @@ public class FacilityDepartment {
         this.facilityName = facilityName;
     }
 
-    @DynamoDBHashKey(attributeName = "department")
+    @DynamoDBHashKey(attributeName = "assignedDepartment")
     public String getDepartment() {
-        return department;
+        return assignedDepartment;
     }
 
-    public void setDepartments(String department) {
-        this.department = department;
+    public void setDepartments(String assignedDepartment) {
+        this.assignedDepartment = assignedDepartment;
     }
 
     @Override
@@ -34,11 +34,12 @@ public class FacilityDepartment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FacilityDepartment that = (FacilityDepartment) o;
-        return Objects.equals(facilityName, that.facilityName) && Objects.equals(department, that.department);
+        return Objects.equals(facilityName, that.facilityName) && Objects.equals(assignedDepartment,
+                that.assignedDepartment);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(facilityName, department);
+        return Objects.hash(facilityName, assignedDepartment);
     }
 }
