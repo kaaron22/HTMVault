@@ -117,7 +117,7 @@ class ModelConverterTest {
     }
 
     @Test
-    void toDeviceModel_withNoWorkOrders() {
+    void toDeviceModel_deviceWithAllValuesPopulated_convertsAndReturnsDeviceModelSuccessfully() {
         // GIVEN
         // setup
 
