@@ -361,12 +361,12 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-        - AttributeName: "facility"
+        - AttributeName: "facilityName"
           AttributeType: "S"
         - AttributeName: "department"
           AttributeType: "S"
       KeySchema:
-        - AttributeName: "facility"
+        - AttributeName: "facilityName"
           KeyType: "HASH"
         - AttributeName: "department"
           KeyType: "RANGE"
