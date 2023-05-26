@@ -1,6 +1,7 @@
 package com.nashss.se.htmvault.dynamodb.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 import java.util.Objects;
@@ -20,7 +21,7 @@ public class FacilityDepartment {
         this.facilityName = facilityName;
     }
 
-    @DynamoDBHashKey(attributeName = "assignedDepartment")
+    @DynamoDBRangeKey(attributeName = "assignedDepartment")
     public String getDepartment() {
         return assignedDepartment;
     }
