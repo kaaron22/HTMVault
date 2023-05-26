@@ -20,9 +20,11 @@ public class ModelConverter {
                 .withServiceStatus(device.getServiceStatus().toString())
                 .withFacilityName(device.getFacilityName())
                 .withAssignedDepartment(device.getAssignedDepartment())
-                .withComplianceThroughDate(device.getComplianceThroughDate().toString())
-                .withLastPmCompletionDate(device.getLastPmCompletionDate().toString())
-                .withNextPmDueDate(device.getNextPmDueDate().toString())
+                .withComplianceThroughDate(null == device.getComplianceThroughDate() ? "" :
+                        device.getComplianceThroughDate().toString())
+                .withLastPmCompletionDate(null == device.getComplianceThroughDate() ? "" :
+                        device.getLastPmCompletionDate().toString())
+                .withNextPmDueDate(null == device.getNextPmDueDate() ? "" : device.getNextPmDueDate().toString())
                 .withMaintenanceFrequencyInMonths(device.getMaintenanceFrequencyInMonths())
                 .withInventoryAddDate(device.getInventoryAddDate().toString())
                 .withAddedById(device.getAddedById())
