@@ -57,6 +57,7 @@ class AddDeviceRequestTest {
                 .build();
 
         // THEN
+        // all values should be set in the request object and should match the parameter passed in
         assertEquals(controlNumber, addDeviceRequest.getControlNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(serialNumber, addDeviceRequest.getSerialNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(manufacturer, addDeviceRequest.getManufacturer(), ASSERT_EQUALS_FAILURE_MESSAGE);
@@ -70,4 +71,78 @@ class AddDeviceRequestTest {
         assertEquals(customerId, addDeviceRequest.getCustomerId(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(customerName, addDeviceRequest.getCustomerName(), ASSERT_EQUALS_FAILURE_MESSAGE);
     }
+
+    @Test
+    public void builder_withValuesForSomeFields_returnsAddDeviceRequestProperlyBuilt() {
+        // GIVEN
+        // setup values
+
+        // WHEN
+        // manufacture date and notes not included in build
+        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber)
+                .withManufacturer(manufacturer)
+                .withModel(model)
+                .withFacilityName(facilityName)
+                .withAssignedDepartment(assignedDepartment)
+                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+
+        // THEN
+        // those values should be null; the ones that were set should match the value passed in
+        assertEquals(controlNumber, addDeviceRequest.getControlNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(serialNumber, addDeviceRequest.getSerialNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(manufacturer, addDeviceRequest.getManufacturer(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(model, addDeviceRequest.getModel(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertNull(addDeviceRequest.getManufactureDate(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(facilityName, addDeviceRequest.getFacilityName(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(maintenanceFrequencyInMonths, addDeviceRequest.getMaintenanceFrequencyInMonths(),
+                ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertNull(addDeviceRequest.getNotes(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(customerId, addDeviceRequest.getCustomerId(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(customerName, addDeviceRequest.getCustomerName(), ASSERT_EQUALS_FAILURE_MESSAGE);
+    }
+
+    @Test
+    public void builder_maintenanceFrequencyNotWithBuild_returnsAddDeviceRequestProperlyBuilt() {
+        // GIVEN
+        // setup values
+
+        // WHEN
+        // maintenanceFrequencyInMonths not included in build
+        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber)
+                .withManufacturer(manufacturer)
+                .withModel(model)
+                .withManufactureDate(manufactureDate)
+                .withFacilityName(facilityName)
+                .withAssignedDepartment(assignedDepartment)
+                .withNotes(notes)
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+
+        // THEN
+        // the maintenance frequency set is 0, the remaining values should be set in the request object and should match
+        // the values passed in
+        assertEquals(controlNumber, addDeviceRequest.getControlNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(serialNumber, addDeviceRequest.getSerialNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(manufacturer, addDeviceRequest.getManufacturer(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(model, addDeviceRequest.getModel(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(manufactureDate, addDeviceRequest.getManufactureDate(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(facilityName, addDeviceRequest.getFacilityName(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(0, addDeviceRequest.getMaintenanceFrequencyInMonths(),
+                ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(notes, addDeviceRequest.getNotes(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(customerId, addDeviceRequest.getCustomerId(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(customerName, addDeviceRequest.getCustomerName(), ASSERT_EQUALS_FAILURE_MESSAGE);
+    }
+
+
 }
