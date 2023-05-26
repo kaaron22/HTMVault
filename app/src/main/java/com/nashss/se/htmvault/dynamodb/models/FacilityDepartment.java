@@ -22,11 +22,11 @@ public class FacilityDepartment {
     }
 
     @DynamoDBRangeKey(attributeName = "assignedDepartment")
-    public String getDepartment() {
+    public String getAssignedDepartment() {
         return assignedDepartment;
     }
 
-    public void setDepartments(String assignedDepartment) {
+    public void setAssignedDepartment(String assignedDepartment) {
         this.assignedDepartment = assignedDepartment;
     }
 
