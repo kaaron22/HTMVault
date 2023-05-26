@@ -64,7 +64,7 @@ public class ModelConverter {
      * @param localDateTime the LocalDateTime to format as a String
      * @return the formatted String containing the date and time
      */
-    private String formatLocalDateTime(LocalDateTime localDateTime) {
+    public static String formatLocalDateTime(LocalDateTime localDateTime) {
         return localDateTime.toLocalDate().toString() + " " + localDateTime.toLocalTime().toString();
     }
 }
