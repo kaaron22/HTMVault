@@ -30,7 +30,7 @@ public class ModelConverter {
                 .withInventoryAddDate(device.getInventoryAddDate().toString())
                 .withAddedById(device.getAddedById())
                 .withAddedByName(device.getAddedByName())
-                .withNotes(device.getNotes())
+                .withNotes(null == device.getNotes() ? "" : device.getNotes())
                 .withWorkOrderSummaries(convertWorkOrderSummaries(device.getWorkOrders()))
                 .build();
     }
