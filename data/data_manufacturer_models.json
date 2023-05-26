@@ -1,0 +1,105 @@
+{
+  "manufacturer_models": [
+    {
+      "PutRequest": {
+        "Item": {
+          "manufacturer": {
+            "S": "Defib Corp"
+          },
+          "model": {
+            "S": "X-1000"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "manufacturer": {
+            "S": "Defib Corp"
+          },
+          "model": {
+            "S": "X-800"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "manufacturer": {
+            "S": "Vital Signs Corp"
+          },
+          "model": {
+            "S": "ICU-L5"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "manufacturer": {
+            "S": "Vital Signs Corp"
+          },
+          "model": {
+            "S": "Telemetry-MX100"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "manufacturer": {
+            "S": "Vital Signs Corp"
+          },
+          "model": {
+            "S": "ER-L2"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "manufacturer": {
+            "S": "Vital Signs Corp"
+          },
+          "model": {
+            "S": "Surgery-L30"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "manufacturer": {
+            "S": "IV Pump Corp"
+          },
+          "model": {
+            "S": "Dual-Channel X7"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "manufacturer": {
+            "S": "Syringe Pump Corp"
+          },
+          "model": {
+            "S": "L-Series"
+          }
+        }
+      }
+    },
+
+
+
+
+
+  ]
+}
