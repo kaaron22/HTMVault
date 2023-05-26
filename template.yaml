@@ -363,12 +363,12 @@ Resources:
       AttributeDefinitions:
         - AttributeName: "facilityName"
           AttributeType: "S"
-        - AttributeName: "department"
+        - AttributeName: "assignedDepartment"
           AttributeType: "S"
       KeySchema:
         - AttributeName: "facilityName"
           KeyType: "HASH"
-        - AttributeName: "department"
+        - AttributeName: "assignedDepartment"
           KeyType: "RANGE"
       BillingMode: "PAY_PER_REQUEST"
       TableName: "facility_departments"
