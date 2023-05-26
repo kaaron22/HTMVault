@@ -47,7 +47,6 @@ class CreatePlaylist extends BindingClass {
         const deviceManufacturer = document.getElementById('manufacturer').value;
         const deviceModel = document.getElementById('model').value;
         const deviceFacilityName = document.getElementById('facility-name').value;
-        //console.log("DeviceFacilityName is: {}", deviceFacilityName);
         const deviceAssignedDepartment = document.getElementById('assigned-department').value;
         const deviceMaintenanceFrequency = document.getElementById('maintenance-frequency').value;
         const deviceManufactureDate = document.getElementById('manufacture-date').value;
