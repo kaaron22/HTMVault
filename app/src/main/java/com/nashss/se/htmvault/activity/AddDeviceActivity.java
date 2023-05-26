@@ -56,7 +56,8 @@ public class AddDeviceActivity {
         manufacturerModel.setManufacturer(addDeviceRequest.getManufacturer());
         manufacturerModel.setModel(addDeviceRequest.getModel());
         device.setManufacturerModel(manufacturerModel);
-        device.setManufactureDate(new LocalDateConverter().unconvert(addDeviceRequest.getManufactureDate()));
+        device.setManufactureDate(null == addDeviceRequest.getManufactureDate() ? null :
+                new LocalDateConverter().unconvert(addDeviceRequest.getManufactureDate()));
         device.setServiceStatus(ServiceStatus.IN_SERVICE);
         device.setFacilityName(addDeviceRequest.getFacilityName());
         device.setAssignedDepartment(addDeviceRequest.getAssignedDepartment());
