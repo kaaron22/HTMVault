@@ -1,6 +1,9 @@
 package com.nashss.se.htmvault.models;
 
 
+import com.nashss.se.htmvault.utils.CollectionUtils;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -113,7 +116,11 @@ public class DeviceModel {
     }
 
     public List<List<String>> getWorkOrderSummaries() {
-        return workOrderSummaries;
+        List<List<String>> copyWorkOrderSummaries = new ArrayList<>();
+        for (List<String> workOrderSummary : workOrderSummaries) {
+            copyWorkOrderSummaries.add(CollectionUtils.copyToList(workOrderSummary));
+        }
+        return copyWorkOrderSummaries;
     }
 
     @Override
