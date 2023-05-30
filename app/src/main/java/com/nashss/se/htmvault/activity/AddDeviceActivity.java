@@ -9,9 +9,8 @@ import com.nashss.se.htmvault.dynamodb.FacilityDepartmentDao;
 import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
-import com.nashss.se.htmvault.dynamodb.models.WorkOrderSummary;
 import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
-import com.nashss.se.htmvault.exceptions.InvalidAttributeException;
+import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
@@ -88,11 +87,12 @@ public class AddDeviceActivity {
         requiredRequestParameterValues.put("Assigned Department", addDeviceRequest.getAssignedDepartment());
 
         try {
-            // ensures required values were provided in request; if any were not, an InvalidAttributeException is thrown
+            // ensures required values were provided in request; if any were not, an InvalidAttributeValueException is
+            // thrown
             NullUtils.ifNull((requiredRequestParameterValues));
 
-            // ensures required values in request are not empty or blank; if any are, an InvalidAttributeException is
-            // thrown
+            // ensures required values in request are not empty or blank; if any are, an InvalidAttributeValueException
+            // is thrown
             HTMVaultServiceUtils.ifEmptyOrBlank(requiredRequestParameterValues);
 
             // ensures the value provided for the control number meets the requirement of containing alphanumeric
@@ -122,12 +122,12 @@ public class AddDeviceActivity {
             // allowed
             HTMVaultServiceUtils.allowedMaintenanceFrequencyRange(0, MAX_MAINTENANCE_FREQUENCY,
                     addDeviceRequest.getMaintenanceFrequencyInMonths());
-        } catch (InvalidAttributeException |
+        } catch (InvalidAttributeValueException |
                  ManufacturerModelNotFoundException |
                  FacilityDepartmentNotFoundException |
                  DateTimeParseException e) {
             metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            throw new InvalidAttributeException(e.getMessage());
+            throw new InvalidAttributeValueException(e.getMessage());
         }
 
         metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
