@@ -157,4 +157,33 @@ class ModelConverterTest {
         }
     }
 
+    @Test
+    public void toDeviceModel_deviceWithNoWorkOrders_convertsAndReturnsDeviceModelSuccessfully() {
+        // GIVEN
+        // setup and list of work order summaries empty
+        device.setWorkOrders(new ArrayList<>());
+
+        // WHEN
+        DeviceModel deviceModel = modelConverter.toDeviceModel(device);
+
+        // THEN
+        assertEquals(controlNumber, deviceModel.getControlNumber());
+        assertEquals(serialNumber, deviceModel.getSerialNumber());
+        assertEquals(manufacturer, deviceModel.getManufacturer());
+        assertEquals(model, deviceModel.getModel());
+        assertEquals(serviceStatus.toString(), deviceModel.getServiceStatus());
+        assertEquals(facilityName, deviceModel.getFacilityName());
+        assertEquals(assignedDepartment, deviceModel.getAssignedDepartment());
+        assertEquals(complianceThroughDate.toString(), deviceModel.getComplianceThroughDate());
+        assertEquals(lastPmCompletionDate.toString(), deviceModel.getLastPmCompletionDate());
+        assertEquals(nextPmDueDate.toString(), deviceModel.getNextPmDueDate());
+        assertEquals(maintenanceFrequencyInMonths, deviceModel.getMaintenanceFrequencyInMonths());
+        assertEquals(inventoryAddDate.toString(), deviceModel.getInventoryAddDate());
+        assertEquals(addedById, deviceModel.getAddedById());
+        assertEquals(addedByName, deviceModel.getAddedByName());
+        assertEquals(notes, deviceModel.getNotes());
+        // List<List<String>> workOrderSummaries is empty
+        assertTrue(deviceModel.getWorkOrderSummaries().isEmpty());
+    }
+
 }
