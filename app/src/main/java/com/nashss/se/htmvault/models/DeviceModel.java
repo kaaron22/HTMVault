@@ -258,7 +258,11 @@ public class DeviceModel {
         }
 
         public Builder withWorkOrderSummaries(List<List<String>> workOrderSummaries) {
-            this.workOrderSummaries = workOrderSummaries;
+            List<List<String>> copyWorkOrderSummaries = new ArrayList<>();
+            for (List<String> workOrderSummary : workOrderSummaries) {
+                copyWorkOrderSummaries.add(CollectionUtils.copyToList(workOrderSummary));
+            }
+            this.workOrderSummaries = copyWorkOrderSummaries;
             return this;
         }
 
