@@ -2,6 +2,7 @@ package com.nashss.se.htmvault.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.nashss.se.htmvault.dynamodb.models.FacilityDepartment;
+import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +30,7 @@ class FacilityDepartmentDaoTest {
         initMocks(this);
     }
     @Test
-    void getFacilityDepartment_withFacilityAndDepartment_callsMapperWithCompositeKey() {
+    public void getFacilityDepartment_withFacilityAndDepartment_callsMapperWithCompositeKey() {
         // GIVEN
         String facilityName = "TestFacility";
         String assignedDepartment = "TestDepartment";
@@ -38,7 +39,6 @@ class FacilityDepartmentDaoTest {
         facilityDepartment.setAssignedDepartment(assignedDepartment);
         when(dynamoDBMapper.load(eq(FacilityDepartment.class), anyString(), anyString()))
                 .thenReturn(facilityDepartment);
-        //doNothing().when(metricsPublisher).addCount(anyString(), anyInt());
 
         // WHEN
         FacilityDepartment result = facilityDepartmentDao.getFacilityDepartment(facilityName,
@@ -46,6 +46,23 @@ class FacilityDepartmentDaoTest {
 
         // THEN
         verify(dynamoDBMapper).load(FacilityDepartment.class, facilityName, assignedDepartment);
-        assertNotNull(result);
+        verify(metricsPublisher).addCount(MetricsConstants.GETFACILITYDEPARTMENT_FACILITYDEPARTMENTNOTFOUND_COUNT,
+                0);
+        assertEquals(facilityDepartment, result);
+    }
+
+    @Test
+    public void getFacilityDepartment_withInvalidFacilityDepartment_throwsFacilityDepartmentNotFoundException() {
+        // GIVEN
+        when(dynamoDBMapper.load(eq(FacilityDepartment.class), anyString(), anyString()))
+                .thenReturn(null);
+
+        // WHEN & THEN
+        assertThrows(FacilityDepartmentNotFoundException.class, () ->
+                facilityDepartmentDao.getFacilityDepartment("invalid facility", "invalid department"),
+                "Expected mapper load call with facility and department combination not found to result in " +
+                        "FacilityDepartmentNotFoundException");
+        verify(metricsPublisher).addCount(MetricsConstants.GETFACILITYDEPARTMENT_FACILITYDEPARTMENTNOTFOUND_COUNT,
+                1);
     }
 }

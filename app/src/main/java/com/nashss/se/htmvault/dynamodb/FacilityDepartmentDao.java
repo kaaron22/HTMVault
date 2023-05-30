@@ -2,6 +2,7 @@ package com.nashss.se.htmvault.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.nashss.se.htmvault.dynamodb.models.FacilityDepartment;
+import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
 import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
@@ -27,7 +28,7 @@ public class FacilityDepartmentDao {
 
         if (null == facilityDepartment) {
             metricsPublisher.addCount(MetricsConstants.GETFACILITYDEPARTMENT_FACILITYDEPARTMENTNOTFOUND_COUNT, 1);
-            throw new ManufacturerModelNotFoundException("Could not find a valid facility department for this " +
+            throw new FacilityDepartmentNotFoundException("Could not find a valid facility department for this " +
                     "combination of facility (" + facility + ") and department (" + department + ")");
         }
 
