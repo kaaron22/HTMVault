@@ -45,7 +45,7 @@ class FacilityDepartmentDaoTest {
                 assignedDepartment);
 
         // THEN
-        verify(dynamoDBMapper).load(FacilityDepartmentDao.class, facilityName, facilityDepartment);
+        verify(dynamoDBMapper).load(FacilityDepartment.class, facilityName, assignedDepartment);
         assertNotNull(result);
     }
 }
