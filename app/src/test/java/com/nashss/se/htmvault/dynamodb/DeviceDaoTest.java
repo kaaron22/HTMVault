@@ -19,12 +19,12 @@ class DeviceDaoTest {
     @Mock
     private MetricsPublisher metricsPublisher;
 
+    @InjectMocks
     private DeviceDao deviceDao;
 
     @BeforeEach
     public void setup() {
         initMocks(this);
-        deviceDao = new DeviceDao(dynamoDBMapper, metricsPublisher);
     }
 
     @Test
