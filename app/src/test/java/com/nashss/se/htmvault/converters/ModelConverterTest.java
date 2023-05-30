@@ -129,6 +129,7 @@ class ModelConverterTest {
         assertEquals(serialNumber, deviceModel.getSerialNumber());
         assertEquals(manufacturer, deviceModel.getManufacturer());
         assertEquals(model, deviceModel.getModel());
+        assertEquals(manufactureDate.toString(), deviceModel.getManufactureDate());
         assertEquals(serviceStatus.toString(), deviceModel.getServiceStatus());
         assertEquals(facilityName, deviceModel.getFacilityName());
         assertEquals(assignedDepartment, deviceModel.getAssignedDepartment());
@@ -143,18 +144,8 @@ class ModelConverterTest {
 
         // check each String attribute in the List<List<String>> of work order summaries and verify
         // they were converted as expected from the List<WorkOrderSummary> work orders
-        for (int i = 0; i < workOrders.size(); i++) {
-            assertEquals(workOrders.get(i).getWorkOrderId(), deviceModel.getWorkOrderSummaries().get(i).get(0));
-            assertEquals(workOrders.get(i).getWorkOrderType().toString(),
-                    deviceModel.getWorkOrderSummaries().get(i).get(1));
-            assertEquals(workOrders.get(i).getCompletionStatus().toString(),
-                    deviceModel.getWorkOrderSummaries().get(i).get(2));
-            assertEquals(HTMVaultServiceUtils.formatLocalDateTime(workOrders.get(i).getDateTimeCreated()),
-                    deviceModel.getWorkOrderSummaries().get(i).get(3));
-            assertEquals(null == workOrders.get(i).getCompletionDateTime() ? "" :
-                    HTMVaultServiceUtils.formatLocalDateTime(workOrders.get(i).getCompletionDateTime()),
-                    deviceModel.getWorkOrderSummaries().get(i).get(4));
-        }
+        verifyListWorkOrderSummaryConversionToListStringList(device.getWorkOrders(),
+                deviceModel.getWorkOrderSummaries());
     }
 
     @Test
@@ -171,6 +162,7 @@ class ModelConverterTest {
         assertEquals(serialNumber, deviceModel.getSerialNumber());
         assertEquals(manufacturer, deviceModel.getManufacturer());
         assertEquals(model, deviceModel.getModel());
+        assertEquals(manufactureDate.toString(), deviceModel.getManufactureDate());
         assertEquals(serviceStatus.toString(), deviceModel.getServiceStatus());
         assertEquals(facilityName, deviceModel.getFacilityName());
         assertEquals(assignedDepartment, deviceModel.getAssignedDepartment());
@@ -184,6 +176,65 @@ class ModelConverterTest {
         assertEquals(notes, deviceModel.getNotes());
         // List<List<String>> workOrderSummaries is empty
         assertTrue(deviceModel.getWorkOrderSummaries().isEmpty());
+    }
+
+    @Test
+    public void toDeviceModel_nullDeviceValues_convertsAndReturnsDeviceModelSuccessfully() {
+        // GIVEN
+        // setup and some values null (these values are either optional, such as the manufacture date
+        // or notes, or have yet to be populated, such as the compliance through date and last PM
+        // completion date for a newly added device that has not yet had an inspection completed)
+        device.setManufactureDate(null);
+        device.setComplianceThroughDate(null);
+        device.setLastPmCompletionDate(null);
+        device.setNextPmDueDate(null);
+        device.setNotes(null);
+
+        // WHEN
+        DeviceModel deviceModel = modelConverter.toDeviceModel(device);
+
+        // THEN
+        assertEquals(controlNumber, deviceModel.getControlNumber());
+        assertEquals(serialNumber, deviceModel.getSerialNumber());
+        assertEquals(manufacturer, deviceModel.getManufacturer());
+        assertEquals(model, deviceModel.getModel());
+        assertEquals("", deviceModel.getManufactureDate());
+        assertEquals(serviceStatus.toString(), deviceModel.getServiceStatus());
+        assertEquals(facilityName, deviceModel.getFacilityName());
+        assertEquals(assignedDepartment, deviceModel.getAssignedDepartment());
+        assertEquals("", deviceModel.getComplianceThroughDate());
+        assertEquals("", deviceModel.getLastPmCompletionDate());
+        assertEquals("", deviceModel.getNextPmDueDate());
+        assertEquals(maintenanceFrequencyInMonths, deviceModel.getMaintenanceFrequencyInMonths());
+        assertEquals(inventoryAddDate.toString(), deviceModel.getInventoryAddDate());
+        assertEquals(addedById, deviceModel.getAddedById());
+        assertEquals(addedByName, deviceModel.getAddedByName());
+        assertEquals("", deviceModel.getNotes());
+        verifyListWorkOrderSummaryConversionToListStringList(device.getWorkOrders(),
+                deviceModel.getWorkOrderSummaries());
+    }
+
+    /**
+     * Checks each String attribute in the List<List<String>> of work order summaries and verifies
+     * they were converted as expected from the List<WorkOrderSummary> work orders
+     * @param workOrders The list of WorkOrderSummary objects
+     * @param workOrderSummaries The list of String lists that was converted from each attribute of each work order
+     *                          summary
+     */
+    private void verifyListWorkOrderSummaryConversionToListStringList(List<WorkOrderSummary> workOrders,
+                                                                      List<List<String>> workOrderSummaries) {
+        for (int i = 0; i < workOrders.size(); i++) {
+            assertEquals(workOrders.get(i).getWorkOrderId(), workOrderSummaries.get(i).get(0));
+            assertEquals(workOrders.get(i).getWorkOrderType().toString(),
+                    workOrderSummaries.get(i).get(1));
+            assertEquals(workOrders.get(i).getCompletionStatus().toString(),
+                    workOrderSummaries.get(i).get(2));
+            assertEquals(HTMVaultServiceUtils.formatLocalDateTime(workOrders.get(i).getDateTimeCreated()),
+                    workOrderSummaries.get(i).get(3));
+            assertEquals(null == workOrders.get(i).getCompletionDateTime() ? "" :
+                            HTMVaultServiceUtils.formatLocalDateTime(workOrders.get(i).getCompletionDateTime()),
+                    workOrderSummaries.get(i).get(4));
+        }
     }
 
 }
