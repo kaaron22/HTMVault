@@ -24,7 +24,7 @@ public class DeviceModel {
     private final String notes;
     private final List<List<String>> workOrderSummaries;
 
-    public DeviceModel(String controlNumber, String serialNumber, String manufacturer, String model,
+    private DeviceModel(String controlNumber, String serialNumber, String manufacturer, String model,
                        String manufactureDate, String serviceStatus, String facilityName, String assignedDepartment,
                        String complianceThroughDate, String lastPmCompletionDate, String nextPmDueDate,
                        int maintenanceFrequencyInMonths, String inventoryAddDate, String addedById, String addedByName,

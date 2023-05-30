@@ -18,7 +18,7 @@ public class AddDeviceRequest {
     private final String customerId;
     private final String customerName;
 
-    public AddDeviceRequest(String controlNumber, String serialNumber, String manufacturer, String model,
+    private AddDeviceRequest(String controlNumber, String serialNumber, String manufacturer, String model,
                             String manufactureDate, String facilityName, String assignedDepartment,
                             int maintenanceFrequencyInMonths, String notes, String customerId, String customerName) {
         this.controlNumber = controlNumber;
