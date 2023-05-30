@@ -1,6 +1,6 @@
 package com.nashss.se.htmvault.utils;
 
-import com.nashss.se.htmvault.exceptions.InvalidAttributeException;
+import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -34,14 +34,14 @@ class NullUtilsTest {
         requiredRequestParameterValues.put("Serial Number", null);
 
         // WHEN & THEN
-        assertThrows(InvalidAttributeException.class, () ->
+        assertThrows(InvalidAttributeValueException.class, () ->
                 ifNull(requiredRequestParameterValues),
                 "Expected null value for a key required attribute to result in an " +
                         "InvalidAttributeValueException thrown");
 
         try {
             ifNull(requiredRequestParameterValues);
-        } catch (InvalidAttributeException e) {
+        } catch (InvalidAttributeValueException e) {
             assertEquals("The Serial Number must be provided", e.getMessage());
         }
     }
