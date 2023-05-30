@@ -46,7 +46,27 @@ class NullUtilsTest {
     }
 
     @Test
-    void testIfNull() {
+    void ifNull_nonNullStringProvidedWithSupplierIfNull_returnsOriginalString() {
+        // GIVEN
+        String testString = "Hello";
+
+        // WHEN
+        String result = ifNull(testString, String::new);
+
+        // THEN
+        assertEquals(testString, result);
+    }
+
+    @Test
+    void ifNull_nullStringProvidedWithSupplierIfNull_returnsNewEmptyString() {
+        // GIVEN
+        String testString = null;
+
+        // WHEN
+        String result = ifNull(testString, String::new);
+
+        // THEN
+        assertTrue(result.isEmpty());
     }
 
     @Test
