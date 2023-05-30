@@ -1,5 +1,6 @@
 package com.nashss.se.htmvault.converters;
 
+import com.google.gson.JsonSyntaxException;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import org.junit.jupiter.api.Test;
 
@@ -21,5 +22,31 @@ class ManufacturerModelConverterTest {
 
         // THEN
         assertEquals(expectedJson, manufacturerModelJson);
+    }
+
+    @Test
+    public void unconvert_manufacturerModelJsonToManufacturerModel_returnsManufacturerModelExpected() {
+        // GIVEN
+        String manufacturerModelJson = "{\"manufacturer\":\"TestManufacturer\",\"model\":\"TestModel\"}";
+
+        // WHEN
+        ManufacturerModel manufacturerModel = manufacturerModelConverter.unconvert(manufacturerModelJson);
+
+        // THEN
+        assertEquals("TestManufacturer", manufacturerModel.getManufacturer());
+        assertEquals("TestModel", manufacturerModel.getModel());
+    }
+
+    @Test
+    public void unconvert_manufacturerAttributeNotIncluded_throwsJsonSyntaxException() {
+        // GIVEN
+        String manufacturerModelJsonMissingManufacturer =
+                "{\"TestManufacturer\",\"model\":\"TestModel\"}";
+
+        // WHEN & THEN
+        assertThrows(JsonSyntaxException.class, () ->
+                manufacturerModelConverter.unconvert(manufacturerModelJsonMissingManufacturer),
+                "Expected attempt to deserialize ManufacturerModel without manufacturer to " +
+                        "result in JsonSyntaxException thrown");
     }
 }
