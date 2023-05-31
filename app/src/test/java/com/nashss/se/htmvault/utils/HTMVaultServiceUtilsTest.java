@@ -81,10 +81,10 @@ class HTMVaultServiceUtilsTest {
         // GIVEN
         String attributeName = "Control Number";
         String controlNumber = "1234";
-        Predicate<Character> condition = Character::isLetterOrDigit;
+        Predicate<Character> characterCanBeAlphanumeric = Character::isLetterOrDigit;
 
         // WHEN
-        ifNotValidString(attributeName, controlNumber, new ArrayList<>(List.of(condition)));
+        ifNotValidString(attributeName, controlNumber, new ArrayList<>(List.of(characterCanBeAlphanumeric)));
 
         // THEN
         // no exception thrown
@@ -95,18 +95,57 @@ class HTMVaultServiceUtilsTest {
         // GIVEN
         String attributeName = "Control Number";
         String controlNumber = "1234-";
-        Predicate<Character> condition = Character::isLetterOrDigit;
+        Predicate<Character> characterCanBeAlphanumeric = Character::isLetterOrDigit;
 
-        // WHEN & Then
+        // WHEN & THEN
         assertThrows(InvalidAttributeValueException.class, () ->
-                ifNotValidString(attributeName, controlNumber, new ArrayList<>(List.of(condition))),
+                ifNotValidString(attributeName, controlNumber, new ArrayList<>(List.of(characterCanBeAlphanumeric))),
                 "Expected control number containing a non-alphanumeric character to result in " +
                         "an InvalidAttributeValueException thrown");
 
         try {
-            ifNotValidString(attributeName, controlNumber, new ArrayList<>(List.of(condition)));
+            ifNotValidString(attributeName, controlNumber, new ArrayList<>(List.of(characterCanBeAlphanumeric)));
         } catch (InvalidAttributeValueException e) {
             assertEquals("The Control Number provided (1234-) contained invalid characters", e.getMessage());
+        }
+    }
+
+    @Test
+    void ifNotValidString_validStringProvidedForMultipleConditions_doesNotThrowException() {
+        // GIVEN
+        String attributeName = "Serial Number";
+        String controlNumber = "1234-";
+        Predicate<Character> characterCanBeAlphanumeric = Character::isLetterOrDigit;
+        Predicate<Character> characterCanBeADash = c -> c.equals('-');
+
+        // WHEN
+        ifNotValidString(attributeName, controlNumber,
+                new ArrayList<>(List.of(characterCanBeAlphanumeric, characterCanBeADash)));
+
+        // THEN
+        // no exception thrown
+    }
+
+    @Test
+    void ifNotValidString_invalidStringProvidedForMultipleConditions_throwsInvalidAttributeValueException() {
+        // GIVEN
+        String attributeName = "Serial Number";
+        String controlNumber = "1234-+";
+        Predicate<Character> characterCanBeAlphanumeric = Character::isLetterOrDigit;
+        Predicate<Character> characterCanBeADash = c -> c.equals('-');
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        ifNotValidString(attributeName, controlNumber,
+                                new ArrayList<>(List.of(characterCanBeAlphanumeric, characterCanBeADash))),
+                "Expected control number containing a non-alphanumeric character to result in " +
+                        "an InvalidAttributeValueException thrown");
+
+        try {
+            ifNotValidString(attributeName, controlNumber,
+                    new ArrayList<>(List.of(characterCanBeAlphanumeric, characterCanBeADash)));
+        } catch (InvalidAttributeValueException e) {
+            assertEquals("The Serial Number provided (1234-+) contained invalid characters", e.getMessage());
         }
     }
 
