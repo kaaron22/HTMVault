@@ -27,11 +27,10 @@ class HTMVaultServiceUtilsTest {
         requiredRequestParameterValues.put("key1", "value1");
         requiredRequestParameterValues.put("key2", "value2");
 
-        // WHEN
-        ifEmptyOrBlank(requiredRequestParameterValues);
-
-        // THEN
-        // no exception thrown
+        // WHEN & THEN
+        assertDoesNotThrow(() -> ifEmptyOrBlank(requiredRequestParameterValues),
+                "Expected map of parameters with non-empty/non-blank values to not result in an exception " +
+                        "thrown");
     }
 
     @Test
@@ -81,11 +80,11 @@ class HTMVaultServiceUtilsTest {
         String controlNumber = "1234";
         Predicate<Character> characterCanBeAlphanumeric = Character::isLetterOrDigit;
 
-        // WHEN
-        ifNotValidString(attributeName, controlNumber, new ArrayList<>(List.of(characterCanBeAlphanumeric)));
-
-        // THEN
-        // no exception thrown
+        // WHEN & THEN
+        assertDoesNotThrow(() -> ifNotValidString(attributeName, controlNumber,
+                new ArrayList<>(List.of(characterCanBeAlphanumeric))),
+                "Expected string with all characters meeting one of the conditions to not result in an " +
+                        "exception thrown");
     }
 
     @Test
@@ -117,11 +116,10 @@ class HTMVaultServiceUtilsTest {
         Predicate<Character> characterCanBeADash = c -> c.equals('-');
 
         // WHEN
-        ifNotValidString(attributeName, controlNumber,
-                new ArrayList<>(List.of(characterCanBeAlphanumeric, characterCanBeADash)));
-
-        // THEN
-        // no exception thrown
+        assertDoesNotThrow(() -> ifNotValidString(attributeName, controlNumber,
+                new ArrayList<>(List.of(characterCanBeAlphanumeric, characterCanBeADash))),
+                "Expected string with all characters meeting one of the conditions to not result in an " +
+                        "exception thrown");
     }
 
     @Test
