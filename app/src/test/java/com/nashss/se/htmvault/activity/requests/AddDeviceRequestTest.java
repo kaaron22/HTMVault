@@ -3,10 +3,13 @@ package com.nashss.se.htmvault.activity.requests;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class AddDeviceRequestTest {
 
+    private static final String ASSERT_EQUALS_FAILURE_MESSAGE = "Expected value set in request object to be what was " +
+            "passed to builder";
     private String controlNumber;
     private String serialNumber;
     private String manufacturer;
@@ -18,8 +21,6 @@ class AddDeviceRequestTest {
     private String notes;
     private String customerId;
     private String customerName;
-    private static final String ASSERT_EQUALS_FAILURE_MESSAGE = "Expected value set in request object to be what was " +
-            "passed to builder";
 
     @BeforeEach
     void setUp() {
