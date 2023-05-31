@@ -129,6 +129,7 @@ class AddDeviceActivityTest {
 
     @Test
     public void handleRequest_withRequiredValueNull_throwsInvalidAttributeValueException() {
+        // GIVEN
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
                 .withControlNumber(null)
                 .withSerialNumber(serialNumber)
@@ -142,9 +143,6 @@ class AddDeviceActivityTest {
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
                 .build();
-        when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(manufacturerModel);
-        when(facilityDepartmentDao.getFacilityDepartment(anyString(), anyString())).thenReturn(facilityDepartment);
-        when(deviceDao.saveDevice(any(Device.class))).thenReturn(device);
 
         // WHEN & THEN
         assertThrows(InvalidAttributeValueException.class, () ->
@@ -155,6 +153,8 @@ class AddDeviceActivityTest {
 
     @Test
     public void handleRequest_withOptionalValueNull_createsAndSavesDevice() {
+        // GIVEN
+        device.setManufactureDate(null);
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
                 .withControlNumber(controlNumber)
                 .withSerialNumber(serialNumber)
@@ -174,12 +174,27 @@ class AddDeviceActivityTest {
 
         // WHEN
         AddDeviceResult addDeviceResult = addDeviceActivity.handleRequest(addDeviceRequest);
+        DeviceModel deviceModel = addDeviceResult.getDeviceModel();
 
         // THEN
-
-        assertDoesNotThrow(() -> addDeviceActivity.handleRequest(addDeviceRequest),
-                "Expected a null value for an optional attribute to result in an " +
-                        "InvalidAttributeValueException thrown");
+        verify(deviceDao).saveDevice(any(Device.class));
+        assertEquals(controlNumber, deviceModel.getControlNumber());
+        assertEquals(serialNumber, deviceModel.getSerialNumber());
+        assertEquals(manufacturer, deviceModel.getManufacturer());
+        assertEquals(model, deviceModel.getModel());
+        assertEquals("", deviceModel.getManufactureDate());
+        assertEquals(ServiceStatus.IN_SERVICE.toString(), deviceModel.getServiceStatus());
+        assertEquals(facilityName, deviceModel.getFacilityName());
+        assertEquals(assignedDepartment, deviceModel.getAssignedDepartment());
+        assertEquals("", deviceModel.getComplianceThroughDate());
+        assertEquals("", deviceModel.getLastPmCompletionDate());
+        assertEquals(LocalDate.now().toString(), deviceModel.getNextPmDueDate());
+        assertEquals(maintenanceFrequencyInMonths, deviceModel.getMaintenanceFrequencyInMonths());
+        assertEquals(LocalDate.now().toString(), deviceModel.getInventoryAddDate());
+        assertEquals(customerId, deviceModel.getAddedById());
+        assertEquals(customerName, deviceModel.getAddedByName());
+        assertEquals(notes, deviceModel.getNotes());
+        assertTrue(deviceModel.getWorkOrderSummaries().isEmpty());
     }
 
 
