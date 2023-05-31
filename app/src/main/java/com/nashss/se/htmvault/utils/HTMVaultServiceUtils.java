@@ -1,6 +1,6 @@
 package com.nashss.se.htmvault.utils;
 
-import com.nashss.se.htmvault.exceptions.InvalidAttributeException;
+import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +21,7 @@ public class HTMVaultServiceUtils {
     public static void ifEmptyOrBlank(Map<String, String> requiredRequestParameterValues) {
         for (Map.Entry<String, String> entry : requiredRequestParameterValues.entrySet()) {
             if (entry.getValue().isEmpty() || entry.getValue().isBlank()) {
-                throw new InvalidAttributeException(String.format("The %s must not be empty or blank", entry.getKey()));
+                throw new InvalidAttributeValueException(String.format("The %s must not be empty or blank", entry.getKey()));
             }
         }
     }
@@ -53,7 +53,7 @@ public class HTMVaultServiceUtils {
 
             // if the character was not proven to be valid, we throw an exception
             if (!validCharacter) {
-                throw new InvalidAttributeException(String.format("The %s provided (%s) contained invalid characters",
+                throw new InvalidAttributeValueException(String.format("The %s provided (%s) contained invalid characters",
                         attributeName, stringToCheck));
             }
         }
@@ -61,7 +61,7 @@ public class HTMVaultServiceUtils {
 
     public static void allowedMaintenanceFrequencyRange(int min, int max, int actual) {
         if (actual < min || actual > max) {
-            throw new InvalidAttributeException(String.format("The maintenance frequency provided (%s) is outside of " +
+            throw new InvalidAttributeValueException(String.format("The maintenance frequency provided (%s) is outside of " +
                     "the acceptable range of %s-%s", actual, min, max));
         }
     }
