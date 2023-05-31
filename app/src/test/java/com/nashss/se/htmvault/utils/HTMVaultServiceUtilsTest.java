@@ -138,8 +138,8 @@ class HTMVaultServiceUtilsTest {
         assertThrows(InvalidAttributeValueException.class, () ->
                         ifNotValidString(attributeName, controlNumber,
                                 new ArrayList<>(List.of(characterCanBeAlphanumeric, characterCanBeADash))),
-                "Expected control number containing a non-alphanumeric character to result in " +
-                        "an InvalidAttributeValueException thrown");
+                "Expected serial number containing a character that was not either a dash or alphanumeric " +
+                        "to result in an InvalidAttributeValueException thrown");
 
         try {
             ifNotValidString(attributeName, controlNumber,
