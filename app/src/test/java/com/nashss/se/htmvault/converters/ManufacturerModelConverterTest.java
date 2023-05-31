@@ -1,10 +1,12 @@
 package com.nashss.se.htmvault.converters;
 
-import com.google.gson.JsonSyntaxException;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
+
+import com.google.gson.JsonSyntaxException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ManufacturerModelConverterTest {
     private final ManufacturerModelConverter manufacturerModelConverter = new ManufacturerModelConverter();
