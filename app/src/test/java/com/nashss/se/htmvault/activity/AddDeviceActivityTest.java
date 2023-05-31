@@ -1,5 +1,6 @@
 package com.nashss.se.htmvault.activity;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.nashss.se.htmvault.activity.requests.AddDeviceRequest;
 import com.nashss.se.htmvault.activity.results.AddDeviceResult;
 import com.nashss.se.htmvault.converters.LocalDateConverter;
@@ -10,6 +11,7 @@ import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.FacilityDepartment;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
+import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.DeviceModel;
 import com.nashss.se.htmvault.models.ServiceStatus;
@@ -37,6 +39,8 @@ class AddDeviceActivityTest {
     private FacilityDepartmentDao facilityDepartmentDao;
     @Mock
     private MetricsPublisher metricsPublisher;
+    @Mock
+    private DynamoDBMapper dynamoDBMapper;
 
     private AddDeviceActivity addDeviceActivity;
 
@@ -265,7 +269,7 @@ class AddDeviceActivityTest {
         // WHEN & THEN
         assertThrows(InvalidAttributeValueException.class, () ->
                         addDeviceActivity.handleRequest(addDeviceRequest),
-                "Expected a control number containing invalid characters to result in an " +
+                "Expected a control number containing an invalid character to result in an " +
                         "InvalidAttributeValueException thrown");
     }
 
@@ -289,7 +293,33 @@ class AddDeviceActivityTest {
         // WHEN & THEN
         assertThrows(InvalidAttributeValueException.class, () ->
                         addDeviceActivity.handleRequest(addDeviceRequest),
-                "Expected a control number containing invalid characters to result in an " +
+                "Expected a serial number containing an invalid character to result in an " +
                         "InvalidAttributeValueException thrown");
+    }
+
+    @Test
+    public void handleRequest_withManufacturerModelDoesNotExist_throwsInvalidAttributeValueException() {
+        // GIVEN
+        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber)
+                .withManufacturer("not a real manufacturer")
+                .withModel("not a real model")
+                .withManufactureDate(manufactureDate)
+                .withFacilityName(facilityName)
+                .withAssignedDepartment(assignedDepartment)
+                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
+                .withNotes(notes)
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+        doThrow(ManufacturerModelNotFoundException.class)
+                .when(manufacturerModelDao).getManufacturerModel(anyString(), anyString());
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        addDeviceActivity.handleRequest(addDeviceRequest),
+                "Expected a manufacturer/model not found to result in an InvalidAttributeValueException " +
+                        "thrown");
     }
 }
