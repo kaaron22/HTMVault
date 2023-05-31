@@ -11,10 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import static com.nashss.se.htmvault.utils.HTMVaultServiceUtils.ifEmptyOrBlank;
-import static com.nashss.se.htmvault.utils.HTMVaultServiceUtils.ifNotValidString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static com.nashss.se.htmvault.utils.HTMVaultServiceUtils.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class HTMVaultServiceUtilsTest {
 
@@ -150,7 +148,41 @@ class HTMVaultServiceUtilsTest {
     }
 
     @Test
-    void allowedMaintenanceFrequencyRange() {
+    void allowedMaintenanceFrequencyRange_actualValueWithinRange_doesNotThrowException() {
+        // GIVEN
+        int min = 0;
+        int max = 10;
+        int actual = 5;
+
+        // WHEN & THEN
+        assertDoesNotThrow(() -> allowedMaintenanceFrequencyRange(min, max, actual),
+                "Expected actual value within acceptable range to not result in an exception thrown");
+    }
+
+    @Test
+    void allowedMaintenanceFrequencyRange_actualValueAtMax_doesNotThrowException() {
+        // GIVEN
+        int min = 0;
+        int max = 10;
+        int actual = 10;
+
+        // WHEN & THEN
+        assertDoesNotThrow(() -> allowedMaintenanceFrequencyRange(min, max, actual),
+                "Expected actual value within acceptable range to not result in an exception thrown");
+    }
+
+    @Test
+    void allowedMaintenanceFrequencyRange_actualValueAboveMax_throwsInvalidAttributeValueException() {
+        // GIVEN
+        int min = 0;
+        int max = 10;
+        int actual = 11;
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        allowedMaintenanceFrequencyRange(min, max, actual),
+                "Expected actual value above max acceptable range to result in an " +
+                        "InvalidAttributeValueException thrown");
     }
 
     @Test
