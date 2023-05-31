@@ -3,6 +3,7 @@ package com.nashss.se.htmvault.converters;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrderSummary;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderType;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class WorkOrderSummaryListConverterTest {
 
@@ -63,26 +64,130 @@ class WorkOrderSummaryListConverterTest {
         String serializedWorkOrderSummaries = workOrderSummaryListConverter.convert(workOrderSummaryList);
 
         // THEN
-        assertEquals("[{\"workOrderId\":\"1\",\"workOrderType\":\"ACCEPTANCE_TESTING\"," +
-                "\"completionStatus\":\"CLOSED\",\"dateTimeCreated\":{\"date\":{\"year\":2023,\"month\":5,\"day\":27}," +
-                "\"time\":{\"hour\":15,\"minute\":16,\"second\":30,\"nano\":579893000}}," +
-                "\"completionDateTime\":{\"date\":{\"year\":2023,\"month\":5,\"day\":28},\"time\":{\"hour\":15," +
-                "\"minute\":16,\"second\":30,\"nano\":579893000}}},{\"workOrderId\":\"2\",\"workOrderType\":\"REPAIR\"," +
-                "\"completionStatus\":\"OPEN\",\"dateTimeCreated\":{\"date\":{\"year\":2023,\"month\":5,\"day\":29}," +
-                "\"time\":{\"hour\":15,\"minute\":16,\"second\":30,\"nano\":579893000}}}]",
-                serializedWorkOrderSummaries);
+        assertEquals(
+            "[" +
+                        "{" +
+                            "\"workOrderId\":\"1\"," +
+                            "\"workOrderType\":\"ACCEPTANCE_TESTING\"," +
+                            "\"completionStatus\":\"CLOSED\"," +
+                            "\"dateTimeCreated\":" +
+                            "{" +
+                                "\"date\":" +
+                                "{" +
+                                    "\"year\":2023," +
+                                    "\"month\":5," +
+                                    "\"day\":27" +
+                                "}," +
+                                "\"time\":" +
+                                "{" +
+                                    "\"hour\":15," +
+                                    "\"minute\":16," +
+                                    "\"second\":30," +
+                                    "\"nano\":579893000" +
+                                "}" +
+                            "}," +
+                            "\"completionDateTime\":" +
+                            "{" +
+                                "\"date\":" +
+                                "{" +
+                                    "\"year\":2023," +
+                                    "\"month\":5," +
+                                    "\"day\":28" +
+                                "}," +
+                                "\"time\":" +
+                                "{" +
+                                    "\"hour\":15," +
+                                    "\"minute\":16," +
+                                    "\"second\":30," +
+                                    "\"nano\":579893000" +
+                                "}" +
+                            "}" +
+                        "}," +
+                        "{" +
+                            "\"workOrderId\":\"2\"," +
+                            "\"workOrderType\":\"REPAIR\"," +
+                            "\"completionStatus\":\"OPEN\"," +
+                            "\"dateTimeCreated\":" +
+                            "{" +
+                                "\"date\":" +
+                                "{" +
+                                    "\"year\":2023," +
+                                    "\"month\":5," +
+                                    "\"day\":29" +
+                                "}," +
+                                "\"time\":" +
+                                "{" +
+                                    "\"hour\":15," +
+                                    "\"minute\":16," +
+                                    "\"second\":30," +
+                                    "\"nano\":579893000" +
+                                "}" +
+                            "}" +
+                        "}" +
+                    "]",
+                serializedWorkOrderSummaries
+        );
     }
 
     @Test
     public void unconvert_jsonWorkOrderSummaries_returnsListWorkOrderSummaries() {
         // GIVEN
-        String serializedWorkOrderSummaries = "[{\"workOrderId\":\"1\",\"workOrderType\":\"ACCEPTANCE_TESTING\"," +
-                "\"completionStatus\":\"CLOSED\",\"dateTimeCreated\":{\"date\":{\"year\":2023,\"month\":5,\"day\":27}," +
-                "\"time\":{\"hour\":15,\"minute\":16,\"second\":30,\"nano\":579893000}}," +
-                "\"completionDateTime\":{\"date\":{\"year\":2023,\"month\":5,\"day\":28},\"time\":{\"hour\":15," +
-                "\"minute\":16,\"second\":30,\"nano\":579893000}}},{\"workOrderId\":\"2\",\"workOrderType\":\"REPAIR\"," +
-                "\"completionStatus\":\"OPEN\",\"dateTimeCreated\":{\"date\":{\"year\":2023,\"month\":5,\"day\":29}," +
-                "\"time\":{\"hour\":15,\"minute\":16,\"second\":30,\"nano\":579893000}}}]";
+        String serializedWorkOrderSummaries =
+            "[" +
+                "{" +
+                    "\"workOrderId\":\"1\"," +
+                    "\"workOrderType\":\"ACCEPTANCE_TESTING\"," +
+                    "\"completionStatus\":\"CLOSED\"," +
+                    "\"dateTimeCreated\":" +
+                    "{" +
+                        "\"date\":" +
+                        "{" +
+                            "\"year\":2023," +
+                            "\"month\":5," +
+                            "\"day\":27}," +
+                        "\"time\":" +
+                        "{" +
+                            "\"hour\":15," +
+                            "\"minute\":16," +
+                            "\"second\":30," +
+                            "\"nano\":579893000}}," +
+                    "\"completionDateTime\":" +
+                    "{" +
+                        "\"date\":" +
+                        "{" +
+                            "\"year\":2023," +
+                            "\"month\":5," +
+                            "\"day\":28}," +
+                        "\"time\":" +
+                        "{" +
+                            "\"hour\":15," +
+                            "\"minute\":16," +
+                            "\"second\":30," +
+                            "\"nano\":579893000" +
+                        "}" +
+                    "}" +
+                "}," +
+                "{" +
+                    "\"workOrderId\":\"2\"," +
+                    "\"workOrderType\":\"REPAIR\"," +
+                    "\"completionStatus\":\"OPEN\"," +
+                    "\"dateTimeCreated\":" +
+                    "{" +
+                        "\"date\":" +
+                        "{" +
+                        "\"year\":2023," +
+                        "\"month\":5," +
+                        "\"day\":29}," +
+                        "\"time\":" +
+                        "{" +
+                            "\"hour\":15," +
+                            "\"minute\":16," +
+                            "\"second\":30," +
+                            "\"nano\":579893000" +
+                        "}" +
+                    "}" +
+                "}" +
+            "]";
 
         // WHEN
         List<WorkOrderSummary> workOrderSummaryList =
