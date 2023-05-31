@@ -5,6 +5,9 @@ import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -184,6 +187,27 @@ class HTMVaultServiceUtilsTest {
     }
 
     @Test
-    void formatLocalDateTime() {
+    void formatLocalDateTime_localDateTimeProvided_returnsExpectedString() {
+        // GIVEN
+        LocalDateTime localDateTime = LocalDateTime.of(LocalDate.of(2023, 5, 31),
+                LocalTime.of(12, 20, 10));
+
+        // WHEN
+        String formattedLocalDateTime = formatLocalDateTime(localDateTime);
+
+        // THEN
+        assertEquals("2023-05-31 12:20:10", formattedLocalDateTime);
+    }
+
+    @Test
+    void formatLocalDateTime_nullLocalDateTimeProvided_returnsEmptyString() {
+        // GIVEN
+        LocalDateTime localDateTime = null;
+
+        // WHEN
+        String formattedLocalDateTime = formatLocalDateTime(localDateTime);
+
+        // THEN
+        assertEquals("", formattedLocalDateTime);
     }
 }

@@ -70,10 +70,11 @@ public class HTMVaultServiceUtils {
      * Formats a LocalDateTime object to a String containing a LocalDate and LocalTime,
      * separated by a space
      * @param localDateTime the LocalDateTime to format as a String
-     * @return the formatted String containing the date and time
+     * @return the formatted String containing the date and time or an empty string if the localDateTime is null
      */
     public static String formatLocalDateTime(LocalDateTime localDateTime) {
-        return localDateTime.toLocalDate().toString() + " " + localDateTime.toLocalTime().toString();
+        return null == localDateTime ? "" : localDateTime.toLocalDate().toString() + " " +
+                localDateTime.toLocalTime().toString();
     }
 
 }
