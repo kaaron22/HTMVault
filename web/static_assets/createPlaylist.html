@@ -13,13 +13,13 @@
         <form class="card-content" id="add-device-form">
             <p class="hidden error" id="error-message"> </p>
             <p class="form-field">
-                <label>Control Number</label>
-                <input type="text" required class="validated-field" id="control-number" placeholder="123456"
+                <label>Control Number (numbers and letters only)</label>
+                <input type="text" required class="validated-field" id="control-number" placeholder="i.e. 123456, T789, etc."
                     autofocus>
             </p>
             <p class="form-field">
-                <label>Serial Number</label>
-                <input type="text" required class="validated-field" id="serial-number" placeholder="S-1234"
+                <label>Serial Number (numbers, letters, and dashes only)</label>
+                <input type="text" required class="validated-field" id="serial-number" placeholder="i.e. S-1234, B567, etc."
                        autofocus>
             </p>
             <p class="form-field">
@@ -48,7 +48,7 @@
                        autofocus>
             </p>
             <p class="form-field">
-                <label>Manufacture Date</label>
+                <label>Manufacture Date (YYYY-MM-DD)</label>
                 <input type="text" id="manufacture-date" placeholder="i.e. 2023-05-25"
                        autofocus>
             </p>
