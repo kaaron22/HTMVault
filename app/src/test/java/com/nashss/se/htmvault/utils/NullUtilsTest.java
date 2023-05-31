@@ -9,6 +9,7 @@ import java.util.Map;
 
 import static com.nashss.se.htmvault.utils.NullUtils.ifNotNull;
 import static com.nashss.se.htmvault.utils.NullUtils.ifNull;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,11 +24,10 @@ class NullUtilsTest {
         requiredRequestParameterValues.put("key1", "value1");
         requiredRequestParameterValues.put("key2", "value2");
 
-        // WHEN
-        ifNull(requiredRequestParameterValues);
+        // WHEN & THEN
+        assertDoesNotThrow(() -> ifNull(requiredRequestParameterValues),
+                "Expected required parameter values provided to not result in exception thrown");
 
-        // THEN
-        // no exception thrown
     }
 
     @Test
