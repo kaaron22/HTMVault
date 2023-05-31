@@ -1,6 +1,7 @@
 package com.nashss.se.htmvault.utils;
 
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -8,7 +9,10 @@ import java.util.Map;
 
 import static com.nashss.se.htmvault.utils.NullUtils.ifNotNull;
 import static com.nashss.se.htmvault.utils.NullUtils.ifNull;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NullUtilsTest {
 
