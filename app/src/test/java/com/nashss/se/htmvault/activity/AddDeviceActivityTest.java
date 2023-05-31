@@ -10,8 +10,10 @@ import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.FacilityDepartment;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
+import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
+import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.DeviceModel;
 import com.nashss.se.htmvault.models.ServiceStatus;
@@ -112,6 +114,7 @@ class AddDeviceActivityTest {
 
         // THEN
         verify(deviceDao).saveDevice(any(Device.class));
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         assertEquals(controlNumber, deviceModel.getControlNumber());
         assertEquals(serialNumber, deviceModel.getSerialNumber());
         assertEquals(manufacturer, deviceModel.getManufacturer());
@@ -153,6 +156,7 @@ class AddDeviceActivityTest {
                 addDeviceActivity.handleRequest(addDeviceRequest),
                 "Expected a null value for control number to result in an InvalidAttributeValueException " +
                         "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
     @Test
@@ -182,6 +186,7 @@ class AddDeviceActivityTest {
 
         // THEN
         verify(deviceDao).saveDevice(any(Device.class));
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         assertEquals(controlNumber, deviceModel.getControlNumber());
         assertEquals(serialNumber, deviceModel.getSerialNumber());
         assertEquals(manufacturer, deviceModel.getManufacturer());
@@ -223,6 +228,7 @@ class AddDeviceActivityTest {
                         addDeviceActivity.handleRequest(addDeviceRequest),
                 "Expected an empty value for control number to result in an InvalidAttributeValueException " +
                         "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
     @Test
@@ -247,6 +253,7 @@ class AddDeviceActivityTest {
                         addDeviceActivity.handleRequest(addDeviceRequest),
                 "Expected a blank value for serial number to result in an InvalidAttributeValueException " +
                         "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
     @Test
@@ -271,6 +278,7 @@ class AddDeviceActivityTest {
                         addDeviceActivity.handleRequest(addDeviceRequest),
                 "Expected a control number containing an invalid character to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
     @Test
@@ -295,6 +303,7 @@ class AddDeviceActivityTest {
                         addDeviceActivity.handleRequest(addDeviceRequest),
                 "Expected a serial number containing an invalid character to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
     @Test
@@ -321,5 +330,117 @@ class AddDeviceActivityTest {
                         addDeviceActivity.handleRequest(addDeviceRequest),
                 "Expected a manufacturer/model not found to result in an InvalidAttributeValueException " +
                         "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
+    public void handleRequest_withFacilityDepartmentDoesNotExist_throwsInvalidAttributeValueException() {
+        // GIVEN
+        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber)
+                .withManufacturer(manufacturer)
+                .withModel(model)
+                .withManufactureDate(manufactureDate)
+                .withFacilityName("not a facility")
+                .withAssignedDepartment("not a department")
+                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
+                .withNotes(notes)
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+        doThrow(FacilityDepartmentNotFoundException.class)
+                .when(facilityDepartmentDao).getFacilityDepartment(anyString(), anyString());
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        addDeviceActivity.handleRequest(addDeviceRequest),
+                "Expected a facility/department not found to result in an InvalidAttributeValueException " +
+                        "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
+    public void handleRequest_withManufactureDateWrongFormat_throwsInvalidAttributeValueException() {
+        // GIVEN
+        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber)
+                .withManufacturer(manufacturer)
+                .withModel(model)
+                .withManufactureDate("5-26-2023")
+                .withFacilityName(facilityName)
+                .withAssignedDepartment(assignedDepartment)
+                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
+                .withNotes(notes)
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+
+        when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(manufacturerModel);
+        when(facilityDepartmentDao.getFacilityDepartment(anyString(), anyString())).thenReturn(facilityDepartment);
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        addDeviceActivity.handleRequest(addDeviceRequest),
+                "Expected a manufacture date with incorrect format to result in an " +
+                        "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
+    public void handleRequest_withNegativeMaintenanceFrequency_throwsInvalidAttributeValueException() {
+        // GIVEN
+        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber)
+                .withManufacturer(manufacturer)
+                .withModel(model)
+                .withManufactureDate(manufactureDate)
+                .withFacilityName(facilityName)
+                .withAssignedDepartment(assignedDepartment)
+                .withMaintenanceFrequencyInMonths(-1)
+                .withNotes(notes)
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+
+        when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(manufacturerModel);
+        when(facilityDepartmentDao.getFacilityDepartment(anyString(), anyString())).thenReturn(facilityDepartment);
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        addDeviceActivity.handleRequest(addDeviceRequest),
+                "Expected a negative maintenance frequency to result in an InvalidAttributeValueException " +
+                        "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
+    public void handleRequest_withMaintenanceFrequencyAboveMax_throwsInvalidAttributeValueException() {
+        // GIVEN
+        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber)
+                .withManufacturer(manufacturer)
+                .withModel(model)
+                .withManufactureDate(manufactureDate)
+                .withFacilityName(facilityName)
+                .withAssignedDepartment(assignedDepartment)
+                .withMaintenanceFrequencyInMonths(25)
+                .withNotes(notes)
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+
+        when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(manufacturerModel);
+        when(facilityDepartmentDao.getFacilityDepartment(anyString(), anyString())).thenReturn(facilityDepartment);
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        addDeviceActivity.handleRequest(addDeviceRequest),
+                "Expected a maintenance frequency above maximum to result in an " +
+                        "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 }
