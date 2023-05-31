@@ -197,5 +197,99 @@ class AddDeviceActivityTest {
         assertTrue(deviceModel.getWorkOrderSummaries().isEmpty());
     }
 
+    @Test
+    public void handleRequest_withRequiredValueEmpty_throwsInvalidAttributeValueException() {
+        // GIVEN
+        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
+                .withControlNumber("")
+                .withSerialNumber(serialNumber)
+                .withManufacturer(manufacturer)
+                .withModel(model)
+                .withManufactureDate(manufactureDate)
+                .withFacilityName(facilityName)
+                .withAssignedDepartment(assignedDepartment)
+                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
+                .withNotes(notes)
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
 
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        addDeviceActivity.handleRequest(addDeviceRequest),
+                "Expected an empty value for control number to result in an InvalidAttributeValueException " +
+                        "thrown");
+    }
+
+    @Test
+    public void handleRequest_withRequiredValueBlank_throwsInvalidAttributeValueException() {
+        // GIVEN
+        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber("   ")
+                .withManufacturer(manufacturer)
+                .withModel(model)
+                .withManufactureDate(manufactureDate)
+                .withFacilityName(facilityName)
+                .withAssignedDepartment(assignedDepartment)
+                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
+                .withNotes(notes)
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        addDeviceActivity.handleRequest(addDeviceRequest),
+                "Expected a blank value for serial number to result in an InvalidAttributeValueException " +
+                        "thrown");
+    }
+
+    @Test
+    public void handleRequest_withControlNumberContainsANonAlphaNumericChar_throwsInvalidAttributeValueException() {
+        // GIVEN
+        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
+                .withControlNumber("1234-")
+                .withSerialNumber(serialNumber)
+                .withManufacturer(manufacturer)
+                .withModel(model)
+                .withManufactureDate(manufactureDate)
+                .withFacilityName(facilityName)
+                .withAssignedDepartment(assignedDepartment)
+                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
+                .withNotes(notes)
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        addDeviceActivity.handleRequest(addDeviceRequest),
+                "Expected a control number containing invalid characters to result in an " +
+                        "InvalidAttributeValueException thrown");
+    }
+
+    @Test
+    public void handleRequest_withSerialNumberContainsAnInvalidCharacter_throwsInvalidAttributeValueException() {
+        // GIVEN
+        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
+                .withControlNumber("1234-+")
+                .withSerialNumber(serialNumber)
+                .withManufacturer(manufacturer)
+                .withModel(model)
+                .withManufactureDate(manufactureDate)
+                .withFacilityName(facilityName)
+                .withAssignedDepartment(assignedDepartment)
+                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
+                .withNotes(notes)
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        addDeviceActivity.handleRequest(addDeviceRequest),
+                "Expected a control number containing invalid characters to result in an " +
+                        "InvalidAttributeValueException thrown");
+    }
 }
