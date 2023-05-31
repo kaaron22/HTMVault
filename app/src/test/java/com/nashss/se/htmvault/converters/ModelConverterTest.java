@@ -8,28 +8,28 @@ import com.nashss.se.htmvault.models.ServiceStatus;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderType;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ModelConverterTest {
 
-    private ModelConverter modelConverter = new ModelConverter();
+    private final ModelConverter modelConverter = new ModelConverter();
 
     private Device device;
     private String controlNumber;
     private String serialNumber;
     private String manufacturer;
     private String model;
-    private ManufacturerModel manufacturerModel;
     private LocalDate manufactureDate;
     private ServiceStatus serviceStatus;
     private String facilityName;
@@ -42,10 +42,6 @@ class ModelConverterTest {
     private String addedById;
     private String addedByName;
     private String notes;
-    private WorkOrderSummary workOrderSummary1;
-    private WorkOrderSummary workOrderSummary2;
-    private WorkOrderSummary workOrderSummary3;
-    private List<WorkOrderSummary> workOrders;
 
     @BeforeEach
     void setUp() {
@@ -54,7 +50,7 @@ class ModelConverterTest {
         manufacturer = "Test Manufacturer";
         model = "Test Model";
 
-        manufacturerModel = new ManufacturerModel();
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
         manufacturerModel.setManufacturer(manufacturer);
         manufacturerModel.setModel(model);
 
@@ -72,7 +68,7 @@ class ModelConverterTest {
         notes = "Storage B when not in use";
 
         // an initial completed acceptance work order when the device first arrived and was placed into service
-        workOrderSummary1 = new WorkOrderSummary();
+        WorkOrderSummary workOrderSummary1 = new WorkOrderSummary();
         workOrderSummary1.setWorkOrderId("1");
         workOrderSummary1.setWorkOrderType(WorkOrderType.ACCEPTANCE_TESTING);
         workOrderSummary1.setCompletionStatus(WorkOrderCompletionStatus.CLOSED);
@@ -80,7 +76,7 @@ class ModelConverterTest {
         workOrderSummary1.setCompletionDateTime(LocalDateTime.parse("2021-12-03T11:15:30"));
 
         // a completed annual preventative maintenance work order
-        workOrderSummary2 = new WorkOrderSummary();
+        WorkOrderSummary workOrderSummary2 = new WorkOrderSummary();
         workOrderSummary2.setWorkOrderId("2");
         workOrderSummary2.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
         workOrderSummary2.setCompletionStatus(WorkOrderCompletionStatus.CLOSED);
@@ -88,14 +84,15 @@ class ModelConverterTest {
         workOrderSummary2.setCompletionDateTime(LocalDateTime.parse("2022-12-08T12:15:30"));
 
         // an open repair work order
-        workOrderSummary3 = new WorkOrderSummary();
+        WorkOrderSummary workOrderSummary3 = new WorkOrderSummary();
         workOrderSummary3.setWorkOrderId("7");
         workOrderSummary3.setWorkOrderType(WorkOrderType.REPAIR);
         workOrderSummary3.setCompletionStatus(WorkOrderCompletionStatus.OPEN);
         workOrderSummary3.setDateTimeCreated(LocalDateTime.parse("2023-05-25T13:22:10"));
         workOrderSummary3.setCompletionDateTime(null);
 
-        workOrders = new ArrayList<>(Arrays.asList(workOrderSummary1, workOrderSummary2, workOrderSummary3));
+        List<WorkOrderSummary> workOrders =
+                new ArrayList<>(Arrays.asList(workOrderSummary1, workOrderSummary2, workOrderSummary3));
 
         device = new Device();
         device.setControlNumber(controlNumber);
@@ -215,8 +212,8 @@ class ModelConverterTest {
     }
 
     /**
-     * Checks each String attribute in the List<List<String>> of work order summaries and verifies
-     * they were converted as expected from the List<WorkOrderSummary> work orders
+     * Checks each String attribute in each String List of work order summaries and verifies
+     * they were converted as expected from the WorkOrderSummary list of work orders
      * @param workOrders The list of WorkOrderSummary objects
      * @param workOrderSummaries The list of String lists that was converted from each attribute of each work order
      *                          summary
@@ -236,5 +233,4 @@ class ModelConverterTest {
                     workOrderSummaries.get(i).get(4));
         }
     }
-
 }
