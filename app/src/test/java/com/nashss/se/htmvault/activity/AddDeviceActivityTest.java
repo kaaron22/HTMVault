@@ -2,6 +2,7 @@ package com.nashss.se.htmvault.activity;
 
 import com.nashss.se.htmvault.activity.requests.AddDeviceRequest;
 import com.nashss.se.htmvault.activity.results.AddDeviceResult;
+import com.nashss.se.htmvault.converters.LocalDateConverter;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.FacilityDepartmentDao;
 import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
@@ -66,6 +67,7 @@ class AddDeviceActivityTest {
         device.setControlNumber(controlNumber);
         device.setSerialNumber(serialNumber);
         device.setManufacturerModel(manufacturerModel);
+        device.setManufactureDate(new LocalDateConverter().unconvert(manufactureDate));
         device.setServiceStatus(ServiceStatus.IN_SERVICE);
         device.setFacilityName(facilityName);
         device.setAssignedDepartment(assignedDepartment);
@@ -74,8 +76,8 @@ class AddDeviceActivityTest {
         device.setNextPmDueDate(LocalDate.now());
         device.setMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths);
         device.setInventoryAddDate(LocalDate.now());
-        device.setAddedById("1234");
-        device.setAddedByName("John Doe");
+        device.setAddedById(customerId);
+        device.setAddedByName(customerName);
         device.setNotes(notes);
         device.setWorkOrders(new ArrayList<>());
     }
@@ -106,7 +108,7 @@ class AddDeviceActivityTest {
 
         // THEN
         verify(deviceDao).saveDevice(any(Device.class));
-        assertNotNull(deviceModel.getControlNumber());
+        assertEquals(controlNumber, deviceModel.getControlNumber());
         assertEquals(serialNumber, deviceModel.getSerialNumber());
         assertEquals(manufacturer, deviceModel.getManufacturer());
         assertEquals(model, deviceModel.getModel());
@@ -116,8 +118,13 @@ class AddDeviceActivityTest {
         assertEquals(assignedDepartment, deviceModel.getAssignedDepartment());
         assertEquals("", deviceModel.getComplianceThroughDate());
         assertEquals("", deviceModel.getLastPmCompletionDate());
-        assertEquals();
-
+        assertEquals(LocalDate.now().toString(), deviceModel.getNextPmDueDate());
+        assertEquals(maintenanceFrequencyInMonths, deviceModel.getMaintenanceFrequencyInMonths());
+        assertEquals(LocalDate.now().toString(), deviceModel.getInventoryAddDate());
+        assertEquals(customerId, deviceModel.getAddedById());
+        assertEquals(customerName, deviceModel.getAddedByName());
+        assertEquals(notes, deviceModel.getNotes());
+        assertTrue(deviceModel.getWorkOrderSummaries().isEmpty());
     }
 
     @Test
