@@ -10,6 +10,7 @@ import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
+import com.nashss.se.htmvault.exceptions.InvalidAttributeException;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
@@ -124,10 +125,12 @@ public class AddDeviceActivity {
                     addDeviceRequest.getMaintenanceFrequencyInMonths());
         } catch (InvalidAttributeValueException |
                  ManufacturerModelNotFoundException |
-                 FacilityDepartmentNotFoundException |
-                 DateTimeParseException e) {
+                 FacilityDepartmentNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             throw new InvalidAttributeValueException(e.getMessage());
+        } catch (DateTimeParseException e) {
+            metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            throw new InvalidAttributeValueException("The date provided must be formatted as YYYY-MM-DD");
         }
 
         metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
