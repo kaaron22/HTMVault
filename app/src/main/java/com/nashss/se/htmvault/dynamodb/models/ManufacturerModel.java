@@ -1,5 +1,6 @@
 package com.nashss.se.htmvault.dynamodb.models;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
@@ -11,6 +12,7 @@ public class ManufacturerModel {
 
     private String manufacturer;
     private String model;
+    private Integer requiredMaintenanceFrequencyInMonths;
 
     @DynamoDBHashKey(attributeName = "manufacturer")
     public String getManufacturer() {
@@ -30,16 +32,26 @@ public class ManufacturerModel {
         this.model = model;
     }
 
+    @DynamoDBAttribute(attributeName = "requiredMaintenanceFrequencyInMonths")
+    public int getRequiredMaintenanceFrequencyInMonths() {
+        return requiredMaintenanceFrequencyInMonths;
+    }
+
+    public void setRequiredMaintenanceFrequencyInMonths(int requiredMaintenanceFrequencyInMonths) {
+        this.requiredMaintenanceFrequencyInMonths = requiredMaintenanceFrequencyInMonths;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ManufacturerModel that = (ManufacturerModel) o;
-        return Objects.equals(manufacturer, that.manufacturer) && Objects.equals(model, that.model);
+        return requiredMaintenanceFrequencyInMonths == that.requiredMaintenanceFrequencyInMonths &&
+                Objects.equals(manufacturer, that.manufacturer) && Objects.equals(model, that.model);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(manufacturer, model);
+        return Objects.hash(manufacturer, model, requiredMaintenanceFrequencyInMonths);
     }
 }
