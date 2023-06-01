@@ -180,7 +180,15 @@ class ModelConverterTest {
         // GIVEN
         // setup and some values null (these values are either optional, such as the manufacture date
         // or notes, or have yet to be populated, such as the compliance through date and last PM
-        // completion date for a newly added device that has not yet had an inspection completed)
+        // completion date for a newly added device, that has not yet had routine maintenance completed or
+        // may not ultimately require it).
+        // additionally, the device's ManufacturerModel may not have an associated maintenance frequency,
+        // which for our purposes is the equivalent of a model having no preventative maintenance
+        // requirements (requiredMaintenanceFrequency = 0)
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer(manufacturer);
+        manufacturerModel.setModel(model);
+        device.setManufacturerModel(manufacturerModel);
         device.setManufactureDate(null);
         device.setComplianceThroughDate(null);
         device.setLastPmCompletionDate(null);
@@ -202,7 +210,7 @@ class ModelConverterTest {
         assertEquals("", deviceModel.getComplianceThroughDate());
         assertEquals("", deviceModel.getLastPmCompletionDate());
         assertEquals("", deviceModel.getNextPmDueDate());
-        assertEquals(maintenanceFrequencyInMonths, deviceModel.getMaintenanceFrequencyInMonths());
+        assertEquals(0, deviceModel.getMaintenanceFrequencyInMonths());
         assertEquals(inventoryAddDate.toString(), deviceModel.getInventoryAddDate());
         assertEquals(addedById, deviceModel.getAddedById());
         assertEquals(addedByName, deviceModel.getAddedByName());

@@ -33,11 +33,11 @@ public class ManufacturerModel {
     }
 
     @DynamoDBAttribute(attributeName = "requiredMaintenanceFrequencyInMonths")
-    public int getRequiredMaintenanceFrequencyInMonths() {
+    public Integer getRequiredMaintenanceFrequencyInMonths() {
         return requiredMaintenanceFrequencyInMonths;
     }
 
-    public void setRequiredMaintenanceFrequencyInMonths(int requiredMaintenanceFrequencyInMonths) {
+    public void setRequiredMaintenanceFrequencyInMonths(Integer requiredMaintenanceFrequencyInMonths) {
         this.requiredMaintenanceFrequencyInMonths = requiredMaintenanceFrequencyInMonths;
     }
 
