@@ -30,7 +30,6 @@ public class AddDeviceLambda
                                     .withManufactureDate(unauthenticatedRequest.getManufactureDate())
                                     .withFacilityName(unauthenticatedRequest.getFacilityName())
                                     .withAssignedDepartment(unauthenticatedRequest.getAssignedDepartment())
-                                    .withMaintenanceFrequencyInMonths(unauthenticatedRequest.getMaintenanceFrequencyInMonths())
                                     .withNotes(unauthenticatedRequest.getNotes())
                                     .withCustomerId(claims.get("email"))
                                     .withCustomerName(claims.get("name"))
