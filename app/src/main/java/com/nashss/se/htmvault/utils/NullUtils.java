@@ -13,21 +13,6 @@ public class NullUtils {
     private NullUtils() { }
 
     /**
-     * Checks a map of attribute name & value pairs associated with a request that are required to be provided. If any
-     * of the attributes required were not provided (i.e. the value is null), throws an InvalidAttributeException, with
-     * a message specifying the attribute that was not provided.
-     * @param requiredRequestParameterValues the map of attribute name & value pairs
-     *
-     */
-    public static void ifNull(Map<String, String> requiredRequestParameterValues) {
-        for (Map.Entry<String, String> entry : requiredRequestParameterValues.entrySet()) {
-            if (null == entry.getValue()) {
-                throw new InvalidAttributeValueException(String.format("The %s must be provided", entry.getKey()));
-            }
-        }
-    }
-
-    /**
      * If obj is null, return valIfNull, otherwise return obj.
      * @param obj The object to check for null.
      * @param valIfNull The value to return if obj is null.

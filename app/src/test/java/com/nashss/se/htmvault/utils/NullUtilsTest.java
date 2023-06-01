@@ -1,54 +1,14 @@
 package com.nashss.se.htmvault.utils;
 
-import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
-
 import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.nashss.se.htmvault.utils.NullUtils.ifNotNull;
 import static com.nashss.se.htmvault.utils.NullUtils.ifNull;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NullUtilsTest {
-
-    @Test
-    public void ifNull_mapRequiredRequestParametersProvidedWithNoNullValues_noExceptionThrown() {
-        // GIVEN
-        Map<String, String> requiredRequestParameterValues = new HashMap<>();
-        requiredRequestParameterValues.put("key1", "value1");
-        requiredRequestParameterValues.put("key2", "value2");
-
-        // WHEN & THEN
-        assertDoesNotThrow(() -> ifNull(requiredRequestParameterValues),
-                "Expected required parameter values provided to not result in exception thrown");
-
-    }
-
-    @Test
-    public void ifNull_mapRequiredRequestParametersProvidedWithANullValue_throwsInvalidAttributeValueException() {
-        // GIVEN
-        Map<String, String> requiredRequestParameterValues = new HashMap<>();
-        requiredRequestParameterValues.put("Control Number", "1234");
-        requiredRequestParameterValues.put("Serial Number", null);
-
-        // WHEN & THEN
-        assertThrows(InvalidAttributeValueException.class, () ->
-                ifNull(requiredRequestParameterValues),
-                "Expected null value for a key required attribute to result in an " +
-                        "InvalidAttributeValueException thrown");
-
-        try {
-            ifNull(requiredRequestParameterValues);
-        } catch (InvalidAttributeValueException e) {
-            assertEquals("The Serial Number must be provided", e.getMessage());
-        }
-    }
 
     @Test
     void ifNull_nonNullStringProvidedWithSupplierIfNull_returnsOriginalString() {
