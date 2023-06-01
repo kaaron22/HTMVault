@@ -126,10 +126,9 @@ export default class MusicPlaylistClient extends BindingClass {
     }
 
     async addDevice(controlNumber, serialNumber, manufacturer, model, facilityName, assignedDepartment,
-     maintenanceFrequencyInMonths, manufactureDate, notes, errorCallback) {
+     manufactureDate, notes, errorCallback) {
         try {
             const token = await this.getTokenOrThrow("Only authenticated users can add devices.");
-            //console.log("musicPlaylistClient line 132")
             const response = await this.axiosClient.post(`devices`, {
                 controlNumber: controlNumber,
                 serialNumber: serialNumber,
@@ -137,7 +136,6 @@ export default class MusicPlaylistClient extends BindingClass {
                 model: model,
                 facilityName: facilityName,
                 assignedDepartment: assignedDepartment,
-                maintenanceFrequencyInMonths: maintenanceFrequencyInMonths,
                 manufactureDate: manufactureDate,
                 notes: notes
             }, {

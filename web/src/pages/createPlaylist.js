@@ -48,7 +48,6 @@ class CreatePlaylist extends BindingClass {
         const deviceModel = document.getElementById('model').value;
         const deviceFacilityName = document.getElementById('facility-name').value;
         const deviceAssignedDepartment = document.getElementById('assigned-department').value;
-        const deviceMaintenanceFrequency = document.getElementById('maintenance-frequency').value;
         const deviceManufactureDate = document.getElementById('manufacture-date').value;
         const deviceNotes = document.getElementById('notes').value;
 
@@ -67,8 +66,7 @@ class CreatePlaylist extends BindingClass {
         }
 
         const device = await this.client.addDevice(deviceControlNumber, deviceSerialNumber, deviceManufacturer,
-         deviceModel, deviceFacilityName, deviceAssignedDepartment, deviceMaintenanceFrequency, manufactureDate, notes,
-          (error) => {
+         deviceModel, deviceFacilityName, deviceAssignedDepartment, manufactureDate, notes, (error) => {
             createButton.innerText = origButtonText;
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');
