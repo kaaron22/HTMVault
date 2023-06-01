@@ -1,68 +1,32 @@
 package com.nashss.se.htmvault.utils;
 
-import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
 
 public class HTMVaultServiceUtils {
+
+    public static final String ALPHA_NUMERIC = "^[A-Za-z0-9]+$";
+    public static final String ALPHA_NUMERIC_SPACE_OR_DASH = "^[A-Za-z0-9- ]+$";
 
     private HTMVaultServiceUtils() { }
 
     /**
-     * Checks a map of attribute name & value pairs associated with a request that are required to be provided. If any
-     * of the attributes required were empty or blank, throws an InvalidAttributeException with a message specifying
-     * the attribute that was empty or blank.
-     * @param requiredRequestParameterValues the map of attribute name & value pairs
-     *
-     */
-    public static void ifEmptyOrBlank(Map<String, String> requiredRequestParameterValues) {
-        for (Map.Entry<String, String> entry : requiredRequestParameterValues.entrySet()) {
-            if (entry.getValue().isEmpty() || entry.getValue().isBlank()) {
-                throw new InvalidAttributeValueException(String.format("The %s must not be empty or blank", entry.getKey()));
-            }
-        }
-    }
-
-    /**
-     * Checks a string value to see if it contains only characters that meet at least one of the desired conditions
-     * (i.e. only alphanumeric characters, or only alphanumeric characters and dashes). If not, an
-     * InvalidAttributeException is thrown, specifying the attribute and the value provided.
-     * @param attributeName the name of the attribute being checked
+     * Checks a string value to see if it is null, empty, or blank, or if it does not contain only characters that are
+     * acceptable (i.e. only alphanumeric characters, or only alphanumeric characters, dashes, and spaces).
      * @param stringToCheck the value of the attribute that was provided
-     * @param conditions a list of Character conditions against which to check each character of the string
+     * @param validCharacters a list of allowed Characters against which to check each character of the string, in
+     *                        regular expression form
+     * @return boolean true if string is valid, false otherwise
      */
-    public static void ifNotValidString(String attributeName, String stringToCheck,
-                                        List<Predicate<Character>> conditions) {
+    public static boolean isValidString(final String stringToCheck, final String validCharacters) {
 
-        // check each character of the string being
-        for (int i = 0; i < stringToCheck.length(); i++) {
-            // this is an invalid character unless proven otherwise
-            boolean validCharacter = false;
-            // check this character against the list of predicate conditions provided
-            for (Predicate<Character> condition : conditions) {
-                if (condition.test(stringToCheck.charAt((i)))) {
-                    // if this character meets one of the conditions, it's a valid character
-                    // and we can stop checking it
-                    validCharacter = true;
-                    break;
-                }
-            }
-
-            // if the character was not proven to be valid, we throw an exception
-            if (!validCharacter) {
-                throw new InvalidAttributeValueException(String.format("The %s provided (%s) contained invalid characters",
-                        attributeName, stringToCheck));
-            }
-        }
-    }
-
-    public static void allowedMaintenanceFrequencyRange(int min, int max, int actual) {
-        if (actual < min || actual > max) {
-            throw new InvalidAttributeValueException(String.format("The maintenance frequency provided (%s) is outside of " +
-                    "the acceptable range of %s-%s", actual, min, max));
+        // if stringToCheck is null, empty, or blank, then it's invalid
+        if (StringUtils.isBlank(stringToCheck)) {
+            return false;
+        // otherwise, verify the string only contains valid characters
+        } else {
+            return stringToCheck.matches(validCharacters);
         }
     }
 
