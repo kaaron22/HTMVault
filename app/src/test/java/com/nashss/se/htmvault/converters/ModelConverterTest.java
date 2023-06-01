@@ -49,10 +49,12 @@ class ModelConverterTest {
         serialNumber = "T-456";
         manufacturer = "Test Manufacturer";
         model = "Test Model";
+        maintenanceFrequencyInMonths = 12;
 
         ManufacturerModel manufacturerModel = new ManufacturerModel();
         manufacturerModel.setManufacturer(manufacturer);
         manufacturerModel.setModel(model);
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths);
 
         manufactureDate = LocalDate.of(2021, 10, 26);
         serviceStatus = ServiceStatus.IN_SERVICE;
@@ -61,7 +63,6 @@ class ModelConverterTest {
         complianceThroughDate = LocalDate.of(2023, 12, 31);
         lastPmCompletionDate = LocalDate.of(2022, 12, 8);
         nextPmDueDate = LocalDate.of(2023, 12, 31);
-        maintenanceFrequencyInMonths = 12;
         inventoryAddDate = LocalDate.of(2021, 12, 3);
         addedById = "E1234";
         addedByName = "Jane Doe";
@@ -105,7 +106,6 @@ class ModelConverterTest {
         device.setComplianceThroughDate(complianceThroughDate);
         device.setLastPmCompletionDate(lastPmCompletionDate);
         device.setNextPmDueDate(nextPmDueDate);
-        device.setMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths);
         device.setInventoryAddDate(inventoryAddDate);
         device.setAddedById(addedById);
         device.setAddedByName(addedByName);
