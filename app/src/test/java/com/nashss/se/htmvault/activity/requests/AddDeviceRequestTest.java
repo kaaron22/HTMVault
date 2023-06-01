@@ -17,7 +17,6 @@ class AddDeviceRequestTest {
     private String manufactureDate;
     private String facilityName;
     private String assignedDepartment;
-    private int maintenanceFrequencyInMonths;
     private String notes;
     private String customerId;
     private String customerName;
@@ -31,7 +30,6 @@ class AddDeviceRequestTest {
         manufactureDate = "2023-05-26";
         facilityName = "a hospital";
         assignedDepartment = "ER";
-        maintenanceFrequencyInMonths = 6;
         notes = "some notes";
         customerId = "227345";
         customerName = "John Doe";
@@ -52,7 +50,6 @@ class AddDeviceRequestTest {
                 .withManufactureDate(manufactureDate)
                 .withFacilityName(facilityName)
                 .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
                 .withNotes(notes)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
@@ -67,8 +64,6 @@ class AddDeviceRequestTest {
         assertEquals(manufactureDate, addDeviceRequest.getManufactureDate(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(facilityName, addDeviceRequest.getFacilityName(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(maintenanceFrequencyInMonths, addDeviceRequest.getMaintenanceFrequencyInMonths(),
-                ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(notes, addDeviceRequest.getNotes(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(customerId, addDeviceRequest.getCustomerId(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(customerName, addDeviceRequest.getCustomerName(), ASSERT_EQUALS_FAILURE_MESSAGE);
@@ -88,7 +83,6 @@ class AddDeviceRequestTest {
                 .withModel(model)
                 .withFacilityName(facilityName)
                 .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
                 .build();
@@ -102,8 +96,6 @@ class AddDeviceRequestTest {
         assertNull(addDeviceRequest.getManufactureDate(), "Expected value not built to be null");
         assertEquals(facilityName, addDeviceRequest.getFacilityName(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(maintenanceFrequencyInMonths, addDeviceRequest.getMaintenanceFrequencyInMonths(),
-                ASSERT_EQUALS_FAILURE_MESSAGE);
         assertNull(addDeviceRequest.getNotes(), "Expected value not built to be null");
         assertEquals(customerId, addDeviceRequest.getCustomerId(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(customerName, addDeviceRequest.getCustomerName(), ASSERT_EQUALS_FAILURE_MESSAGE);
@@ -139,8 +131,6 @@ class AddDeviceRequestTest {
         assertEquals(manufactureDate, addDeviceRequest.getManufactureDate(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(facilityName, addDeviceRequest.getFacilityName(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(0, addDeviceRequest.getMaintenanceFrequencyInMonths(),
-                ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(notes, addDeviceRequest.getNotes(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(customerId, addDeviceRequest.getCustomerId(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(customerName, addDeviceRequest.getCustomerName(), ASSERT_EQUALS_FAILURE_MESSAGE);
@@ -161,7 +151,6 @@ class AddDeviceRequestTest {
                 .withManufactureDate(manufactureDate)
                 .withFacilityName(facilityName)
                 .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
                 .withNotes(null)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
@@ -175,8 +164,6 @@ class AddDeviceRequestTest {
         assertEquals(manufactureDate, addDeviceRequest.getManufactureDate(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(facilityName, addDeviceRequest.getFacilityName(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(maintenanceFrequencyInMonths, addDeviceRequest.getMaintenanceFrequencyInMonths(),
-                ASSERT_EQUALS_FAILURE_MESSAGE);
         assertNull(addDeviceRequest.getNotes(), "Expected value not built to be null");
         assertEquals(customerId, addDeviceRequest.getCustomerId(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(customerName, addDeviceRequest.getCustomerName(), ASSERT_EQUALS_FAILURE_MESSAGE);
@@ -197,7 +184,6 @@ class AddDeviceRequestTest {
                 .withManufactureDate(manufactureDate)
                 .withFacilityName(facilityName)
                 .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
                 .withNotes(notes)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
@@ -211,7 +197,6 @@ class AddDeviceRequestTest {
                 ", manufactureDate='" + manufactureDate + '\'' +
                 ", facilityName='" + facilityName + '\'' +
                 ", assignedDepartment='" + assignedDepartment + '\'' +
-                ", maintenanceFrequencyInMonths=" + maintenanceFrequencyInMonths +
                 ", notes='" + notes + '\'' +
                 ", customerId='" + customerId + '\'' +
                 ", customerName='" + customerName + '\'' +
@@ -235,7 +220,6 @@ class AddDeviceRequestTest {
                 .withModel(model)
                 .withFacilityName(facilityName)
                 .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
                 .build();
@@ -248,7 +232,6 @@ class AddDeviceRequestTest {
                 ", manufactureDate='" + "null" + '\'' +
                 ", facilityName='" + facilityName + '\'' +
                 ", assignedDepartment='" + assignedDepartment + '\'' +
-                ", maintenanceFrequencyInMonths=" + maintenanceFrequencyInMonths +
                 ", notes='" + "null" + '\'' +
                 ", customerId='" + customerId + '\'' +
                 ", customerName='" + customerName + '\'' +

@@ -13,14 +13,13 @@ public class AddDeviceRequest {
     private final String manufactureDate;
     private final String facilityName;
     private final String assignedDepartment;
-    private final int maintenanceFrequencyInMonths;
     private final String notes;
     private final String customerId;
     private final String customerName;
 
     private AddDeviceRequest(String controlNumber, String serialNumber, String manufacturer, String model,
                             String manufactureDate, String facilityName, String assignedDepartment,
-                            int maintenanceFrequencyInMonths, String notes, String customerId, String customerName) {
+                            String notes, String customerId, String customerName) {
         this.controlNumber = controlNumber;
         this.serialNumber = serialNumber;
         this.manufacturer = manufacturer;
@@ -28,7 +27,6 @@ public class AddDeviceRequest {
         this.manufactureDate = manufactureDate;
         this.facilityName = facilityName;
         this.assignedDepartment = assignedDepartment;
-        this.maintenanceFrequencyInMonths = maintenanceFrequencyInMonths;
         this.notes = notes;
         this.customerId = customerId;
         this.customerName = customerName;
@@ -62,10 +60,6 @@ public class AddDeviceRequest {
         return assignedDepartment;
     }
 
-    public int getMaintenanceFrequencyInMonths() {
-        return maintenanceFrequencyInMonths;
-    }
-
     public String getNotes() {
         return notes;
     }
@@ -88,7 +82,6 @@ public class AddDeviceRequest {
                 ", manufactureDate='" + manufactureDate + '\'' +
                 ", facilityName='" + facilityName + '\'' +
                 ", assignedDepartment='" + assignedDepartment + '\'' +
-                ", maintenanceFrequencyInMonths=" + maintenanceFrequencyInMonths +
                 ", notes='" + notes + '\'' +
                 ", customerId='" + customerId + '\'' +
                 ", customerName='" + customerName + '\'' +
@@ -108,7 +101,6 @@ public class AddDeviceRequest {
         private String manufactureDate;
         private String facilityName;
         private String assignedDepartment;
-        private int maintenanceFrequencyInMonths;
         private String notes;
         private String customerId;
         private String customerName;
@@ -148,11 +140,6 @@ public class AddDeviceRequest {
             return this;
         }
 
-        public Builder withMaintenanceFrequencyInMonths(int maintenanceFrequencyInMonths) {
-            this.maintenanceFrequencyInMonths = maintenanceFrequencyInMonths;
-            return this;
-        }
-
         public Builder withNotes(String notes) {
             this.notes = notes;
             return this;
@@ -170,7 +157,7 @@ public class AddDeviceRequest {
 
         public AddDeviceRequest build() {
             return new AddDeviceRequest(controlNumber, serialNumber, manufacturer, model, manufactureDate, facilityName,
-                    assignedDepartment, maintenanceFrequencyInMonths, notes, customerId, customerName);
+                    assignedDepartment, notes, customerId, customerName);
         }
     }
 }
