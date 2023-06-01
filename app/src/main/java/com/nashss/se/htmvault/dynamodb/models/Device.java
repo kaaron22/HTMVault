@@ -27,7 +27,6 @@ public class Device {
     private LocalDate complianceThroughDate;
     private LocalDate lastPmCompletionDate;
     private LocalDate nextPmDueDate;
-    private Integer maintenanceFrequencyInMonths;
     private LocalDate inventoryAddDate;
     private String addedById;
     private String addedByName;
@@ -135,15 +134,6 @@ public class Device {
         this.nextPmDueDate = nextPmDueDate;
     }
 
-    @DynamoDBAttribute(attributeName = "maintenanceFrequencyInMonths")
-    public Integer getMaintenanceFrequencyInMonths() {
-        return maintenanceFrequencyInMonths;
-    }
-
-    public void setMaintenanceFrequencyInMonths(Integer maintenanceFrequencyInMonths) {
-        this.maintenanceFrequencyInMonths = maintenanceFrequencyInMonths;
-    }
-
     @DynamoDBTypeConverted(converter = LocalDateConverter.class)
     @DynamoDBAttribute(attributeName = "inventoryAddDate")
     public LocalDate getInventoryAddDate() {
@@ -206,7 +196,6 @@ public class Device {
                 Objects.equals(complianceThroughDate, device.complianceThroughDate) &&
                 Objects.equals(lastPmCompletionDate, device.lastPmCompletionDate) &&
                 Objects.equals(nextPmDueDate, device.nextPmDueDate) &&
-                Objects.equals(maintenanceFrequencyInMonths, device.maintenanceFrequencyInMonths) &&
                 Objects.equals(inventoryAddDate, device.inventoryAddDate) &&
                 Objects.equals(addedById, device.addedById) &&
                 Objects.equals(addedByName, device.addedByName) &&
@@ -218,6 +207,6 @@ public class Device {
     public int hashCode() {
         return Objects.hash(controlNumber, serialNumber, manufacturerModel, manufactureDate, serviceStatus,
                 facilityName, assignedDepartment, complianceThroughDate, lastPmCompletionDate, nextPmDueDate,
-                maintenanceFrequencyInMonths, inventoryAddDate, addedById, addedByName, notes, workOrders);
+                inventoryAddDate, addedById, addedByName, notes, workOrders);
     }
 }
