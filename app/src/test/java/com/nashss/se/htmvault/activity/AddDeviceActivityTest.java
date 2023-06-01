@@ -10,6 +10,7 @@ import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.FacilityDepartment;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
+import com.nashss.se.htmvault.exceptions.DeviceWithControlNumberAlreadyExistsException;
 import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
@@ -20,7 +21,6 @@ import com.nashss.se.htmvault.models.ServiceStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -68,6 +68,7 @@ class AddDeviceActivityTest {
                 metricsPublisher);
         manufacturerModel.setManufacturer(manufacturer);
         manufacturerModel.setModel(model);
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths);
         facilityDepartment.setFacilityName(facilityName);
         facilityDepartment.setAssignedDepartment(assignedDepartment);
         device.setControlNumber(controlNumber);
@@ -80,7 +81,6 @@ class AddDeviceActivityTest {
         device.setComplianceThroughDate(null);
         device.setLastPmCompletionDate(null);
         device.setNextPmDueDate(LocalDate.now());
-        device.setMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths);
         device.setInventoryAddDate(LocalDate.now());
         device.setAddedById(customerId);
         device.setAddedByName(customerName);
@@ -99,7 +99,6 @@ class AddDeviceActivityTest {
                 .withManufactureDate(manufactureDate)
                 .withFacilityName(facilityName)
                 .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
                 .withNotes(notes)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
@@ -135,6 +134,32 @@ class AddDeviceActivityTest {
     }
 
     @Test
+    public void handleRequest_withDuplicateControlNumber_throwsInvalidAttributeValueException() {
+        // GIVEN
+        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber)
+                .withManufacturer(manufacturer)
+                .withModel(model)
+                .withManufactureDate(manufactureDate)
+                .withFacilityName(facilityName)
+                .withAssignedDepartment(assignedDepartment)
+                .withNotes(notes)
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+        doThrow(DeviceWithControlNumberAlreadyExistsException.class).when(deviceDao)
+                .checkDeviceWithControlNumberAlreadyExists(anyString());
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                addDeviceActivity.handleRequest(addDeviceRequest),
+                "Expected a request to add a device with a control number that already exists in the database " +
+                        "to result in an InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
     public void handleRequest_withRequiredValueNull_throwsInvalidAttributeValueException() {
         // GIVEN
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
@@ -145,7 +170,6 @@ class AddDeviceActivityTest {
                 .withManufactureDate(manufactureDate)
                 .withFacilityName(facilityName)
                 .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
                 .withNotes(notes)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
@@ -171,7 +195,6 @@ class AddDeviceActivityTest {
                 .withManufactureDate(null)
                 .withFacilityName(facilityName)
                 .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
                 .withNotes(notes)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
@@ -217,7 +240,6 @@ class AddDeviceActivityTest {
                 .withManufactureDate(manufactureDate)
                 .withFacilityName(facilityName)
                 .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
                 .withNotes(notes)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
@@ -242,7 +264,6 @@ class AddDeviceActivityTest {
                 .withManufactureDate(manufactureDate)
                 .withFacilityName(facilityName)
                 .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
                 .withNotes(notes)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
@@ -267,7 +288,6 @@ class AddDeviceActivityTest {
                 .withManufactureDate(manufactureDate)
                 .withFacilityName(facilityName)
                 .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
                 .withNotes(notes)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
@@ -292,7 +312,6 @@ class AddDeviceActivityTest {
                 .withManufactureDate(manufactureDate)
                 .withFacilityName(facilityName)
                 .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
                 .withNotes(notes)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
@@ -317,7 +336,6 @@ class AddDeviceActivityTest {
                 .withManufactureDate(manufactureDate)
                 .withFacilityName(facilityName)
                 .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
                 .withNotes(notes)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
@@ -344,7 +362,6 @@ class AddDeviceActivityTest {
                 .withManufactureDate(manufactureDate)
                 .withFacilityName("not a facility")
                 .withAssignedDepartment("not a department")
-                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
                 .withNotes(notes)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
@@ -371,7 +388,6 @@ class AddDeviceActivityTest {
                 .withManufactureDate("5-26-2023")
                 .withFacilityName(facilityName)
                 .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(maintenanceFrequencyInMonths)
                 .withNotes(notes)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
@@ -389,57 +405,30 @@ class AddDeviceActivityTest {
     }
 
     @Test
-    public void handleRequest_withNegativeMaintenanceFrequency_throwsInvalidAttributeValueException() {
+    public void handleRequest_withFutureManufactureDate_throwsInvalidAttributeValueException() {
         // GIVEN
+        LocalDate futureDate = LocalDate.now().plusDays(1);
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
                 .withControlNumber(controlNumber)
                 .withSerialNumber(serialNumber)
                 .withManufacturer(manufacturer)
                 .withModel(model)
-                .withManufactureDate(manufactureDate)
+                .withManufactureDate(new LocalDateConverter().convert(futureDate))
                 .withFacilityName(facilityName)
                 .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(-1)
                 .withNotes(notes)
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
                 .build();
 
+        when(dynamoDBMapper.load(eq(Device.class), anyString())).thenReturn(null);
         when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(manufacturerModel);
         when(facilityDepartmentDao.getFacilityDepartment(anyString(), anyString())).thenReturn(facilityDepartment);
 
         // WHEN & THEN
         assertThrows(InvalidAttributeValueException.class, () ->
                         addDeviceActivity.handleRequest(addDeviceRequest),
-                "Expected a negative maintenance frequency to result in an InvalidAttributeValueException " +
-                        "thrown");
-        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-    }
-
-    @Test
-    public void handleRequest_withMaintenanceFrequencyAboveMax_throwsInvalidAttributeValueException() {
-        // GIVEN
-        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(controlNumber)
-                .withSerialNumber(serialNumber)
-                .withManufacturer(manufacturer)
-                .withModel(model)
-                .withManufactureDate(manufactureDate)
-                .withFacilityName(facilityName)
-                .withAssignedDepartment(assignedDepartment)
-                .withMaintenanceFrequencyInMonths(25)
-                .withNotes(notes)
-                .withCustomerId(customerId)
-                .withCustomerName(customerName)
-                .build();
-
-        when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(manufacturerModel);
-        when(facilityDepartmentDao.getFacilityDepartment(anyString(), anyString())).thenReturn(facilityDepartment);
-
-        // WHEN & THEN
-        assertThrows(InvalidAttributeValueException.class, () ->
-                        addDeviceActivity.handleRequest(addDeviceRequest),
-                "Expected a maintenance frequency above maximum to result in an " +
+                "Expected an add device request with a future manufacture date to result in an " +
                         "InvalidAttributeValueException thrown");
         verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }

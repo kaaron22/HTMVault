@@ -9,23 +9,21 @@ import com.nashss.se.htmvault.dynamodb.FacilityDepartmentDao;
 import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
+import com.nashss.se.htmvault.exceptions.DeviceWithControlNumberAlreadyExistsException;
 import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
-import com.nashss.se.htmvault.exceptions.InvalidAttributeException;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.ServiceStatus;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
-import com.nashss.se.htmvault.utils.NullUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.*;
-
+import java.util.ArrayList;
 public class AddDeviceActivity {
 
     private final DeviceDao deviceDao;
@@ -33,7 +31,6 @@ public class AddDeviceActivity {
     private final FacilityDepartmentDao facilityDepartmentDao;
     private final Logger log = LogManager.getLogger();
     private final MetricsPublisher metricsPublisher;
-    private static final int MAX_MAINTENANCE_FREQUENCY = 24;
 
     @Inject
     public AddDeviceActivity(DeviceDao deviceDao, ManufacturerModelDao manufacturerModelDao,
@@ -47,25 +44,85 @@ public class AddDeviceActivity {
     public AddDeviceResult handleRequest(final AddDeviceRequest addDeviceRequest) {
         log.info("Received AddDeviceRequest {}", addDeviceRequest);
 
-        checkValidRequiredRequestParameters(addDeviceRequest);
+        // validate the control number in the request. it should not be null, blank, or empty. additionally, it should
+        // not be in the database already (partition key), and it should contain alphanumeric characters only
+        String controlNumber = addDeviceRequest.getControlNumber();
+        validateRequestAttribute("Control Number", controlNumber, HTMVaultServiceUtils.ALPHA_NUMERIC);
+        try {
+            deviceDao.checkDeviceWithControlNumberAlreadyExists(controlNumber);
+        } catch (DeviceWithControlNumberAlreadyExistsException e) {
+            metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            throw new InvalidAttributeValueException(e.getMessage());
+        }
 
+        // validate the serial number in the request. it should not be null, blank, or empty. additionally, it should
+        // contain alphanumeric characters or dashes only
+        String serialNumber = addDeviceRequest.getSerialNumber();
+        validateRequestAttribute("Serial Number", serialNumber,
+                HTMVaultServiceUtils.ALPHA_NUMERIC_SPACE_OR_DASH);
+
+        // validate the manufacturer and model in the request. they should not be null, blank, or empty. additionally,
+        // they should contain alphanumeric characters or dashes only. finally, it should be an existing
+        // manufacturer/model combination in the database
+        String manufacturer = addDeviceRequest.getManufacturer();
+        validateRequestAttribute("Manufacturer", manufacturer, HTMVaultServiceUtils.ALPHA_NUMERIC_SPACE_OR_DASH);
+        String model = addDeviceRequest.getModel();
+        validateRequestAttribute("Model", model, HTMVaultServiceUtils.ALPHA_NUMERIC_SPACE_OR_DASH);
+        ManufacturerModel manufacturerModel = null;
+        try {
+            manufacturerModel = manufacturerModelDao.getManufacturerModel(manufacturer, model);
+        } catch (ManufacturerModelNotFoundException e) {
+            metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            throw new InvalidAttributeValueException(e.getMessage());
+        }
+
+        // validate the facility and department in the request. they should not be null, blank, or empty. additionally,
+        // they should contain alphanumeric characters or dashes only. finally, it should be an existing
+        // facility/department combination in the database
+        String facilityName = addDeviceRequest.getFacilityName();
+        validateRequestAttribute("Facility", facilityName, HTMVaultServiceUtils.ALPHA_NUMERIC_SPACE_OR_DASH);
+        String assignedDepartment = addDeviceRequest.getAssignedDepartment();
+        validateRequestAttribute("Assigned Department", assignedDepartment,
+                HTMVaultServiceUtils.ALPHA_NUMERIC_SPACE_OR_DASH);
+        try {
+            facilityDepartmentDao.getFacilityDepartment(facilityName, assignedDepartment);
+        } catch (FacilityDepartmentNotFoundException e) {
+            metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            throw new InvalidAttributeValueException(e.getMessage());
+        }
+
+        // ensure the optional manufacture date, if provided, has the correct format, and is not a future date
+        String manufactureDate = addDeviceRequest.getManufactureDate();
+        if (null != manufactureDate) {
+            try {
+                LocalDate manufactureDateParsed = new LocalDateConverter().unconvert(manufactureDate);
+                if (manufactureDateParsed.isAfter(LocalDate.now())) {
+                    metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+                    throw new InvalidAttributeValueException(String.format("Cannot provide a future manufacture date " +
+                            "(%s)", manufactureDateParsed));
+                };
+            } catch (DateTimeParseException e) {
+                metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+                throw new InvalidAttributeValueException("The date provided must be formatted as YYYY-MM-DD");
+            }
+        }
+
+        // valid request received - create and save new device
+        metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
+
+        LocalDate dateOfAdd = LocalDate.now();
         Device device = new Device();
-        device.setControlNumber(addDeviceRequest.getControlNumber());
-        device.setSerialNumber(addDeviceRequest.getSerialNumber());
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer(addDeviceRequest.getManufacturer());
-        manufacturerModel.setModel(addDeviceRequest.getModel());
+        device.setControlNumber(controlNumber);
+        device.setSerialNumber(serialNumber);
         device.setManufacturerModel(manufacturerModel);
-        device.setManufactureDate(null == addDeviceRequest.getManufactureDate() ? null :
-                new LocalDateConverter().unconvert(addDeviceRequest.getManufactureDate()));
+        device.setManufactureDate(null == manufactureDate ? null : new LocalDateConverter().unconvert(manufactureDate));
         device.setServiceStatus(ServiceStatus.IN_SERVICE);
-        device.setFacilityName(addDeviceRequest.getFacilityName());
-        device.setAssignedDepartment(addDeviceRequest.getAssignedDepartment());
+        device.setFacilityName(facilityName);
+        device.setAssignedDepartment(assignedDepartment);
         device.setComplianceThroughDate(null);
         device.setLastPmCompletionDate(null);
-        device.setNextPmDueDate(addDeviceRequest.getMaintenanceFrequencyInMonths() == 0 ? null : LocalDate.now());
-        device.setMaintenanceFrequencyInMonths(addDeviceRequest.getMaintenanceFrequencyInMonths());
-        device.setInventoryAddDate(LocalDate.now());
+        device.setNextPmDueDate(manufacturerModel.getRequiredMaintenanceFrequencyInMonths() == 0 ? null : dateOfAdd);
+        device.setInventoryAddDate(dateOfAdd);
         device.setAddedById(addDeviceRequest.getCustomerId());
         device.setAddedByName(addDeviceRequest.getCustomerName());
         device.setNotes(null == addDeviceRequest.getNotes() ? "" : addDeviceRequest.getNotes());
@@ -78,61 +135,11 @@ public class AddDeviceActivity {
                 .build();
     }
 
-    private void checkValidRequiredRequestParameters(AddDeviceRequest addDeviceRequest) {
-        Map<String, String> requiredRequestParameterValues = new HashMap<>();
-        requiredRequestParameterValues.put("Control Number", addDeviceRequest.getControlNumber());
-        requiredRequestParameterValues.put("Serial Number", addDeviceRequest.getSerialNumber());
-        requiredRequestParameterValues.put("Manufacturer", addDeviceRequest.getManufacturer());
-        requiredRequestParameterValues.put("Model", addDeviceRequest.getModel());
-        requiredRequestParameterValues.put("Facility Name", addDeviceRequest.getFacilityName());
-        requiredRequestParameterValues.put("Assigned Department", addDeviceRequest.getAssignedDepartment());
-
-        try {
-            // ensures required values were provided in request; if any were not, an InvalidAttributeValueException is
-            // thrown
-            NullUtils.ifNull((requiredRequestParameterValues));
-
-            // ensures required values in request are not empty or blank; if any are, an InvalidAttributeValueException
-            // is thrown
-            HTMVaultServiceUtils.ifEmptyOrBlank(requiredRequestParameterValues);
-
-            // ensures the value provided for the control number meets the requirement of containing alphanumeric
-            // characters only
-            HTMVaultServiceUtils.ifNotValidString("Control Number",
-                    requiredRequestParameterValues.get("Control Number"), List.of(Character::isLetterOrDigit));
-
-            // ensures the value provided for the serial number meets the requirement of containing alphanumeric
-            // character or dashes only
-            HTMVaultServiceUtils.ifNotValidString("Serial Number",
-                    requiredRequestParameterValues.get("Serial Number"),
-                    Arrays.asList(Character::isLetterOrDigit, character -> character.equals('-')));
-
-            // check the manufacturer-model combination against the database to ensure it exists
-            manufacturerModelDao.getManufacturerModel(addDeviceRequest.getManufacturer(), addDeviceRequest.getModel());
-
-            // check the facility-department combination against the database to ensure it exists
-            facilityDepartmentDao.getFacilityDepartment(addDeviceRequest.getFacilityName(),
-                    addDeviceRequest.getAssignedDepartment());
-
-            // ensure the optional manufacture date, if provided, has the correct format
-            if (null != addDeviceRequest.getManufactureDate()) {
-                new LocalDateConverter().unconvert(addDeviceRequest.getManufactureDate());
-            }
-
-            // ensure the maintenance frequency provided is non-negative and is no larger than the maximum frequency
-            // allowed
-            HTMVaultServiceUtils.allowedMaintenanceFrequencyRange(0, MAX_MAINTENANCE_FREQUENCY,
-                    addDeviceRequest.getMaintenanceFrequencyInMonths());
-        } catch (InvalidAttributeValueException |
-                 ManufacturerModelNotFoundException |
-                 FacilityDepartmentNotFoundException e) {
+    private void validateRequestAttribute(String attributeName, String attribute, String validCharacterPattern) {
+        if (!HTMVaultServiceUtils.isValidString(attribute, validCharacterPattern)) {
             metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            throw new InvalidAttributeValueException(e.getMessage());
-        } catch (DateTimeParseException e) {
-            metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            throw new InvalidAttributeValueException("The date provided must be formatted as YYYY-MM-DD");
+            throw new InvalidAttributeValueException(String.format("The %s provided (%s) contained invalid " +
+                            "characters.", attributeName, attribute));
         }
-
-        metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
     }
 }
