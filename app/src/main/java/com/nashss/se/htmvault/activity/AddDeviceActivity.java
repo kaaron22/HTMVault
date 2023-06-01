@@ -56,13 +56,13 @@ public class AddDeviceActivity {
         }
 
         // validate the serial number in the request. it should not be null, blank, or empty. additionally, it should
-        // contain alphanumeric characters or dashes only
+        // contain alphanumeric characters, spaces, and dashes only
         String serialNumber = addDeviceRequest.getSerialNumber();
         validateRequestAttribute("Serial Number", serialNumber,
                 HTMVaultServiceUtils.ALPHA_NUMERIC_SPACE_OR_DASH);
 
         // validate the manufacturer and model in the request. they should not be null, blank, or empty. additionally,
-        // they should contain alphanumeric characters or dashes only. finally, it should be an existing
+        // they should contain alphanumeric characters, spaces, and dashes only. finally, it should be an existing
         // manufacturer/model combination in the database
         String manufacturer = addDeviceRequest.getManufacturer();
         validateRequestAttribute("Manufacturer", manufacturer, HTMVaultServiceUtils.ALPHA_NUMERIC_SPACE_OR_DASH);
@@ -77,7 +77,7 @@ public class AddDeviceActivity {
         }
 
         // validate the facility and department in the request. they should not be null, blank, or empty. additionally,
-        // they should contain alphanumeric characters or dashes only. finally, it should be an existing
+        // they should contain alphanumeric characters, spaces, and dashes only. finally, it should be an existing
         // facility/department combination in the database
         String facilityName = addDeviceRequest.getFacilityName();
         validateRequestAttribute("Facility", facilityName, HTMVaultServiceUtils.ALPHA_NUMERIC_SPACE_OR_DASH);
@@ -100,7 +100,7 @@ public class AddDeviceActivity {
                     metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
                     throw new InvalidAttributeValueException(String.format("Cannot provide a future manufacture date " +
                             "(%s)", manufactureDateParsed));
-                };
+                }
             } catch (DateTimeParseException e) {
                 metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
                 throw new InvalidAttributeValueException("The date provided must be formatted as YYYY-MM-DD");
