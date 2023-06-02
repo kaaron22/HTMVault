@@ -46,7 +46,154 @@
             "S": "Trauma Room 2"
           },
           "workOrders": {
-            "S": "[{\"workOrderId\":\"WR00000000\",\"workOrderType\":\"WorkOrderType.ACCEPTANCE_TESTING\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2021-05-22T09:03:07\",\"completionDateTime\":\"2021-05-22T10:05:32\"},{\"workOrderId\":\"WR00000103\",\"workOrderType\":\"WorkOrderType.PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2021-11-24T11:16:32\",\"completionDateTime\":\"2021-11-24T12:18:07\"},{\"workOrderId\":\"WR00000217\",\"workOrderType\":\"WorkOrderType.PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2022-11-21T12:08:41\",\"completionDateTime\":\"2021-11-21T13:05:14\"},{\"workOrderId\":\"WR00000303\",\"workOrderType\":\"WorkOrderType.REPAIR\",\"completionStatus\":\"WorkOrderCompletionStatus.OPEN\",\"dateTimeCreated\":\"2022-06-01T08:08:54\",\"completionDateTime\":null}]"
+            "S": "[{\"workOrderId\":\"WR00000000\",\"workOrderType\":\"WorkOrderType.ACCEPTANCE_TESTING\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2021-05-22T09:03:07\",\"completionDateTime\":\"2021-05-22T10:05:32\"},{\"workOrderId\":\"WR00000103\",\"workOrderType\":\"WorkOrderType.PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2021-11-24T11:16:32\",\"completionDateTime\":\"2021-11-24T12:18:07\"},{\"workOrderId\":\"WR00000217\",\"workOrderType\":\"WorkOrderType.PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2022-11-21T12:08:41\",\"completionDateTime\":\"2021-11-21T13:05:14\"},{\"workOrderId\":\"WR00000303\",\"workOrderType\":\"WorkOrderType.REPAIR\",\"completionStatus\":\"WorkOrderCompletionStatus.OPEN\",\"dateTimeCreated\":\"2023-06-01T08:08:54\",\"completionDateTime\":null}]"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "controlNumber": {
+            "S": "200433213"
+          },
+          "serialNumber": {
+            "S": "G-80027"
+          },
+          "manufacturerModel": {
+            "S": "[{\"manufacturer\":\"Defib Corp\",\"model\":\"X-1000\",\"requiredMaintenanceFrequencyInMonths\":12}]"
+          },
+          "manufactureDate": {
+            "S": "2021-05-02"
+          },
+          "serviceStatus": {
+            "S": "ServiceStatus.IN_SERVICE"
+          },
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "ICU"
+          },
+          "complianceThroughDate": {
+            "S": "2023-08-31"
+          },
+          "lastPMCompletionDate": {
+            "S": "2022-08-21"
+          },
+          "nextPmDueDate": {
+            "S": "2023-08-31"
+          },
+          "inventoryAddDate": {
+            "S": "2021-05-22"
+          },
+          "addedById": {
+            "S": "htm.vault.test.user@gmail.com"
+          },
+          "addedByName": {
+            "S": "Bill Biomed"
+          },
+          "notes": {
+            "S": "Crash Cart Nurse Station A"
+          },
+          "workOrders": {
+            "S": "[{\"workOrderId\":\"WR00000017\",\"workOrderType\":\"WorkOrderType.ACCEPTANCE_TESTING\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2021-05-22T10:03:07\",\"completionDateTime\":\"2021-05-22T11:05:32\"},{\"workOrderId\":\"WR00000088\",\"workOrderType\":\"WorkOrderType.PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2021-08-24T11:16:32\",\"completionDateTime\":\"2021-08-24T12:18:07\"},{\"workOrderId\":\"WR00000199\",\"workOrderType\":\"WorkOrderType.PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2022-08-21T12:08:41\",\"completionDateTime\":\"2021-08-21T13:05:14\"},{\"workOrderId\":\"WR00000291\",\"workOrderType\":\"WorkOrderType.REPAIR\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2023-05-31T08:08:54\",\"completionDateTime\":\"2023-06-02T14:32:01\"}]"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "controlNumber": {
+            "S": "200433305"
+          },
+          "serialNumber": {
+            "S": "R84221"
+          },
+          "manufacturerModel": {
+            "S": "[{\"manufacturer\":\"Vital Signs Corp\",\"model\":\"ICU-L5\",\"requiredMaintenanceFrequencyInMonths\":12}]"
+          },
+          "manufactureDate": {
+            "S": "2023-05-01"
+          },
+          "serviceStatus": {
+            "S": "ServiceStatus.IN_SERVICE"
+          },
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "ICU"
+          },
+          "complianceThroughDate": {
+            "S": "2024-05-31"
+          },
+          "lastPMCompletionDate": {
+            "S": "2023-05-24"
+          },
+          "nextPmDueDate": {
+            "S": "2024-05-31"
+          },
+          "inventoryAddDate": {
+            "S": "2023-05-24"
+          },
+          "addedById": {
+            "S": "htm.vault.test.user@gmail.com"
+          },
+          "addedByName": {
+            "S": "Bill Biomed"
+          },
+          "notes": {
+            "S": "Trauma Room 2"
+          },
+          "workOrders": {
+            "S": "[{\"workOrderId\":\"WR00000422\",\"workOrderType\":\"WorkOrderType.ACCEPTANCE_TESTING\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2023-05-24T14:03:07\",\"completionDateTime\":\"2023-05-24T15:05:32\"}]"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "controlNumber": {
+            "S": "200435922"
+          },
+          "serialNumber": {
+            "S": "B11-H3012"
+          },
+          "manufacturerModel": {
+            "S": "[{\"manufacturer\":\"IV Pump Corp\",\"model\":\"Dual-Channel X7\",\"requiredMaintenanceFrequencyInMonths\":12}]"
+          },
+          "manufactureDate": {
+            "S": "2023-05-14"
+          },
+          "serviceStatus": {
+            "S": "ServiceStatus.IN_SERVICE"
+          },
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "Cath Lab"
+          },
+          "nextPmDueDate": {
+            "S": "2023-06-02"
+          },
+          "inventoryAddDate": {
+            "S": "2023-06-02"
+          },
+          "addedById": {
+            "S": "htm.vault.test.user@gmail.com"
+          },
+          "addedByName": {
+            "S": "Bill Biomed"
+          },
+          "notes": {
+            "S": "Trauma Room 2"
+          },
+          "workOrders": {
+            "S": "[]"
           }
         }
       }
