@@ -23,8 +23,8 @@ module.exports = {
     usedExports: true
   },
   entry: {
-    createPlaylist: path.resolve(__dirname, 'src', 'pages', 'createPlaylist.js'),
-    viewPlaylist: path.resolve(__dirname, 'src', 'pages', 'viewPlaylist.js'),
+    addDevice: path.resolve(__dirname, 'src', 'pages', 'addDevice.js'),
+    viewDevice: path.resolve(__dirname, 'src', 'pages', 'viewDevice.js'),
     searchPlaylists: path.resolve(__dirname, 'src', 'pages', 'searchPlaylists.js'),
   },
   output: {

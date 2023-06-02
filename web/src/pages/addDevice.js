@@ -1,36 +1,34 @@
-import MusicPlaylistClient from '../api/musicPlaylistClient';
+import HTMVaultClient from '../api/htmVaultClient';
 import Header from '../components/header';
 import BindingClass from '../util/bindingClass';
 import DataStore from '../util/DataStore';
 
 /**
- * Logic needed for the create playlist page of the website.
+ * Logic needed for the add device page of the website.
  */
-class CreatePlaylist extends BindingClass {
+class AddDevice extends BindingClass {
     constructor() {
         super();
         this.bindClassMethods(['mount', 'submit', 'redirectToViewDevice'], this);
-        //this.bindClassMethods(['mount', 'submit', 'redirectToViewPlaylist'], this);
         this.dataStore = new DataStore();
-        //this.dataStore.addChangeListener(this.redirectToViewPlaylist);
         this.dataStore.addChangeListener(this.redirectToViewDevice);
         this.header = new Header(this.dataStore);
     }
 
     /**
-     * Add the header to the page and load the MusicPlaylistClient.
+     * Add the header to the page and load the HTMVaultClient.
      */
     mount() {
         document.getElementById('create').addEventListener('click', this.submit);
 
         this.header.addHeaderToPage();
 
-        this.client = new MusicPlaylistClient();
+        this.client = new HTMVaultClient();
     }
 
     /**
-     * Method to run when the create playlist submit button is pressed. Call the MusicPlaylistService to create the
-     * playlist.
+     * Method to run when the add device submit button is pressed. Call the HTMVaultService to add the
+     * device.
      */
     async submit(evt) {
         evt.preventDefault();
@@ -74,20 +72,13 @@ class CreatePlaylist extends BindingClass {
         this.dataStore.set('device', device);
     }
 
+    /**
+     * When the device is updated in the datastore, redirect to the view device page.
+     */
     redirectToViewDevice() {
         const device = this.dataStore.get('device');
         if (device != null) {
             window.location.href = `/device.html?controlNumber=${device.controlNumber}`;
-        }
-    }
-
-    /**
-     * When the playlist is updated in the datastore, redirect to the view playlist page.
-     */
-    redirectToViewPlaylist() {
-        const playlist = this.dataStore.get('playlist');
-        if (playlist != null) {
-            window.location.href = `/playlist.html?id=${playlist.id}`;
         }
     }
 }
@@ -96,8 +87,8 @@ class CreatePlaylist extends BindingClass {
  * Main method to run when the page contents have loaded.
  */
 const main = async () => {
-    const createPlaylist = new CreatePlaylist();
-    createPlaylist.mount();
+    const addDevice = new AddDevice();
+    addDevice.mount();
 };
 
 window.addEventListener('DOMContentLoaded', main);
