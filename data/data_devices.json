@@ -1,0 +1,55 @@
+{
+  "devices": [
+    {
+      "PutRequest": {
+        "Item": {
+          "controlNumber": {
+            "S": "200433212"
+          },
+          "serialNumber": {
+            "S": "G-80023"
+          },
+          "manufacturerModel": {
+            "S": "[{\"manufacturer\":\"Defib Corp\",\"model\":\"X-1000\",\"requiredMaintenanceFrequencyInMonths\":12}]"
+          },
+          "manufactureDate": {
+            "S": "2021-05-01"
+          },
+          "serviceStatus": {
+            "S": "ServiceStatus.IN_SERVICE"
+          },
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "ER"
+          },
+          "complianceThroughDate": {
+            "S": "2023-11-30"
+          },
+          "lastPMCompletionDate": {
+            "S": "2022-11-21"
+          },
+          "nextPmDueDate": {
+            "S": "2023-11-30"
+          },
+          "inventoryAddDate": {
+            "S": "2021-05-22"
+          },
+          "addedById": {
+            "S": "htm.vault.test.user@gmail.com"
+          },
+          "addedByName": {
+            "S": "Bill Biomed"
+          },
+          "notes": {
+            "S": "Trauma Room 2"
+          },
+          "workOrders": {
+            "S": "[{\"workOrderId\":\"WR00000000\",\"workOrderType\":\"WorkOrderType.ACCEPTANCE_TESTING\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2021-05-22T09:03:07\",\"completionDateTime\":\"2021-05-22T10:05:32\"},{\"workOrderId\":\"WR00000103\",\"workOrderType\":\"WorkOrderType.PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2021-11-24T11:16:32\",\"completionDateTime\":\"2021-11-24T12:18:07\"},{\"workOrderId\":\"WR00000217\",\"workOrderType\":\"WorkOrderType.PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2022-11-21T12:08:41\",\"completionDateTime\":\"2021-11-21T13:05:14\"},{\"workOrderId\":\"WR00000303\",\"workOrderType\":\"WorkOrderType.REPAIR\",\"completionStatus\":\"WorkOrderCompletionStatus.OPEN\",\"dateTimeCreated\":\"2022-06-01T08:08:54\",\"completionDateTime\":null}]"
+          }
+        }
+      }
+    }
+  ]
+}
