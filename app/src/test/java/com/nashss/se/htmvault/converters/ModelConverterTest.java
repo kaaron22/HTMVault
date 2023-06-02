@@ -138,11 +138,7 @@ class ModelConverterTest {
         assertEquals(addedById, deviceModel.getAddedById());
         assertEquals(addedByName, deviceModel.getAddedByName());
         assertEquals(notes, deviceModel.getNotes());
-
-        // check each String attribute in the List<List<String>> of work order summaries and verify
-        // they were converted as expected from the List<WorkOrderSummary> work orders
-        verifyListWorkOrderSummaryConversionToListStringList(device.getWorkOrders(),
-                deviceModel.getWorkOrderSummaries());
+        assertEquals(device.getWorkOrders(), deviceModel.getWorkOrderSummaries());
     }
 
     @Test
@@ -215,8 +211,7 @@ class ModelConverterTest {
         assertEquals(addedById, deviceModel.getAddedById());
         assertEquals(addedByName, deviceModel.getAddedByName());
         assertEquals("", deviceModel.getNotes());
-        verifyListWorkOrderSummaryConversionToListStringList(device.getWorkOrders(),
-                deviceModel.getWorkOrderSummaries());
+        assertEquals(device.getWorkOrders(), deviceModel.getWorkOrderSummaries());
     }
 
     /**

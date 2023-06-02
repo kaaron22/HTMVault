@@ -1,9 +1,9 @@
 package com.nashss.se.htmvault.models;
 
 
+import com.nashss.se.htmvault.dynamodb.models.WorkOrderSummary;
 import com.nashss.se.htmvault.utils.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,13 +25,13 @@ public class DeviceModel {
     private final String addedById;
     private final String addedByName;
     private final String notes;
-    private final List<List<String>> workOrderSummaries;
+    private final List<WorkOrderSummary> workOrderSummaries;
 
     private DeviceModel(String controlNumber, String serialNumber, String manufacturer, String model,
                        String manufactureDate, String serviceStatus, String facilityName, String assignedDepartment,
                        String complianceThroughDate, String lastPmCompletionDate, String nextPmDueDate,
                        int maintenanceFrequencyInMonths, String inventoryAddDate, String addedById, String addedByName,
-                       String notes, List<List<String>> workOrderSummaries) {
+                       String notes, List<WorkOrderSummary> workOrderSummaries) {
         this.controlNumber = controlNumber;
         this.serialNumber = serialNumber;
         this.manufacturer = manufacturer;
@@ -115,12 +115,8 @@ public class DeviceModel {
         return notes;
     }
 
-    public List<List<String>> getWorkOrderSummaries() {
-        List<List<String>> copyWorkOrderSummaries = new ArrayList<>();
-        for (List<String> workOrderSummary : workOrderSummaries) {
-            copyWorkOrderSummaries.add(CollectionUtils.copyToList(workOrderSummary));
-        }
-        return copyWorkOrderSummaries;
+    public List<WorkOrderSummary> getWorkOrderSummaries() {
+        return CollectionUtils.copyToList(workOrderSummaries);
     }
 
     @Override
@@ -175,7 +171,7 @@ public class DeviceModel {
         private String addedById;
         private String addedByName;
         private String notes;
-        private List<List<String>> workOrderSummaries;
+        private List<WorkOrderSummary> workOrderSummaries;
 
         public Builder withControlNumber(String controlNumber) {
             this.controlNumber = controlNumber;
@@ -257,12 +253,8 @@ public class DeviceModel {
             return this;
         }
 
-        public Builder withWorkOrderSummaries(List<List<String>> workOrderSummaries) {
-            List<List<String>> copyWorkOrderSummaries = new ArrayList<>();
-            for (List<String> workOrderSummary : workOrderSummaries) {
-                copyWorkOrderSummaries.add(CollectionUtils.copyToList(workOrderSummary));
-            }
-            this.workOrderSummaries = copyWorkOrderSummaries;
+        public Builder withWorkOrderSummaries(List<WorkOrderSummary> workOrderSummaries) {
+            this.workOrderSummaries = CollectionUtils.copyToList(workOrderSummaries);
             return this;
         }
 
