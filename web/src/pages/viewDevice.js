@@ -1,12 +1,12 @@
-import MusicPlaylistClient from '../api/musicPlaylistClient';
+import HTMVaultClient from '../api/htmVaultClient';
 import Header from '../components/header';
 import BindingClass from "../util/bindingClass";
 import DataStore from "../util/DataStore";
 
 /**
- * Logic needed for the view playlist page of the website.
+ * Logic needed for the view device page of the website.
  */
-class ViewPlaylist extends BindingClass {
+class ViewDevice extends BindingClass {
     constructor() {
         super();
         this.bindClassMethods(['clientLoaded', 'mount', 'addPlaylistToPage', 'addSongsToPage', 'addSong'], this);
@@ -14,25 +14,25 @@ class ViewPlaylist extends BindingClass {
         this.dataStore.addChangeListener(this.addPlaylistToPage);
         this.dataStore.addChangeListener(this.addSongsToPage);
         this.header = new Header(this.dataStore);
-        console.log("viewplaylist constructor");
+        console.log("add device constructor");
     }
 
     /**
-     * Once the client is loaded, get the playlist metadata and song list.
+     * Once the client is loaded, get the device metadata and work order list.
      */
     async clientLoaded() {
         const urlParams = new URLSearchParams(window.location.search);
-        const playlistId = urlParams.get('id');
-        document.getElementById('playlist-name').innerText = "Loading Playlist ...";
+        const deviceId = urlParams.get('controlNumber');
+        document.getElementById('playlist-name').innerText = "Loading Device ...";
         const playlist = await this.client.getPlaylist(playlistId);
-        this.dataStore.set('playlist', playlist);
-        document.getElementById('songs').innerText = "(loading songs...)";
-        const songs = await this.client.getPlaylistSongs(playlistId);
-        this.dataStore.set('songs', songs);
+        this.dataStore.set('device', device);
+        document.getElementById('work-orders').innerText = "(loading work orders...)";
+        const workOrders = await this.client.getDeviceWorkOrders(deviceId);
+        this.dataStore.set('workOrders', workOrders);
     }
 
     /**
-     * Add the header to the page and load the MusicPlaylistClient.
+     * Add the header to the page and load the HTMVaultClient.
      */
     mount() {
         document.getElementById('add-song').addEventListener('click', this.addSong);
@@ -122,8 +122,8 @@ class ViewPlaylist extends BindingClass {
  * Main method to run when the page contents have loaded.
  */
 const main = async () => {
-    const viewPlaylist = new ViewPlaylist();
-    viewPlaylist.mount();
+    const viewDevice = new ViewDevice();
+    viewDevice.mount();
 };
 
 window.addEventListener('DOMContentLoaded', main);
