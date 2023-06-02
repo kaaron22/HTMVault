@@ -232,6 +232,14 @@ Resources:
                 Action: dynamodb:*
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/devices/index/FacilityNameAndPmDueDateIndex"
 
+        - PolicyName: 'AccessDevicesTableManufacturerModelAndSerialNumberIndex'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: dynamodb:*
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/devices/index/ManufacturerModelAndSerialNumberIndex"
+
         - PolicyName: 'AccessManufacturerModelTable'
           PolicyDocument:
             Version: '2012-10-17'
@@ -290,6 +298,8 @@ Resources:
       AttributeDefinitions:
         - AttributeName: "controlNumber"
           AttributeType: "S"
+        - AttributeName: "serialNumber"
+          AttributeType: "S"
         - AttributeName: "manufacturerModel"
           AttributeType: "S"
         - AttributeName: "facilityName"
@@ -328,6 +338,14 @@ Resources:
               KeyType: "RANGE"
           Projection:
             ProjectionType: "ALL"
+        - IndexName: "ManufacturerModelAndSerialNumberIndex"
+          KeySchema:
+            - AttributeName: "manufacturerModel"
+              KeyType: "HASH"
+            - AttributeName: "serialNumber"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "KEYS_ONLY"
 
   WorkOrderSummariesTable:
     Type: AWS::DynamoDB::Table

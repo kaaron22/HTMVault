@@ -9,7 +9,7 @@ import com.nashss.se.htmvault.dynamodb.FacilityDepartmentDao;
 import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
-import com.nashss.se.htmvault.exceptions.DeviceWithControlNumberAlreadyExistsException;
+import com.nashss.se.htmvault.exceptions.DevicePreviouslyAddedException;
 import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
@@ -70,6 +70,13 @@ public class AddDeviceActivity {
         }
         int requiredMaintenanceFrequencyInMonths =
                 ifNull(manufacturerModel.getRequiredMaintenanceFrequencyInMonths(), 0);
+
+        // verify that a device with matching manufacturer/model and serial number has not previously been added
+        try {
+            deviceDao.checkDevicePreviouslyAdded(manufacturerModel, serialNumber);
+        } catch (DevicePreviouslyAddedException e) {
+            throw new InvalidAttributeValueException(e.getMessage());
+        }
 
         // validate the facility and department in the request. they should not be null, blank, or empty. additionally,
         // they should contain alphanumeric characters, spaces, and dashes only. finally, it should be an existing

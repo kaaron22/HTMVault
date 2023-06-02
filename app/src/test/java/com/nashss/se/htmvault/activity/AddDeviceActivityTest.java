@@ -10,7 +10,6 @@ import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.FacilityDepartment;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
-import com.nashss.se.htmvault.exceptions.DeviceWithControlNumberAlreadyExistsException;
 import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;

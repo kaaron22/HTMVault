@@ -16,6 +16,7 @@ public class Device {
     public static final String FACILITY_DEPARTMENT_INDEX = "FacilityNameAndAssignedDepartmentIndex";
     public static final String FACILITY_MANUFACTURER_MODEL_INDEX = "FacilityNameAndManufacturerModelIndex";
     public static final String FACILITY_PM_DUE_DATE_INDEX = "FacilityNameAndPmDueDateIndex";
+    public static final String MANUFACTURER_MODEL_SERIAL_NUMBER_INDEX = "ManufacturerModelAndSerialNumberIndex";
 
     private String controlNumber;
     private String serialNumber;
@@ -43,6 +44,7 @@ public class Device {
     }
 
     @DynamoDBAttribute(attributeName = "serialNumber")
+    @DynamoDBIndexRangeKey(globalSecondaryIndexName = MANUFACTURER_MODEL_SERIAL_NUMBER_INDEX)
     public String getSerialNumber() {
         return serialNumber;
     }
@@ -53,6 +55,7 @@ public class Device {
 
     @DynamoDBTypeConverted(converter = ManufacturerModelConverter.class)
     @DynamoDBAttribute(attributeName = "manufacturerModel")
+    @DynamoDBIndexHashKey(globalSecondaryIndexNames = MANUFACTURER_MODEL_SERIAL_NUMBER_INDEX)
     @DynamoDBIndexRangeKey(globalSecondaryIndexName = FACILITY_MANUFACTURER_MODEL_INDEX)
     public ManufacturerModel getManufacturerModel() {
         return manufacturerModel;
