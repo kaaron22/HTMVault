@@ -9,10 +9,11 @@ import DataStore from '../util/DataStore';
 class CreatePlaylist extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['mount', 'submit'], this);
+        this.bindClassMethods(['mount', 'submit', 'redirectToViewDevice'], this);
         //this.bindClassMethods(['mount', 'submit', 'redirectToViewPlaylist'], this);
         this.dataStore = new DataStore();
         //this.dataStore.addChangeListener(this.redirectToViewPlaylist);
+        this.dataStore.addChangeListener(this.redirectToViewDevice);
         this.header = new Header(this.dataStore);
     }
 
@@ -71,6 +72,13 @@ class CreatePlaylist extends BindingClass {
             errorMessageDisplay.classList.remove('hidden');
         });
         this.dataStore.set('device', device);
+    }
+
+    redirectToViewDevice() {
+        const device = this.dataStore.get('device');
+        if (device != null) {
+            window.location.href = `/device.html?controlNumber=${device.controlNumber}`;
+        }
     }
 
     /**
