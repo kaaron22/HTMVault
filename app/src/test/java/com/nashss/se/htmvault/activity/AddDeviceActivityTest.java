@@ -56,7 +56,7 @@ class AddDeviceActivityTest {
     private final String facilityName = "a hospital";
     private final String assignedDepartment = "ER";
     private final FacilityDepartment facilityDepartment = new FacilityDepartment();
-    private final int maintenanceFrequencyInMonths = 6;
+    private final Integer maintenanceFrequencyInMonths = 6;
     private final String notes = "some notes";
     private final String customerId = "227345";
     private final String customerName = "John Doe";
@@ -113,7 +113,7 @@ class AddDeviceActivityTest {
         // THEN
         verify(deviceDao).saveDevice(any(Device.class));
         verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
-        assertNotNull(deviceModel.getControlNumber());
+        assertEquals(controlNumber, deviceModel.getControlNumber());
         assertEquals(serialNumber, deviceModel.getSerialNumber());
         assertEquals(manufacturer, deviceModel.getManufacturer());
         assertEquals(model, deviceModel.getModel());
@@ -125,6 +125,53 @@ class AddDeviceActivityTest {
         assertEquals("", deviceModel.getLastPmCompletionDate());
         assertEquals(LocalDate.now().toString(), deviceModel.getNextPmDueDate());
         assertEquals(maintenanceFrequencyInMonths, deviceModel.getMaintenanceFrequencyInMonths());
+        assertEquals(LocalDate.now().toString(), deviceModel.getInventoryAddDate());
+        assertEquals(customerId, deviceModel.getAddedById());
+        assertEquals(customerName, deviceModel.getAddedByName());
+        assertEquals(notes, deviceModel.getNotes());
+        assertTrue(deviceModel.getWorkOrderSummaries().isEmpty());
+    }
+
+    @Test
+    public void handleRequest_withMaintenanceFrequencyNull_createsAndSavesDevice() {
+        // GIVEN
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(null);
+        device.setManufacturerModel(manufacturerModel);
+        device.setNextPmDueDate(null);
+        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
+                .withSerialNumber(serialNumber)
+                .withManufacturer(manufacturer)
+                .withModel(model)
+                .withManufactureDate(manufactureDate)
+                .withFacilityName(facilityName)
+                .withAssignedDepartment(assignedDepartment)
+                .withNotes(notes)
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+        when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(manufacturerModel);
+        when(facilityDepartmentDao.getFacilityDepartment(anyString(), anyString())).thenReturn(facilityDepartment);
+        when(deviceDao.saveDevice(any(Device.class))).thenReturn(device);
+
+        // WHEN
+        AddDeviceResult addDeviceResult = addDeviceActivity.handleRequest(addDeviceRequest);
+        DeviceModel deviceModel = addDeviceResult.getDeviceModel();
+
+        // THEN
+        verify(deviceDao).saveDevice(any(Device.class));
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
+        assertEquals(controlNumber, deviceModel.getControlNumber());
+        assertEquals(serialNumber, deviceModel.getSerialNumber());
+        assertEquals(manufacturer, deviceModel.getManufacturer());
+        assertEquals(model, deviceModel.getModel());
+        assertEquals(manufactureDate, deviceModel.getManufactureDate());
+        assertEquals(ServiceStatus.IN_SERVICE.toString(), deviceModel.getServiceStatus());
+        assertEquals(facilityName, deviceModel.getFacilityName());
+        assertEquals(assignedDepartment, deviceModel.getAssignedDepartment());
+        assertEquals("", deviceModel.getComplianceThroughDate());
+        assertEquals("", deviceModel.getLastPmCompletionDate());
+        assertEquals("", deviceModel.getNextPmDueDate());
+        assertEquals(0, deviceModel.getMaintenanceFrequencyInMonths());
         assertEquals(LocalDate.now().toString(), deviceModel.getInventoryAddDate());
         assertEquals(customerId, deviceModel.getAddedById());
         assertEquals(customerName, deviceModel.getAddedByName());
@@ -181,7 +228,7 @@ class AddDeviceActivityTest {
         // THEN
         verify(deviceDao).saveDevice(any(Device.class));
         verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
-        assertNotNull(deviceModel.getControlNumber());
+        assertEquals(controlNumber, deviceModel.getControlNumber());
         assertEquals(serialNumber, deviceModel.getSerialNumber());
         assertEquals(manufacturer, deviceModel.getManufacturer());
         assertEquals(model, deviceModel.getModel());
@@ -308,6 +355,7 @@ class AddDeviceActivityTest {
                 .withCustomerId(customerId)
                 .withCustomerName(customerName)
                 .build();
+        when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(manufacturerModel);
         doThrow(FacilityDepartmentNotFoundException.class)
                 .when(facilityDepartmentDao).getFacilityDepartment(anyString(), anyString());
 

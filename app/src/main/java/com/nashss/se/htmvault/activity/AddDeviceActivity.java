@@ -24,6 +24,9 @@ import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+
+import static com.nashss.se.htmvault.utils.NullUtils.ifNull;
+
 public class AddDeviceActivity {
 
     private final DeviceDao deviceDao;
@@ -65,6 +68,8 @@ public class AddDeviceActivity {
             metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             throw new InvalidAttributeValueException(e.getMessage());
         }
+        int requiredMaintenanceFrequencyInMonths =
+                ifNull(manufacturerModel.getRequiredMaintenanceFrequencyInMonths(), 0);
 
         // validate the facility and department in the request. they should not be null, blank, or empty. additionally,
         // they should contain alphanumeric characters, spaces, and dashes only. finally, it should be an existing
@@ -113,7 +118,7 @@ public class AddDeviceActivity {
         device.setAssignedDepartment(assignedDepartment);
         device.setComplianceThroughDate(null);
         device.setLastPmCompletionDate(null);
-        device.setNextPmDueDate(manufacturerModel.getRequiredMaintenanceFrequencyInMonths() == 0 ? null : dateOfAdd);
+        device.setNextPmDueDate(requiredMaintenanceFrequencyInMonths == 0 ? null : dateOfAdd);
         device.setInventoryAddDate(dateOfAdd);
         device.setAddedById(addDeviceRequest.getCustomerId());
         device.setAddedByName(addDeviceRequest.getCustomerName());
