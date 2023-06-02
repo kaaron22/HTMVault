@@ -42,7 +42,6 @@ class CreatePlaylist extends BindingClass {
         const origButtonText = createButton.innerText;
         createButton.innerText = 'Loading...';
 
-        const deviceControlNumber = document.getElementById('control-number').value;
         const deviceSerialNumber = document.getElementById('serial-number').value;
         const deviceManufacturer = document.getElementById('manufacturer').value;
         const deviceModel = document.getElementById('model').value;
@@ -65,7 +64,7 @@ class CreatePlaylist extends BindingClass {
             notes = deviceNotes;
         }
 
-        const device = await this.client.addDevice(deviceControlNumber, deviceSerialNumber, deviceManufacturer,
+        const device = await this.client.addDevice(deviceSerialNumber, deviceManufacturer,
          deviceModel, deviceFacilityName, deviceAssignedDepartment, manufactureDate, notes, (error) => {
             createButton.innerText = origButtonText;
             errorMessageDisplay.innerText = `Error: ${error.message}`;

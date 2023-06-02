@@ -10,7 +10,6 @@ class AddDeviceRequestTest {
 
     private static final String ASSERT_EQUALS_FAILURE_MESSAGE = "Expected value set in request object to be what was " +
             "passed to builder";
-    private String controlNumber;
     private String serialNumber;
     private String manufacturer;
     private String model;
@@ -23,7 +22,6 @@ class AddDeviceRequestTest {
 
     @BeforeEach
     void setUp() {
-        controlNumber = "123";
         serialNumber = "456";
         manufacturer = "a manufacturer";
         model = "a model";
@@ -43,7 +41,6 @@ class AddDeviceRequestTest {
         // WHEN
         // all request fields built
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(controlNumber)
                 .withSerialNumber(serialNumber)
                 .withManufacturer(manufacturer)
                 .withModel(model)
@@ -57,7 +54,6 @@ class AddDeviceRequestTest {
 
         // THEN
         // all values should be set in the request object and should match the parameter passed in
-        assertEquals(controlNumber, addDeviceRequest.getControlNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(serialNumber, addDeviceRequest.getSerialNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(manufacturer, addDeviceRequest.getManufacturer(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(model, addDeviceRequest.getModel(), ASSERT_EQUALS_FAILURE_MESSAGE);
@@ -77,7 +73,6 @@ class AddDeviceRequestTest {
         // WHEN
         // manufacture date and notes not included in build; all others included
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(controlNumber)
                 .withSerialNumber(serialNumber)
                 .withManufacturer(manufacturer)
                 .withModel(model)
@@ -89,7 +84,6 @@ class AddDeviceRequestTest {
 
         // THEN
         // those values should be null; the ones that were set should match the value passed in
-        assertEquals(controlNumber, addDeviceRequest.getControlNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(serialNumber, addDeviceRequest.getSerialNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(manufacturer, addDeviceRequest.getManufacturer(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(model, addDeviceRequest.getModel(), ASSERT_EQUALS_FAILURE_MESSAGE);
@@ -109,7 +103,6 @@ class AddDeviceRequestTest {
         // WHEN
         // maintenanceFrequencyInMonths not included in build, all others included
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(controlNumber)
                 .withSerialNumber(serialNumber)
                 .withManufacturer(manufacturer)
                 .withModel(model)
@@ -124,7 +117,6 @@ class AddDeviceRequestTest {
         // THEN
         // the maintenance frequency set is 0, the remaining values should be set in the request object and should match
         // the values passed in
-        assertEquals(controlNumber, addDeviceRequest.getControlNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(serialNumber, addDeviceRequest.getSerialNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(manufacturer, addDeviceRequest.getManufacturer(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(model, addDeviceRequest.getModel(), ASSERT_EQUALS_FAILURE_MESSAGE);
@@ -144,7 +136,6 @@ class AddDeviceRequestTest {
         // WHEN
         // all values passed in, except null for notes
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(controlNumber)
                 .withSerialNumber(serialNumber)
                 .withManufacturer(manufacturer)
                 .withModel(model)
@@ -157,7 +148,6 @@ class AddDeviceRequestTest {
                 .build();
 
         // THEN
-        assertEquals(controlNumber, addDeviceRequest.getControlNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(serialNumber, addDeviceRequest.getSerialNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(manufacturer, addDeviceRequest.getManufacturer(), ASSERT_EQUALS_FAILURE_MESSAGE);
         assertEquals(model, addDeviceRequest.getModel(), ASSERT_EQUALS_FAILURE_MESSAGE);
@@ -177,7 +167,6 @@ class AddDeviceRequestTest {
         // WHEN
         // all values included in build
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(controlNumber)
                 .withSerialNumber(serialNumber)
                 .withManufacturer(manufacturer)
                 .withModel(model)
@@ -190,7 +179,6 @@ class AddDeviceRequestTest {
                 .build();
 
         String expectedString = "AddDeviceRequest{" +
-                "controlNumber='" + controlNumber + '\'' +
                 ", serialNumber='" + serialNumber + '\'' +
                 ", manufacturer='" + manufacturer + '\'' +
                 ", model='" + model + '\'' +
@@ -214,7 +202,6 @@ class AddDeviceRequestTest {
         // WHEN
         // manufacture date and notes not included in build, all others included
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(controlNumber)
                 .withSerialNumber(serialNumber)
                 .withManufacturer(manufacturer)
                 .withModel(model)
@@ -225,7 +212,6 @@ class AddDeviceRequestTest {
                 .build();
 
         String expectedString = "AddDeviceRequest{" +
-                "controlNumber='" + controlNumber + '\'' +
                 ", serialNumber='" + serialNumber + '\'' +
                 ", manufacturer='" + manufacturer + '\'' +
                 ", model='" + model + '\'' +

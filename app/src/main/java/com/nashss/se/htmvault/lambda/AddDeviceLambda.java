@@ -23,7 +23,6 @@ public class AddDeviceLambda
                     AddDeviceRequest unauthenticatedRequest = input.fromBody(AddDeviceRequest.class);
                     return input.fromUserClaims(claims ->
                             AddDeviceRequest.builder()
-                                    .withControlNumber(unauthenticatedRequest.getControlNumber())
                                     .withSerialNumber(unauthenticatedRequest.getSerialNumber())
                                     .withManufacturer(unauthenticatedRequest.getManufacturer())
                                     .withModel(unauthenticatedRequest.getModel())

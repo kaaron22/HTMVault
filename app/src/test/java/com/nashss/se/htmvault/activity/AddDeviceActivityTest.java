@@ -48,7 +48,7 @@ class AddDeviceActivityTest {
 
     Device device = new Device();
     private final String controlNumber = "123";
-    private final String serialNumber = "456";
+    private final String serialNumber = "G-456";
     private final String manufacturer = "a manufacturer";
     private final String model = "a model";
     private final ManufacturerModel manufacturerModel = new ManufacturerModel();
@@ -92,7 +92,6 @@ class AddDeviceActivityTest {
     public void handleRequest_withAllValuesAcceptable_createsAndSavesDevice() {
         // GIVEN
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(controlNumber)
                 .withSerialNumber(serialNumber)
                 .withManufacturer(manufacturer)
                 .withModel(model)
@@ -114,7 +113,7 @@ class AddDeviceActivityTest {
         // THEN
         verify(deviceDao).saveDevice(any(Device.class));
         verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
-        assertEquals(controlNumber, deviceModel.getControlNumber());
+        assertNotNull(deviceModel.getControlNumber());
         assertEquals(serialNumber, deviceModel.getSerialNumber());
         assertEquals(manufacturer, deviceModel.getManufacturer());
         assertEquals(model, deviceModel.getModel());
@@ -134,37 +133,10 @@ class AddDeviceActivityTest {
     }
 
     @Test
-    public void handleRequest_withDuplicateControlNumber_throwsInvalidAttributeValueException() {
-        // GIVEN
-        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(controlNumber)
-                .withSerialNumber(serialNumber)
-                .withManufacturer(manufacturer)
-                .withModel(model)
-                .withManufactureDate(manufactureDate)
-                .withFacilityName(facilityName)
-                .withAssignedDepartment(assignedDepartment)
-                .withNotes(notes)
-                .withCustomerId(customerId)
-                .withCustomerName(customerName)
-                .build();
-        doThrow(DeviceWithControlNumberAlreadyExistsException.class).when(deviceDao)
-                .checkDeviceWithControlNumberAlreadyExists(anyString());
-
-        // WHEN & THEN
-        assertThrows(InvalidAttributeValueException.class, () ->
-                addDeviceActivity.handleRequest(addDeviceRequest),
-                "Expected a request to add a device with a control number that already exists in the database " +
-                        "to result in an InvalidAttributeValueException thrown");
-        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-    }
-
-    @Test
     public void handleRequest_withRequiredValueNull_throwsInvalidAttributeValueException() {
         // GIVEN
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(null)
-                .withSerialNumber(serialNumber)
+                .withSerialNumber(null)
                 .withManufacturer(manufacturer)
                 .withModel(model)
                 .withManufactureDate(manufactureDate)
@@ -188,7 +160,6 @@ class AddDeviceActivityTest {
         // GIVEN
         device.setManufactureDate(null);
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(controlNumber)
                 .withSerialNumber(serialNumber)
                 .withManufacturer(manufacturer)
                 .withModel(model)
@@ -210,7 +181,7 @@ class AddDeviceActivityTest {
         // THEN
         verify(deviceDao).saveDevice(any(Device.class));
         verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
-        assertEquals(controlNumber, deviceModel.getControlNumber());
+        assertNotNull(deviceModel.getControlNumber());
         assertEquals(serialNumber, deviceModel.getSerialNumber());
         assertEquals(manufacturer, deviceModel.getManufacturer());
         assertEquals(model, deviceModel.getModel());
@@ -233,8 +204,7 @@ class AddDeviceActivityTest {
     public void handleRequest_withRequiredValueEmpty_throwsInvalidAttributeValueException() {
         // GIVEN
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber("")
-                .withSerialNumber(serialNumber)
+                .withSerialNumber("")
                 .withManufacturer(manufacturer)
                 .withModel(model)
                 .withManufactureDate(manufactureDate)
@@ -257,7 +227,6 @@ class AddDeviceActivityTest {
     public void handleRequest_withRequiredValueBlank_throwsInvalidAttributeValueException() {
         // GIVEN
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(controlNumber)
                 .withSerialNumber("   ")
                 .withManufacturer(manufacturer)
                 .withModel(model)
@@ -278,35 +247,10 @@ class AddDeviceActivityTest {
     }
 
     @Test
-    public void handleRequest_withControlNumberContainsANonAlphaNumericChar_throwsInvalidAttributeValueException() {
-        // GIVEN
-        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber("1234-")
-                .withSerialNumber(serialNumber)
-                .withManufacturer(manufacturer)
-                .withModel(model)
-                .withManufactureDate(manufactureDate)
-                .withFacilityName(facilityName)
-                .withAssignedDepartment(assignedDepartment)
-                .withNotes(notes)
-                .withCustomerId(customerId)
-                .withCustomerName(customerName)
-                .build();
-
-        // WHEN & THEN
-        assertThrows(InvalidAttributeValueException.class, () ->
-                        addDeviceActivity.handleRequest(addDeviceRequest),
-                "Expected a control number containing an invalid character to result in an " +
-                        "InvalidAttributeValueException thrown");
-        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-    }
-
-    @Test
     public void handleRequest_withSerialNumberContainsAnInvalidCharacter_throwsInvalidAttributeValueException() {
         // GIVEN
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber("1234-+")
-                .withSerialNumber(serialNumber)
+                .withSerialNumber("1234-+")
                 .withManufacturer(manufacturer)
                 .withModel(model)
                 .withManufactureDate(manufactureDate)
@@ -329,7 +273,6 @@ class AddDeviceActivityTest {
     public void handleRequest_withManufacturerModelDoesNotExist_throwsInvalidAttributeValueException() {
         // GIVEN
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(controlNumber)
                 .withSerialNumber(serialNumber)
                 .withManufacturer("not a real manufacturer")
                 .withModel("not a real model")
@@ -355,7 +298,6 @@ class AddDeviceActivityTest {
     public void handleRequest_withFacilityDepartmentDoesNotExist_throwsInvalidAttributeValueException() {
         // GIVEN
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(controlNumber)
                 .withSerialNumber(serialNumber)
                 .withManufacturer(manufacturer)
                 .withModel(model)
@@ -381,7 +323,6 @@ class AddDeviceActivityTest {
     public void handleRequest_withManufactureDateWrongFormat_throwsInvalidAttributeValueException() {
         // GIVEN
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(controlNumber)
                 .withSerialNumber(serialNumber)
                 .withManufacturer(manufacturer)
                 .withModel(model)
@@ -409,7 +350,6 @@ class AddDeviceActivityTest {
         // GIVEN
         LocalDate futureDate = LocalDate.now().plusDays(1);
         AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
-                .withControlNumber(controlNumber)
                 .withSerialNumber(serialNumber)
                 .withManufacturer(manufacturer)
                 .withModel(model)

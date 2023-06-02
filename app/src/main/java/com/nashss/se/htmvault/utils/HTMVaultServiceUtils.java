@@ -1,13 +1,17 @@
 package com.nashss.se.htmvault.utils;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
 
 public class HTMVaultServiceUtils {
 
-    public static final String ALPHA_NUMERIC = "^[A-Za-z0-9]+$";
     public static final String ALPHA_NUMERIC_SPACE_OR_DASH = "^[A-Za-z0-9- ]+$";
+    public static final String CONTROL_NUMBER_PREFIX = "";
+    public static final int CONTROL_NUMBER_LENGTH = 9;
+    public static final String WORK_ORDER_PREFIX = "WR";
+    public static final int WORK_ORDER_ID_LENGTH = 8;
 
     private HTMVaultServiceUtils() { }
 
@@ -41,4 +45,7 @@ public class HTMVaultServiceUtils {
                 localDateTime.toLocalTime().toString();
     }
 
+    public static String generateId(String prefix, int length) {
+        return prefix + RandomStringUtils.randomNumeric(length);
+    }
 }

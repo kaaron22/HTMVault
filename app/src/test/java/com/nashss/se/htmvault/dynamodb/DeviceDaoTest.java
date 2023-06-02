@@ -44,27 +44,4 @@ class DeviceDaoTest {
         verify(dynamoDBMapper).save(device);
         assertEquals(device, result);
     }
-
-    @Test
-    public void checkDeviceWithControlNumberAlreadyExists_doesNotYetExist_doesNotThrowException() {
-        // GIVEN
-        when(dynamoDBMapper.load(Mockito.eq(Device.class), anyString())).thenReturn(null);
-
-        // WHEN & THEN
-        assertDoesNotThrow(() -> deviceDao.checkDeviceWithControlNumberAlreadyExists("123"),
-                "Expected a device with a control number does not exist in the database to not result in an " +
-                        "exception thrown");
-    }
-
-    @Test
-    public void checkDeviceWithControlNumberAlreadyExists_exists_throwsDeviceWithControlNumberAlreadyExistsException() {
-        // GIVEN
-        when(dynamoDBMapper.load(Mockito.eq(Device.class), anyString())).thenReturn(new Device());
-
-        // WHEN & THEN
-        assertThrows(DeviceWithControlNumberAlreadyExistsException.class, () ->
-                deviceDao.checkDeviceWithControlNumberAlreadyExists("123"),
-                "Expected a device with this control number exists in the database to not result in a" +
-                        "DeviceWithControlNumberAlreadyExistsException thrown");
-    }
 }

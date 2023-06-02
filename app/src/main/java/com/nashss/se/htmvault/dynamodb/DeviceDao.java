@@ -27,13 +27,4 @@ public class DeviceDao {
         dynamoDBMapper.save(device);
         return device;
     }
-
-    public void checkDeviceWithControlNumberAlreadyExists(String controlNumber) {
-        Device device = dynamoDBMapper.load(Device.class, controlNumber);
-
-        if (null != device) {
-            throw new DeviceWithControlNumberAlreadyExistsException(String.format("The %s provided (%s) already exists",
-                    "Control Number", controlNumber));
-        }
-    }
 }

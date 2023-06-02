@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 @JsonDeserialize(builder = AddDeviceRequest.Builder.class)
 public class AddDeviceRequest {
 
-    private final String controlNumber;
     private final String serialNumber;
     private final String manufacturer;
     private final String model;
@@ -17,10 +16,9 @@ public class AddDeviceRequest {
     private final String customerId;
     private final String customerName;
 
-    private AddDeviceRequest(String controlNumber, String serialNumber, String manufacturer, String model,
+    private AddDeviceRequest(String serialNumber, String manufacturer, String model,
                             String manufactureDate, String facilityName, String assignedDepartment,
                             String notes, String customerId, String customerName) {
-        this.controlNumber = controlNumber;
         this.serialNumber = serialNumber;
         this.manufacturer = manufacturer;
         this.model = model;
@@ -30,10 +28,6 @@ public class AddDeviceRequest {
         this.notes = notes;
         this.customerId = customerId;
         this.customerName = customerName;
-    }
-
-    public String getControlNumber() {
-        return controlNumber;
     }
 
     public String getSerialNumber() {
@@ -75,7 +69,6 @@ public class AddDeviceRequest {
     @Override
     public String toString() {
         return "AddDeviceRequest{" +
-                "controlNumber='" + controlNumber + '\'' +
                 ", serialNumber='" + serialNumber + '\'' +
                 ", manufacturer='" + manufacturer + '\'' +
                 ", model='" + model + '\'' +
@@ -94,7 +87,6 @@ public class AddDeviceRequest {
 
     @JsonPOJOBuilder
     public static class Builder {
-        private String controlNumber;
         private String serialNumber;
         private String manufacturer;
         private String model;
@@ -104,11 +96,6 @@ public class AddDeviceRequest {
         private String notes;
         private String customerId;
         private String customerName;
-
-        public Builder withControlNumber(String controlNumber) {
-            this.controlNumber = controlNumber;
-            return this;
-        }
 
         public Builder withSerialNumber(String serialNumber) {
             this.serialNumber = serialNumber;
@@ -156,7 +143,7 @@ public class AddDeviceRequest {
         }
 
         public AddDeviceRequest build() {
-            return new AddDeviceRequest(controlNumber, serialNumber, manufacturer, model, manufactureDate, facilityName,
+            return new AddDeviceRequest(serialNumber, manufacturer, model, manufactureDate, facilityName,
                     assignedDepartment, notes, customerId, customerName);
         }
     }

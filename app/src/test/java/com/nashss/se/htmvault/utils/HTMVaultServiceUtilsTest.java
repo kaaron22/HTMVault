@@ -17,30 +17,6 @@ class HTMVaultServiceUtilsTest {
     }
 
     @Test
-    void isValidString_validAlphaNumericStringProvided_returnsTrue() {
-        // GIVEN
-        String controlNumber = "abc123";
-
-        // WHEN
-        boolean result = HTMVaultServiceUtils.isValidString(controlNumber, ALPHA_NUMERIC);
-
-        // THEN
-        assertTrue(result);
-    }
-
-    @Test
-    void isValidString_invalidAlphaNumericStringProvided_returnsFalse() {
-        // GIVEN
-        String controlNumber = "1234-";
-
-        // WHEN
-        boolean result = HTMVaultServiceUtils.isValidString(controlNumber, ALPHA_NUMERIC);
-
-        // THEN
-        assertFalse(result);
-    }
-
-    @Test
     void isValidString_validAlphaNumericSpaceOrDashStringProvided_returnsTrue() {
         // GIVEN
         String serialNumber = "a-valid-alphanumeric-string-with-6-dashes and 3 spaces";

@@ -44,17 +44,6 @@ public class AddDeviceActivity {
     public AddDeviceResult handleRequest(final AddDeviceRequest addDeviceRequest) {
         log.info("Received AddDeviceRequest {}", addDeviceRequest);
 
-        // validate the control number in the request. it should not be null, blank, or empty. additionally, it should
-        // not be in the database already (partition key), and it should contain alphanumeric characters only
-        String controlNumber = addDeviceRequest.getControlNumber();
-        validateRequestAttribute("Control Number", controlNumber, HTMVaultServiceUtils.ALPHA_NUMERIC);
-        try {
-            deviceDao.checkDeviceWithControlNumberAlreadyExists(controlNumber);
-        } catch (DeviceWithControlNumberAlreadyExistsException e) {
-            metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            throw new InvalidAttributeValueException(e.getMessage());
-        }
-
         // validate the serial number in the request. it should not be null, blank, or empty. additionally, it should
         // contain alphanumeric characters, spaces, and dashes only
         String serialNumber = addDeviceRequest.getSerialNumber();
@@ -65,7 +54,8 @@ public class AddDeviceActivity {
         // they should contain alphanumeric characters, spaces, and dashes only. finally, it should be an existing
         // manufacturer/model combination in the database
         String manufacturer = addDeviceRequest.getManufacturer();
-        validateRequestAttribute("Manufacturer", manufacturer, HTMVaultServiceUtils.ALPHA_NUMERIC_SPACE_OR_DASH);
+        validateRequestAttribute("Manufacturer", manufacturer,
+                HTMVaultServiceUtils.ALPHA_NUMERIC_SPACE_OR_DASH);
         String model = addDeviceRequest.getModel();
         validateRequestAttribute("Model", model, HTMVaultServiceUtils.ALPHA_NUMERIC_SPACE_OR_DASH);
         ManufacturerModel manufacturerModel = null;
@@ -80,7 +70,8 @@ public class AddDeviceActivity {
         // they should contain alphanumeric characters, spaces, and dashes only. finally, it should be an existing
         // facility/department combination in the database
         String facilityName = addDeviceRequest.getFacilityName();
-        validateRequestAttribute("Facility", facilityName, HTMVaultServiceUtils.ALPHA_NUMERIC_SPACE_OR_DASH);
+        validateRequestAttribute("Facility", facilityName,
+                HTMVaultServiceUtils.ALPHA_NUMERIC_SPACE_OR_DASH);
         String assignedDepartment = addDeviceRequest.getAssignedDepartment();
         validateRequestAttribute("Assigned Department", assignedDepartment,
                 HTMVaultServiceUtils.ALPHA_NUMERIC_SPACE_OR_DASH);
@@ -112,7 +103,8 @@ public class AddDeviceActivity {
 
         LocalDate dateOfAdd = LocalDate.now();
         Device device = new Device();
-        device.setControlNumber(controlNumber);
+        device.setControlNumber(HTMVaultServiceUtils.generateId(HTMVaultServiceUtils.CONTROL_NUMBER_PREFIX,
+                HTMVaultServiceUtils.CONTROL_NUMBER_LENGTH));
         device.setSerialNumber(serialNumber);
         device.setManufacturerModel(manufacturerModel);
         device.setManufactureDate(null == manufactureDate ? null : new LocalDateConverter().unconvert(manufactureDate));
