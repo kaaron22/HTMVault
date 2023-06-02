@@ -3,10 +3,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "General Hospital"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "ER"
           }
         }
@@ -15,10 +15,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "General Hospital"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Cath Lab"
           }
         }
@@ -27,10 +27,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "General Hospital"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "EEG"
           }
         }
@@ -39,10 +39,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "General Hospital"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "MRI"
           }
         }
@@ -51,10 +51,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "General Hospital"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Renal Dialysis"
           }
         }
@@ -63,10 +63,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "General Hospital"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Sterile Processing"
           }
         }
@@ -75,10 +75,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "General Hospital"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "OB"
           }
         }
@@ -87,10 +87,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "General Hospital"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "NICU"
           }
         }
@@ -99,10 +99,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "General Hospital"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Telemetry"
           }
         }
@@ -111,10 +111,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "General Hospital"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "ICU"
           }
         }
@@ -123,10 +123,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "General Hospital"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Surgery"
           }
         }
@@ -135,10 +135,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "General Hospital"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Endoscopy"
           }
         }
@@ -147,10 +147,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "General Hospital"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Open Heart"
           }
         }
@@ -159,10 +159,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "General Hospital"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "PACU"
           }
         }
@@ -171,10 +171,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "General Hospital"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Therapy"
           }
         }
@@ -183,10 +183,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "Valley Surgery Center"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Surgical Services"
           }
         }
@@ -195,10 +195,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "Valley Surgery Center"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Endoscopy"
           }
         }
@@ -207,10 +207,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "Valley Surgery Center"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Sterile Processing"
           }
         }
@@ -219,10 +219,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "Valley Surgery Center"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Recovery"
           }
         }
@@ -231,10 +231,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "Eastside Outpatient"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Convenient Care"
           }
         }
@@ -243,10 +243,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "Eastside Outpatient"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Family Practice"
           }
         }
@@ -255,10 +255,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "Eastside Outpatient"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Lab Services"
           }
         }
@@ -267,10 +267,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "Valley Bone and Joint"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Orthopedics"
           }
         }
@@ -279,10 +279,10 @@
     {
       "PutRequest": {
         "Item": {
-          "facility": {
+          "facilityName": {
             "S": "Valley Bone and Joint"
           },
-          "department": {
+          "assignedDepartment": {
             "S": "Outpatient Physical Therapy"
           }
         }
