@@ -10,7 +10,7 @@
             "S": "X-1000"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 12
+            "N": "12"
           }
         }
       }
@@ -25,7 +25,7 @@
             "S": "X-800"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 6
+            "N": "6"
           }
         }
       }
@@ -40,7 +40,7 @@
             "S": "ICU-L5"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 12
+            "N": "12"
           }
         }
       }
@@ -55,7 +55,7 @@
             "S": "Telemetry-MX100"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 0
+            "N": "0"
           }
         }
       }
@@ -70,7 +70,7 @@
             "S": "ER-L2"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 12
+            "N": "12"
           }
         }
       }
@@ -85,7 +85,7 @@
             "S": "Surgery-L30"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 12
+            "N": "12"
           }
         }
       }
@@ -100,7 +100,7 @@
             "S": "Dual-Channel X7"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 12
+            "N": "12"
           }
         }
       }
@@ -115,7 +115,7 @@
             "S": "L-Series"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 12
+            "N": "12"
           }
         }
       }
@@ -130,7 +130,7 @@
             "S": "Stable Plus"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 12
+            "N": "12"
           }
         }
       }
@@ -145,7 +145,7 @@
             "S": "ClearView"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 12
+            "N": "12"
           }
         }
       }
@@ -160,7 +160,7 @@
             "S": "Temporal"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 24
+            "N": "24"
           }
         }
       }
@@ -175,7 +175,7 @@
             "S": "Tympanic"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 24
+            "N": "24"
           }
         }
       }
@@ -190,7 +190,7 @@
             "S": "Portable Series"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 12
+            "N": "12"
           }
         }
       }
@@ -205,7 +205,7 @@
             "S": "ComfySeries"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 12
+            "N": "12"
           }
         }
       }
@@ -220,7 +220,7 @@
             "S": "ESU-2000"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 6
+            "N": "6"
           }
         }
       }
@@ -235,7 +235,7 @@
             "S": "ESU-2800"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 12
+            "N": "12"
           }
         }
       }
@@ -250,7 +250,7 @@
             "S": "Waveform-2"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 12
+            "N": "12"
           }
         }
       }
@@ -265,7 +265,7 @@
             "S": "Waveform-2 Plus"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 12
+            "N": "12"
           }
         }
       }
@@ -280,7 +280,7 @@
             "S": "XB Wall-Mount"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 24
+            "N": "24"
           }
         }
       }
@@ -295,7 +295,7 @@
             "S": "XB Portable"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 24
+            "N": "24"
           }
         }
       }
@@ -310,7 +310,7 @@
             "S": "Dual Cuff"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 6
+            "N": "6"
           }
         }
       }
@@ -325,7 +325,7 @@
             "S": "Dual-Cabinet"
           },
           "requiredMaintenanceFrequencyInMonths": {
-            "N": 12
+            "N": "12"
           }
         }
       }
