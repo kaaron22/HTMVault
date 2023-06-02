@@ -10,6 +10,7 @@ import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.FacilityDepartment;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
+import com.nashss.se.htmvault.exceptions.DevicePreviouslyAddedException;
 import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
@@ -417,6 +418,32 @@ class AddDeviceActivityTest {
                         addDeviceActivity.handleRequest(addDeviceRequest),
                 "Expected an add device request with a future manufacture date to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
+    public void handleRequest_devicePreviouslyAdded_throwsInvalidAttributeValueException() {
+        // GIVEN
+        AddDeviceRequest addDeviceRequest = AddDeviceRequest.builder()
+                .withSerialNumber(serialNumber)
+                .withManufacturer(manufacturer)
+                .withModel(model)
+                .withManufactureDate(manufactureDate)
+                .withFacilityName(facilityName)
+                .withAssignedDepartment(assignedDepartment)
+                .withNotes(notes)
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+        when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(manufacturerModel);
+        doThrow(DevicePreviouslyAddedException.class)
+                .when(deviceDao).checkDevicePreviouslyAdded(any(ManufacturerModel.class), anyString());
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                addDeviceActivity.handleRequest(addDeviceRequest),
+                "Expected attempting to add a device with manufacturer, model, and serial number matching a " +
+                        "a device previously added to result in an InvalidAttributeValueException thrown");
         verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 }

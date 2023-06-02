@@ -75,6 +75,7 @@ public class AddDeviceActivity {
         try {
             deviceDao.checkDevicePreviouslyAdded(manufacturerModel, serialNumber);
         } catch (DevicePreviouslyAddedException e) {
+            metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             throw new InvalidAttributeValueException(e.getMessage());
         }
 
