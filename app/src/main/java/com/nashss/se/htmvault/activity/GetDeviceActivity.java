@@ -32,7 +32,7 @@ public class GetDeviceActivity {
         DeviceModel deviceModel = new ModelConverter().toDeviceModel(device);
 
         return GetDeviceResult.builder()
-                .withDevice(deviceModel)
+                .withDeviceModel(deviceModel)
                 .build();
     }
 }

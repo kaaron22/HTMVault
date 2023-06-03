@@ -7,7 +7,9 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.nashss.se.htmvault.converters.ManufacturerModelConverter;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
+import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
 import com.nashss.se.htmvault.exceptions.DevicePreviouslyAddedException;
+import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 
 import javax.inject.Inject;
@@ -30,6 +32,17 @@ public class DeviceDao {
 
     public Device saveDevice(Device device) {
         dynamoDBMapper.save(device);
+        return device;
+    }
+
+    public Device getDevice(String controlNumber) {
+        Device device = dynamoDBMapper.load(Device.class, controlNumber);
+
+        if (null == device) {
+            metricsPublisher.addCount(MetricsConstants.GETDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            throw new DeviceNotFoundException("Could not find device with control number " + controlNumber);
+        }
+        metricsPublisher.addCount(MetricsConstants.GETDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         return device;
     }
 
