@@ -16,7 +16,7 @@
             "S": "2021-05-01"
           },
           "serviceStatus": {
-            "S": "ServiceStatus.IN_SERVICE"
+            "S": "IN_SERVICE"
           },
           "facilityName": {
             "S": "General Hospital"
@@ -67,7 +67,7 @@
             "S": "2021-05-02"
           },
           "serviceStatus": {
-            "S": "ServiceStatus.IN_SERVICE"
+            "S": "IN_SERVICE"
           },
           "facilityName": {
             "S": "General Hospital"
@@ -118,7 +118,7 @@
             "S": "2023-05-01"
           },
           "serviceStatus": {
-            "S": "ServiceStatus.IN_SERVICE"
+            "S": "IN_SERVICE"
           },
           "facilityName": {
             "S": "General Hospital"
@@ -169,7 +169,7 @@
             "S": "2023-05-14"
           },
           "serviceStatus": {
-            "S": "ServiceStatus.IN_SERVICE"
+            "S": "IN_SERVICE"
           },
           "facilityName": {
             "S": "General Hospital"
