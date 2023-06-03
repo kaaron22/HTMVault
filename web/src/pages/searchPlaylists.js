@@ -1,4 +1,4 @@
-import MusicPlaylistClient from '../api/musicPlaylistClient';
+import HTMVaultClient from '../api/htmVaultClient';
 import Header from '../components/header';
 import BindingClass from "../util/bindingClass";
 import DataStore from "../util/DataStore";
@@ -39,7 +39,7 @@ class SearchPlaylists extends BindingClass {
     }
 
     /**
-     * Add the header to the page and load the MusicPlaylistClient.
+     * Add the header to the page and load the HTMVaultClient.
      */
     mount() {
         // Wire up the form's 'submit' event and the button's 'click' event to the search method.
@@ -48,7 +48,7 @@ class SearchPlaylists extends BindingClass {
 
         this.header.addHeaderToPage();
 
-        this.client = new MusicPlaylistClient();
+        this.client = new HTMVaultClient();
     }
 
     /**

@@ -15,7 +15,8 @@ export default class HTMVaultClient extends BindingClass {
     constructor(props = {}) {
         super();
 
-        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPlaylist', 'getPlaylistSongs', 'createPlaylist', 'addDevice'];
+        //const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPlaylist', 'getPlaylistSongs', 'createPlaylist', 'addDevice'];
+        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -69,6 +70,21 @@ export default class HTMVaultClient extends BindingClass {
         }
 
         return await this.authenticator.getUserToken();
+    }
+
+    /**
+     * Gets the device for the given ID.
+     * @param controlNumber Unique identifier for a device
+     * @param errorCallback (Optional) A function to execute if the call fails.
+     * @returns The device's metadata.
+     */
+    async getDevice(controlNumber, errorCallback) {
+        try {
+            const response = await this.axiosClient.get(`devices/${controlNumber}`);
+            return response.data.device;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
     }
 
     /**
