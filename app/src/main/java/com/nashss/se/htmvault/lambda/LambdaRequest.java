@@ -2,6 +2,7 @@ package com.nashss.se.htmvault.lambda;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +34,18 @@ public class LambdaRequest<T> extends APIGatewayProxyRequestEvent {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(
                     String.format("Unable to deserialize object from request body (%s).", requestClass.getSimpleName()),
+                    e);
+        }
+    }
+
+    public T fromQuery(Class<T> requestClass) {
+        log.info("Attempting to deserialize object from query ({}).", requestClass.getSimpleName());
+        try {
+            String queryJson = MAPPER.writeValueAsString(super.getQueryStringParameters());
+            return MAPPER.readValue(queryJson, requestClass);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(
+                    String.format("Unable to deserialize object from query (%s).", requestClass.getSimpleName()),
                     e);
         }
     }
