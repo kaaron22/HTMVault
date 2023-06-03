@@ -305,7 +305,7 @@ Resources:
         HTMVault:
           Type: Api
           Properties:
-            Path: /devices
+            Path: /devices/{controlNumber}
             Method: get
 
   #-----------------------------------------------------
