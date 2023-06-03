@@ -1,39 +1,21 @@
 package com.nashss.se.htmvault.activity.requests;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-
-@JsonDeserialize(builder = GetDeviceRequest.Builder.class)
 public class GetDeviceRequest {
 
     private final String controlNumber;
-    private final String customerId;
-    private final String customerName;
 
-    private GetDeviceRequest(String controlNumber, String customerId, String customerName) {
+    private GetDeviceRequest(String controlNumber) {
         this.controlNumber = controlNumber;
-        this.customerId = customerId;
-        this.customerName = customerName;
     }
 
     public String getControlNumber() {
         return controlNumber;
     }
 
-    public String getCustomerId() {
-        return customerId;
-    }
-
-    public String getCustomerName() {
-        return customerName;
-    }
-
     @Override
     public String toString() {
         return "GetDeviceRequest{" +
                 "controlNumber='" + controlNumber + '\'' +
-                ", customerId='" + customerId + '\'' +
-                ", customerName='" + customerName + '\'' +
                 '}';
     }
 
@@ -41,29 +23,16 @@ public class GetDeviceRequest {
         return new Builder();
     }
 
-    @JsonPOJOBuilder
     public static class Builder {
         private String controlNumber;
-        private String customerId;
-        private String customerName;
 
         public Builder withControlNumber(String controlNumber) {
             this.controlNumber = controlNumber;
             return this;
         }
 
-        public Builder withCustomerId(String customerId) {
-            this.customerId = customerId;
-            return this;
-        }
-
-        public Builder withCustomerName(String customerName) {
-            this.customerName = customerName;
-            return this;
-        }
-
         public GetDeviceRequest build() {
-            return new GetDeviceRequest(controlNumber, customerId, customerName);
+            return new GetDeviceRequest(controlNumber);
         }
     }
 }

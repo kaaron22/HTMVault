@@ -10,6 +10,10 @@ public class GetDeviceResult {
         this.deviceModel = deviceModel;
     }
 
+    public DeviceModel getDeviceModel() {
+        return deviceModel;
+    }
+
     @Override
     public String toString() {
         return "GetDeviceResult{" +

@@ -4,10 +4,14 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.nashss.se.htmvault.activity.requests.GetDeviceRequest;
 import com.nashss.se.htmvault.activity.results.GetDeviceResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class GetDeviceLambda
         extends LambdaActivityRunner<GetDeviceRequest, GetDeviceResult>
-        implements RequestHandler<AuthenticatedLambdaRequest<GetDeviceRequest>, LambdaResponse> {
+        implements RequestHandler<LambdaRequest<GetDeviceRequest>, LambdaResponse> {
+
+    private final Logger log = LogManager.getLogger();
 
     /**
      * Handles a Lambda Function request
@@ -17,17 +21,13 @@ public class GetDeviceLambda
      * @return The Lambda Function output
      */
     @Override
-    public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetDeviceRequest> input, Context context) {
+    public LambdaResponse handleRequest(LambdaRequest<GetDeviceRequest> input, Context context) {
+        log.info("handleRequest");
         return super.runActivity(
-                () -> {
-                    GetDeviceRequest unauthenticatedRequest = input.fromQuery(GetDeviceRequest.class);
-                    return input.fromUserClaims(claims ->
+                () -> input.fromPath(path ->
                             GetDeviceRequest.builder()
-                                    .withControlNumber(unauthenticatedRequest.getControlNumber())
-                                    .withCustomerId(claims.get("email"))
-                                    .withCustomerName(claims.get("name"))
-                                    .build());
-                },
+                                    .withControlNumber(path.get("controlNumber"))
+                                    .build()),
                 (request, serviceComponent) ->
                         serviceComponent.provideGetDeviceActivity().handleRequest(request)
         );

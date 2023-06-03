@@ -135,7 +135,7 @@ public class AddDeviceActivity {
 
         Device savedDevice = deviceDao.saveDevice(device);
 
-        return new AddDeviceResult.Builder()
+        return AddDeviceResult.builder()
                 .withDeviceModel(new ModelConverter().toDeviceModel(savedDevice))
                 .build();
     }
