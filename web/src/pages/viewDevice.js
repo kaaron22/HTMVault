@@ -9,10 +9,11 @@ import DataStore from "../util/DataStore";
 class ViewDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'mount', 'addPlaylistToPage', 'addSongsToPage', 'addSong'], this);
+        this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'addWorkOrder'], this);
+        //this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'addSong'], this);
         this.dataStore = new DataStore();
-        this.dataStore.addChangeListener(this.addPlaylistToPage);
-        this.dataStore.addChangeListener(this.addSongsToPage);
+        this.dataStore.addChangeListener(this.addDeviceToPage);
+        this.dataStore.addChangeListener(this.addWorkOrdersToPage);
         this.header = new Header(this.dataStore);
         console.log("add device constructor");
     }
@@ -23,8 +24,8 @@ class ViewDevice extends BindingClass {
     async clientLoaded() {
         const urlParams = new URLSearchParams(window.location.search);
         const deviceId = urlParams.get('controlNumber');
-        document.getElementById('playlist-name').innerText = "Loading Device ...";
-        const playlist = await this.client.getPlaylist(playlistId);
+        document.getElementById('device').innerText = "Loading Device ...";
+        const device = await this.client.getDevice(deviceId);
         this.dataStore.set('device', device);
         document.getElementById('work-orders').innerText = "(loading work orders...)";
         const workOrders = await this.client.getDeviceWorkOrders(deviceId);
@@ -35,11 +36,11 @@ class ViewDevice extends BindingClass {
      * Add the header to the page and load the HTMVaultClient.
      */
     mount() {
-        document.getElementById('add-song').addEventListener('click', this.addSong);
+        document.getElementById('add-new-work-order').addEventListener('click', this.addWorkOrder);
 
         this.header.addHeaderToPage();
 
-        this.client = new MusicPlaylistClient();
+        this.client = new HTMVaultClient();
         this.clientLoaded();
     }
 

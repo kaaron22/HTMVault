@@ -16,18 +16,27 @@
     </div>
     <div class="card">
         <h2>Create New Work Order</h2>
-        <form class="card-content" id="add-work-order-form">
+        <form class="card-content" id="create-new-work-order-form">
             <p class="hidden error" id="error-message"> </p>
             <p class="form-field">
-                <label>Album Asin</label>
-                <input type="text" required class="validated-field" id="album-asin" placeholder="B00000000" autofocus>
+                <label for="workOrderType">Work Order Type</label>
+                <select class=validated-field id="workOrderType" required>
+                    <option value="">Select a Work Order Type</option>
+                    <option value="ACCEPTANCE_TESTING">Acceptance Testing</option>
+                    <option value="PREVENTATIVE_MAINTENANCE">Preventative Maintenance</option>
+                    <option value="REPAIR">Repair</option>
+                </select>
             </p>
             <p class="form-field">
-                <label>Track Number</label>
-                <input type="number" id="track-number">
+                <label>Problem Reported</label>
+                <input type="text" class=validated-field id="problem-reported" required>
+            </p>
+            <p class="form-field">
+                <label>Problem Found</label>
+                <input type="text" id="problem-found">
             </p>
         </form>
-        <a href="#" class="button" id="add-song">Add Song</a>
+        <a href="#" class="button" id="add-new-work-order">Create New Work Order</a>
     </div>
 </body>
 
