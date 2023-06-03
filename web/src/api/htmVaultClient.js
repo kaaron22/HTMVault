@@ -81,7 +81,7 @@ export default class HTMVaultClient extends BindingClass {
     async getDevice(controlNumber, errorCallback) {
         try {
             const response = await this.axiosClient.get(`devices/${controlNumber}`);
-            return response.data.device;
+            return response.data.deviceModel;
         } catch (error) {
             this.handleError(error, errorCallback)
         }

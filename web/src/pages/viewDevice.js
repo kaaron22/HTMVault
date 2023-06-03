@@ -57,7 +57,7 @@ class ViewDevice extends BindingClass {
         document.getElementById('serial-number').innerText = device.serialNumber;
         document.getElementById('manufacturer').innerText = device.manufacturer;
         document.getElementById('model').innerText = device.model;
-        document.getElementById('manufacturer-date').innerText = device.manufactureDate;
+        document.getElementById('manufacture-date').innerText = device.manufactureDate;
         document.getElementById('service-status').innerText = device.serviceStatus;
         document.getElementById('facility-name').innerText = device.facilityName;
         document.getElementById('assigned-department').innerText = device.assignedDepartment;
