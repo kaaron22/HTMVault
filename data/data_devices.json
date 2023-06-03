@@ -27,7 +27,7 @@
           "complianceThroughDate": {
             "S": "2023-11-30"
           },
-          "lastPMCompletionDate": {
+          "lastPmCompletionDate": {
             "S": "2022-11-21"
           },
           "nextPmDueDate": {
@@ -78,7 +78,7 @@
           "complianceThroughDate": {
             "S": "2023-08-31"
           },
-          "lastPMCompletionDate": {
+          "lastPmCompletionDate": {
             "S": "2022-08-21"
           },
           "nextPmDueDate": {
@@ -129,7 +129,7 @@
           "complianceThroughDate": {
             "S": "2024-05-31"
           },
-          "lastPMCompletionDate": {
+          "lastPmCompletionDate": {
             "S": "2023-05-24"
           },
           "nextPmDueDate": {
