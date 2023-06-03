@@ -10,7 +10,7 @@
             "S": "G-80023"
           },
           "manufacturerModel": {
-            "S": "[{\"manufacturer\":\"Defib Corp\",\"model\":\"X-1000\",\"requiredMaintenanceFrequencyInMonths\":12}]"
+            "S": "{\"manufacturer\":\"Defib Corp\",\"model\":\"X-1000\",\"requiredMaintenanceFrequencyInMonths\":12}"
           },
           "manufactureDate": {
             "S": "2021-05-01"
@@ -61,7 +61,7 @@
             "S": "G-80027"
           },
           "manufacturerModel": {
-            "S": "[{\"manufacturer\":\"Defib Corp\",\"model\":\"X-1000\",\"requiredMaintenanceFrequencyInMonths\":12}]"
+            "S": "{\"manufacturer\":\"Defib Corp\",\"model\":\"X-1000\",\"requiredMaintenanceFrequencyInMonths\":12}"
           },
           "manufactureDate": {
             "S": "2021-05-02"
@@ -112,7 +112,7 @@
             "S": "R84221"
           },
           "manufacturerModel": {
-            "S": "[{\"manufacturer\":\"Vital Signs Corp\",\"model\":\"ICU-L5\",\"requiredMaintenanceFrequencyInMonths\":12}]"
+            "S": "{\"manufacturer\":\"Vital Signs Corp\",\"model\":\"ICU-L5\",\"requiredMaintenanceFrequencyInMonths\":12}"
           },
           "manufactureDate": {
             "S": "2023-05-01"
@@ -163,7 +163,7 @@
             "S": "B11-H3012"
           },
           "manufacturerModel": {
-            "S": "[{\"manufacturer\":\"IV Pump Corp\",\"model\":\"Dual-Channel X7\",\"requiredMaintenanceFrequencyInMonths\":12}]"
+            "S": "{\"manufacturer\":\"IV Pump Corp\",\"model\":\"Dual-Channel X7\",\"requiredMaintenanceFrequencyInMonths\":12}"
           },
           "manufactureDate": {
             "S": "2023-05-14"
