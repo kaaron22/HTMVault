@@ -9,11 +9,11 @@ import DataStore from "../util/DataStore";
 class ViewDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'addWorkOrder'], this);
+        this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage'], this);
         //this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'addSong'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.addDeviceToPage);
-        this.dataStore.addChangeListener(this.addWorkOrdersToPage);
+        //this.dataStore.addChangeListener(this.addWorkOrdersToPage);
         this.header = new Header(this.dataStore);
         console.log("add device constructor");
     }
@@ -24,12 +24,12 @@ class ViewDevice extends BindingClass {
     async clientLoaded() {
         const urlParams = new URLSearchParams(window.location.search);
         const deviceId = urlParams.get('controlNumber');
-        document.getElementById('device').innerText = "Loading Device ...";
+        document.getElementById('control-number').innerText = "Loading Device ...";
         const device = await this.client.getDevice(deviceId);
         this.dataStore.set('device', device);
         document.getElementById('work-orders').innerText = "(loading work orders...)";
-        const workOrders = await this.client.getDeviceWorkOrders(deviceId);
-        this.dataStore.set('workOrders', workOrders);
+        //const workOrders = await this.client.getDeviceWorkOrders(deviceId);
+        //this.dataStore.set('workOrders', workOrders);
     }
 
     /**
@@ -45,23 +45,55 @@ class ViewDevice extends BindingClass {
     }
 
     /**
-     * When the playlist is updated in the datastore, update the playlist metadata on the page.
+     * When the device is updated in the datastore, update the device metadata on the page.
      */
-    addPlaylistToPage() {
-        const playlist = this.dataStore.get('playlist');
-        if (playlist == null) {
+    addDeviceToPage() {
+        const device = this.dataStore.get('device');
+        if (device == null) {
             return;
         }
 
-        document.getElementById('playlist-name').innerText = playlist.name;
-        document.getElementById('playlist-owner').innerText = playlist.customerName;
+        document.getElementById('control-number').innerText = device.controlNumber;
+        document.getElementById('serial-number').innerText = device.serialNumber;
+        document.getElementById('manufacturer').innerText = device.manufacturer;
+        document.getElementById('model').innerText = device.model;
+        document.getElementById('manufacturer-date').innerText = device.manufactureDate;
+        document.getElementById('service-status').innerText = device.serviceStatus;
+        document.getElementById('facility-name').innerText = device.facilityName;
+        document.getElementById('assigned-department').innerText = device.assignedDepartment;
+        document.getElementById('compliance-through-date').innerText = device.complianceThroughDate;
+        document.getElementById('last-pm-completion-date').innerText = device.lastPmCompletionDate;
+        document.getElementById('next-pm-due-date').innerText = device.nextPmDueDate;
+        document.getElementById('pm-frequency-months').innerText = device.maintenanceFrequencyInMonths;
+        document.getElementById('inventory-add-date').innerText = device.inventoryAddDate;
+        document.getElementById('added-by-id').innerText = device.addedById;
+        document.getElementById('added-by-name').innerText = device.addedByName;
+        document.getElementById('device-notes').innerText = device.notes;
 
-        let tagHtml = '';
-        let tag;
-        for (tag of playlist.tags) {
-            tagHtml += '<div class="tag">' + tag + '</div>';
+        let workOrderSummaryHtml = '';
+        // table header row
+        workOrderSummaryHtml += `<table id="work-orders">
+                                   <tr>
+                                       <th>Work Order ID</th>
+                                       <th>Type</th>
+                                       <th>Completion Status</th>
+                                       <th>Created</th>
+                                       <th>Completed</th>
+                                   </tr>`
+
+        let workOrderSummary;
+        for (workOrderSummary of device.workOrderSummaries) {
+            workOrderSummaryHtml += `
+                <tr>
+                    <td>${workOrderSummary.workOrderId}</td>
+                    <td>${workOrderSummary.workOrderType}</td>
+                    <td>${workOrderSummary.completionStatus}</td>
+                    <td>${workOrderSummary.dateTimeCreated}</td>
+                    <td>${workOrderSummary.completionDateTime}</td>
+                </tr>`
         }
-        document.getElementById('tags').innerHTML = tagHtml;
+        workOrderSummaryHtml += `</table>`
+        document.getElementById('work-orders').innerHTML = workOrderSummaryHtml;
     }
 
     /**
