@@ -46,7 +46,7 @@
             "S": "Trauma Room 2"
           },
           "workOrders": {
-            "S": "[{\"workOrderId\":\"WR00000000\",\"workOrderType\":\"WorkOrderType.ACCEPTANCE_TESTING\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2021-05-22T09:03:07\",\"completionDateTime\":\"2021-05-22T10:05:32\"},{\"workOrderId\":\"WR00000103\",\"workOrderType\":\"WorkOrderType.PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2021-11-24T11:16:32\",\"completionDateTime\":\"2021-11-24T12:18:07\"},{\"workOrderId\":\"WR00000217\",\"workOrderType\":\"WorkOrderType.PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2022-11-21T12:08:41\",\"completionDateTime\":\"2021-11-21T13:05:14\"},{\"workOrderId\":\"WR00000303\",\"workOrderType\":\"WorkOrderType.REPAIR\",\"completionStatus\":\"WorkOrderCompletionStatus.OPEN\",\"dateTimeCreated\":\"2023-06-01T08:08:54\",\"completionDateTime\":null}]"
+            "S": "[{\"workOrderId\":\"WR00000000\",\"workOrderType\":\"ACCEPTANCE_TESTING\",\"completionStatus\":\"CLOSED\",\"dateTimeCreated\":\"2021-05-22T09:03:07\",\"completionDateTime\":\"2021-05-22T10:05:32\"},{\"workOrderId\":\"WR00000103\",\"workOrderType\":\"PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"CLOSED\",\"dateTimeCreated\":\"2021-11-24T11:16:32\",\"completionDateTime\":\"2021-11-24T12:18:07\"},{\"workOrderId\":\"WR00000217\",\"workOrderType\":\"PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"CLOSED\",\"dateTimeCreated\":\"2022-11-21T12:08:41\",\"completionDateTime\":\"2021-11-21T13:05:14\"},{\"workOrderId\":\"WR00000303\",\"workOrderType\":\"REPAIR\",\"completionStatus\":\"OPEN\",\"dateTimeCreated\":\"2023-06-01T08:08:54\"}]"
           }
         }
       }
@@ -97,7 +97,7 @@
             "S": "Crash Cart Nurse Station A"
           },
           "workOrders": {
-            "S": "[{\"workOrderId\":\"WR00000017\",\"workOrderType\":\"WorkOrderType.ACCEPTANCE_TESTING\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2021-05-22T10:03:07\",\"completionDateTime\":\"2021-05-22T11:05:32\"},{\"workOrderId\":\"WR00000088\",\"workOrderType\":\"WorkOrderType.PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2021-08-24T11:16:32\",\"completionDateTime\":\"2021-08-24T12:18:07\"},{\"workOrderId\":\"WR00000199\",\"workOrderType\":\"WorkOrderType.PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2022-08-21T12:08:41\",\"completionDateTime\":\"2021-08-21T13:05:14\"},{\"workOrderId\":\"WR00000291\",\"workOrderType\":\"WorkOrderType.REPAIR\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2023-05-31T08:08:54\",\"completionDateTime\":\"2023-06-02T14:32:01\"}]"
+            "S": "[{\"workOrderId\":\"WR00000017\",\"workOrderType\":\"ACCEPTANCE_TESTING\",\"completionStatus\":\"CLOSED\",\"dateTimeCreated\":\"2021-05-22T10:03:07\",\"completionDateTime\":\"2021-05-22T11:05:32\"},{\"workOrderId\":\"WR00000088\",\"workOrderType\":\"PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"CLOSED\",\"dateTimeCreated\":\"2021-08-24T11:16:32\",\"completionDateTime\":\"2021-08-24T12:18:07\"},{\"workOrderId\":\"WR00000199\",\"workOrderType\":\"PREVENTATIVE_MAINTENANCE\",\"completionStatus\":\"CLOSED\",\"dateTimeCreated\":\"2022-08-21T12:08:41\",\"completionDateTime\":\"2021-08-21T13:05:14\"},{\"workOrderId\":\"WR00000291\",\"workOrderType\":\"REPAIR\",\"completionStatus\":\"CLOSED\",\"dateTimeCreated\":\"2023-05-31T08:08:54\",\"completionDateTime\":\"2023-06-02T14:32:01\"}]"
           }
         }
       }
@@ -148,7 +148,7 @@
             "S": "Trauma Room 2"
           },
           "workOrders": {
-            "S": "[{\"workOrderId\":\"WR00000422\",\"workOrderType\":\"WorkOrderType.ACCEPTANCE_TESTING\",\"completionStatus\":\"WorkOrderCompletionStatus.CLOSED\",\"dateTimeCreated\":\"2023-05-24T14:03:07\",\"completionDateTime\":\"2023-05-24T15:05:32\"}]"
+            "S": "[{\"workOrderId\":\"WR00000422\",\"workOrderType\":\"ACCEPTANCE_TESTING\",\"completionStatus\":\"CLOSED\",\"dateTimeCreated\":\"2023-05-24T14:03:07\",\"completionDateTime\":\"2023-05-24T15:05:32\"}]"
           }
         }
       }
