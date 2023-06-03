@@ -288,6 +288,26 @@ Resources:
             Path: /devices
             Method: post
 
+  GetDeviceLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: com.nashss.se.htmvault.lambda.GetDeviceLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        HTMVault:
+          Type: Api
+          Properties:
+            Path: /devices
+            Method: get
+
   #-----------------------------------------------------
   # DynamoDB Configuration
   #-----------------------------------------------------
