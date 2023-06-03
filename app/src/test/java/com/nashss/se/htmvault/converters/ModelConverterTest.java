@@ -14,9 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -68,32 +66,11 @@ class ModelConverterTest {
         addedByName = "Jane Doe";
         notes = "Storage B when not in use";
 
-        // an initial completed acceptance work order when the device first arrived and was placed into service
-        WorkOrderSummary workOrderSummary1 = new WorkOrderSummary();
-        workOrderSummary1.setWorkOrderId("1");
-        workOrderSummary1.setWorkOrderType(WorkOrderType.ACCEPTANCE_TESTING);
-        workOrderSummary1.setCompletionStatus(WorkOrderCompletionStatus.CLOSED);
-        workOrderSummary1.setDateTimeCreated(LocalDateTime.parse("2021-12-03T10:15:30"));
-        workOrderSummary1.setCompletionDateTime(LocalDateTime.parse("2021-12-03T11:15:30"));
-
-        // a completed annual preventative maintenance work order
-        WorkOrderSummary workOrderSummary2 = new WorkOrderSummary();
-        workOrderSummary2.setWorkOrderId("2");
-        workOrderSummary2.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
-        workOrderSummary2.setCompletionStatus(WorkOrderCompletionStatus.CLOSED);
-        workOrderSummary2.setDateTimeCreated(LocalDateTime.parse("2022-12-08T10:15:30"));
-        workOrderSummary2.setCompletionDateTime(LocalDateTime.parse("2022-12-08T12:15:30"));
-
-        // an open repair work order
-        WorkOrderSummary workOrderSummary3 = new WorkOrderSummary();
-        workOrderSummary3.setWorkOrderId("7");
-        workOrderSummary3.setWorkOrderType(WorkOrderType.REPAIR);
-        workOrderSummary3.setCompletionStatus(WorkOrderCompletionStatus.OPEN);
-        workOrderSummary3.setDateTimeCreated(LocalDateTime.parse("2023-05-25T13:22:10"));
-        workOrderSummary3.setCompletionDateTime(null);
-
-        List<WorkOrderSummary> workOrders =
-                new ArrayList<>(Arrays.asList(workOrderSummary1, workOrderSummary2, workOrderSummary3));
+        // list of work orders associated with this device
+        String workOrder1 = "1";
+        String workOrder2 = "2";
+        String workOrder3 = "7";
+        Set<String> workOrders = new HashSet<>(Arrays.asList(workOrder1, workOrder2, workOrder3));
 
         device = new Device();
         device.setControlNumber(controlNumber);
@@ -138,37 +115,6 @@ class ModelConverterTest {
         assertEquals(addedById, deviceModel.getAddedById());
         assertEquals(addedByName, deviceModel.getAddedByName());
         assertEquals(notes, deviceModel.getNotes());
-        assertEquals(device.getWorkOrders(), deviceModel.getWorkOrderSummaries());
-    }
-
-    @Test
-    public void toDeviceModel_deviceWithNoWorkOrders_convertsAndReturnsDeviceModelSuccessfully() {
-        // GIVEN
-        // setup and list of work order summaries empty
-        device.setWorkOrders(new ArrayList<>());
-
-        // WHEN
-        DeviceModel deviceModel = modelConverter.toDeviceModel(device);
-
-        // THEN
-        assertEquals(controlNumber, deviceModel.getControlNumber());
-        assertEquals(serialNumber, deviceModel.getSerialNumber());
-        assertEquals(manufacturer, deviceModel.getManufacturer());
-        assertEquals(model, deviceModel.getModel());
-        assertEquals(manufactureDate.toString(), deviceModel.getManufactureDate());
-        assertEquals(serviceStatus.toString(), deviceModel.getServiceStatus());
-        assertEquals(facilityName, deviceModel.getFacilityName());
-        assertEquals(assignedDepartment, deviceModel.getAssignedDepartment());
-        assertEquals(complianceThroughDate.toString(), deviceModel.getComplianceThroughDate());
-        assertEquals(lastPmCompletionDate.toString(), deviceModel.getLastPmCompletionDate());
-        assertEquals(nextPmDueDate.toString(), deviceModel.getNextPmDueDate());
-        assertEquals(maintenanceFrequencyInMonths, deviceModel.getMaintenanceFrequencyInMonths());
-        assertEquals(inventoryAddDate.toString(), deviceModel.getInventoryAddDate());
-        assertEquals(addedById, deviceModel.getAddedById());
-        assertEquals(addedByName, deviceModel.getAddedByName());
-        assertEquals(notes, deviceModel.getNotes());
-        // List<List<String>> workOrderSummaries is empty
-        assertTrue(deviceModel.getWorkOrderSummaries().isEmpty());
     }
 
     @Test
@@ -211,7 +157,6 @@ class ModelConverterTest {
         assertEquals(addedById, deviceModel.getAddedById());
         assertEquals(addedByName, deviceModel.getAddedByName());
         assertEquals("", deviceModel.getNotes());
-        assertEquals(device.getWorkOrders(), deviceModel.getWorkOrderSummaries());
     }
 
     /**

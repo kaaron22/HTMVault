@@ -85,7 +85,7 @@ class AddDeviceActivityTest {
         device.setAddedById(customerId);
         device.setAddedByName(customerName);
         device.setNotes(notes);
-        device.setWorkOrders(new ArrayList<>());
+        device.setWorkOrders(null);
     }
 
     @Test
@@ -129,7 +129,6 @@ class AddDeviceActivityTest {
         assertEquals(customerId, deviceModel.getAddedById());
         assertEquals(customerName, deviceModel.getAddedByName());
         assertEquals(notes, deviceModel.getNotes());
-        assertTrue(deviceModel.getWorkOrderSummaries().isEmpty());
     }
 
     @Test
@@ -176,7 +175,6 @@ class AddDeviceActivityTest {
         assertEquals(customerId, deviceModel.getAddedById());
         assertEquals(customerName, deviceModel.getAddedByName());
         assertEquals(notes, deviceModel.getNotes());
-        assertTrue(deviceModel.getWorkOrderSummaries().isEmpty());
     }
 
     @Test
@@ -244,7 +242,6 @@ class AddDeviceActivityTest {
         assertEquals(customerId, deviceModel.getAddedById());
         assertEquals(customerName, deviceModel.getAddedByName());
         assertEquals(notes, deviceModel.getNotes());
-        assertTrue(deviceModel.getWorkOrderSummaries().isEmpty());
     }
 
     @Test

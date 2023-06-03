@@ -9,6 +9,9 @@ import com.nashss.se.htmvault.models.ServiceStatus;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
+import static com.nashss.se.htmvault.utils.CollectionUtils.copyToSet;
 
 @DynamoDBTable(tableName = "devices")
 public class Device {
@@ -32,7 +35,7 @@ public class Device {
     private String addedById;
     private String addedByName;
     private String notes;
-    private List<WorkOrderSummary> workOrders;
+    private Set<String> workOrders;
 
     @DynamoDBHashKey(attributeName = "controlNumber")
     public String getControlNumber() {
@@ -174,13 +177,15 @@ public class Device {
         this.notes = notes;
     }
 
-    @DynamoDBTypeConverted(converter = WorkOrderSummaryListConverter.class)
     @DynamoDBAttribute(attributeName = "workOrders")
-    public List<WorkOrderSummary> getWorkOrders() {
-        return workOrders;
+    public Set<String> getWorkOrders() {
+        if (null == workOrders) {
+            return null;
+        }
+        return copyToSet(workOrders);
     }
 
-    public void setWorkOrders(List<WorkOrderSummary> workOrders) {
+    public void setWorkOrders(Set<String> workOrders) {
         this.workOrders = workOrders;
     }
 
