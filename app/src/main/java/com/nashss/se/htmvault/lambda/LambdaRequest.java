@@ -38,18 +38,6 @@ public class LambdaRequest<T> extends APIGatewayProxyRequestEvent {
         }
     }
 
-    public T fromQuery(Class<T> requestClass) {
-        log.info("Attempting to deserialize object from query ({}).", requestClass.getSimpleName());
-        try {
-            String queryJson = MAPPER.writeValueAsString(super.getQueryStringParameters());
-            return MAPPER.readValue(queryJson, requestClass);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(
-                    String.format("Unable to deserialize object from query (%s).", requestClass.getSimpleName()),
-                    e);
-        }
-    }
-
     /**
      * Use the given converter to create an instance of T from the request's query string.
      * @param converter Contains the conversion code

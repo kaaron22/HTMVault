@@ -131,7 +131,6 @@ public class AddDeviceActivity {
         device.setAddedById(addDeviceRequest.getCustomerId());
         device.setAddedByName(addDeviceRequest.getCustomerName());
         device.setNotes(null == addDeviceRequest.getNotes() ? "" : addDeviceRequest.getNotes());
-        device.setWorkOrders(null);
 
         Device savedDevice = deviceDao.saveDevice(device);
 

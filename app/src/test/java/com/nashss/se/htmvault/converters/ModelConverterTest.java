@@ -66,12 +66,6 @@ class ModelConverterTest {
         addedByName = "Jane Doe";
         notes = "Storage B when not in use";
 
-        // list of work orders associated with this device
-        String workOrder1 = "1";
-        String workOrder2 = "2";
-        String workOrder3 = "7";
-        Set<String> workOrders = new HashSet<>(Arrays.asList(workOrder1, workOrder2, workOrder3));
-
         device = new Device();
         device.setControlNumber(controlNumber);
         device.setSerialNumber(serialNumber);
@@ -87,7 +81,6 @@ class ModelConverterTest {
         device.setAddedById(addedById);
         device.setAddedByName(addedByName);
         device.setNotes(notes);
-        device.setWorkOrders(workOrders);
     }
 
     @Test
@@ -157,28 +150,5 @@ class ModelConverterTest {
         assertEquals(addedById, deviceModel.getAddedById());
         assertEquals(addedByName, deviceModel.getAddedByName());
         assertEquals("", deviceModel.getNotes());
-    }
-
-    /**
-     * Checks each String attribute in each String List of work order summaries and verifies
-     * they were converted as expected from the WorkOrderSummary list of work orders
-     * @param workOrders The list of WorkOrderSummary objects
-     * @param workOrderSummaries The list of String lists that was converted from each attribute of each work order
-     *                          summary
-     */
-    private void verifyListWorkOrderSummaryConversionToListStringList(List<WorkOrderSummary> workOrders,
-                                                                      List<List<String>> workOrderSummaries) {
-        for (int i = 0; i < workOrders.size(); i++) {
-            assertEquals(workOrders.get(i).getWorkOrderId(), workOrderSummaries.get(i).get(0));
-            assertEquals(workOrders.get(i).getWorkOrderType().toString(),
-                    workOrderSummaries.get(i).get(1));
-            assertEquals(workOrders.get(i).getCompletionStatus().toString(),
-                    workOrderSummaries.get(i).get(2));
-            assertEquals(HTMVaultServiceUtils.formatLocalDateTime(workOrders.get(i).getDateTimeCreated()),
-                    workOrderSummaries.get(i).get(3));
-            assertEquals(null == workOrders.get(i).getCompletionDateTime() ? "" :
-                            HTMVaultServiceUtils.formatLocalDateTime(workOrders.get(i).getCompletionDateTime()),
-                    workOrderSummaries.get(i).get(4));
-        }
     }
 }

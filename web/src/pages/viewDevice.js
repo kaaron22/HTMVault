@@ -27,7 +27,7 @@ class ViewDevice extends BindingClass {
         document.getElementById('control-number').innerText = "Loading Device ...";
         const device = await this.client.getDevice(deviceId);
         this.dataStore.set('device', device);
-        document.getElementById('work-orders').innerText = "(loading work orders...)";
+        //document.getElementById('work-orders').innerText = "(loading work orders...)";
         //const workOrders = await this.client.getDeviceWorkOrders(deviceId);
         //this.dataStore.set('workOrders', workOrders);
     }
@@ -52,7 +52,6 @@ class ViewDevice extends BindingClass {
         if (device == null) {
             return;
         }
-
         document.getElementById('control-number').innerText = device.controlNumber;
         document.getElementById('serial-number').innerText = device.serialNumber;
         document.getElementById('manufacturer').innerText = device.manufacturer;
@@ -70,7 +69,7 @@ class ViewDevice extends BindingClass {
         document.getElementById('added-by-name').innerText = device.addedByName;
         document.getElementById('device-notes').innerText = device.notes;
 
-        let workOrderSummaryHtml = '';
+        /*let workOrderSummaryHtml = '';
         // table header row
         workOrderSummaryHtml += `<table id="work-orders">
                                    <tr>
@@ -93,7 +92,7 @@ class ViewDevice extends BindingClass {
                 </tr>`
         }
         workOrderSummaryHtml += `</table>`
-        document.getElementById('work-orders').innerHTML = workOrderSummaryHtml;
+        document.getElementById('work-orders').innerHTML = workOrderSummaryHtml;*/
     }
 
     /**

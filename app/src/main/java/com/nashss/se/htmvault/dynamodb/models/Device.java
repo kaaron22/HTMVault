@@ -35,7 +35,6 @@ public class Device {
     private String addedById;
     private String addedByName;
     private String notes;
-    private Set<String> workOrders;
 
     @DynamoDBHashKey(attributeName = "controlNumber")
     public String getControlNumber() {
@@ -177,18 +176,6 @@ public class Device {
         this.notes = notes;
     }
 
-    @DynamoDBAttribute(attributeName = "workOrders")
-    public Set<String> getWorkOrders() {
-        if (null == workOrders) {
-            return null;
-        }
-        return copyToSet(workOrders);
-    }
-
-    public void setWorkOrders(Set<String> workOrders) {
-        this.workOrders = workOrders;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -207,14 +194,13 @@ public class Device {
                 Objects.equals(inventoryAddDate, device.inventoryAddDate) &&
                 Objects.equals(addedById, device.addedById) &&
                 Objects.equals(addedByName, device.addedByName) &&
-                Objects.equals(notes, device.notes) &&
-                Objects.equals(workOrders, device.workOrders);
+                Objects.equals(notes, device.notes);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(controlNumber, serialNumber, manufacturerModel, manufactureDate, serviceStatus,
                 facilityName, assignedDepartment, complianceThroughDate, lastPmCompletionDate, nextPmDueDate,
-                inventoryAddDate, addedById, addedByName, notes, workOrders);
+                inventoryAddDate, addedById, addedByName, notes);
     }
 }

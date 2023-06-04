@@ -4,20 +4,20 @@ import com.nashss.se.htmvault.models.DeviceModel;
 
 public class GetDeviceResult {
 
-    private final DeviceModel deviceModel;
+    private final DeviceModel device;
 
-    private GetDeviceResult(DeviceModel deviceModel) {
-        this.deviceModel = deviceModel;
+    private GetDeviceResult(DeviceModel device) {
+        this.device = device;
     }
 
-    public DeviceModel getDeviceModel() {
-        return deviceModel;
+    public DeviceModel getDevice() {
+        return device;
     }
 
     @Override
     public String toString() {
         return "GetDeviceResult{" +
-                "deviceModel=" + deviceModel +
+                "deviceModel=" + device +
                 '}';
     }
 

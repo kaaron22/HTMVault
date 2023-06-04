@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -85,7 +84,6 @@ class AddDeviceActivityTest {
         device.setAddedById(customerId);
         device.setAddedByName(customerName);
         device.setNotes(notes);
-        device.setWorkOrders(null);
     }
 
     @Test
@@ -108,7 +106,7 @@ class AddDeviceActivityTest {
 
         // WHEN
         AddDeviceResult addDeviceResult = addDeviceActivity.handleRequest(addDeviceRequest);
-        DeviceModel deviceModel = addDeviceResult.getDeviceModel();
+        DeviceModel deviceModel = addDeviceResult.getDevice();
 
         // THEN
         verify(deviceDao).saveDevice(any(Device.class));
@@ -154,7 +152,7 @@ class AddDeviceActivityTest {
 
         // WHEN
         AddDeviceResult addDeviceResult = addDeviceActivity.handleRequest(addDeviceRequest);
-        DeviceModel deviceModel = addDeviceResult.getDeviceModel();
+        DeviceModel deviceModel = addDeviceResult.getDevice();
 
         // THEN
         verify(deviceDao).saveDevice(any(Device.class));
@@ -221,7 +219,7 @@ class AddDeviceActivityTest {
 
         // WHEN
         AddDeviceResult addDeviceResult = addDeviceActivity.handleRequest(addDeviceRequest);
-        DeviceModel deviceModel = addDeviceResult.getDeviceModel();
+        DeviceModel deviceModel = addDeviceResult.getDevice();
 
         // THEN
         verify(deviceDao).saveDevice(any(Device.class));
