@@ -5,6 +5,9 @@ import com.nashss.se.htmvault.activity.results.GetDeviceResult;
 import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
+import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
+import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
+import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.DeviceModel;
 import org.apache.logging.log4j.LogManager;
@@ -28,11 +31,17 @@ public class GetDeviceActivity {
         log.info("Received GetDeviceRequest {}", getDeviceRequest);
 
         String controlNumber = getDeviceRequest.getControlNumber();
-        Device device = deviceDao.getDevice(controlNumber);
-        DeviceModel deviceModel = new ModelConverter().toDeviceModel(device);
+        try {
+            Device device = deviceDao.getDevice(controlNumber);
+            metricsPublisher.addCount(MetricsConstants.GETDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
 
-        return GetDeviceResult.builder()
-                .withDeviceModel(deviceModel)
-                .build();
+            DeviceModel deviceModel = new ModelConverter().toDeviceModel(device);
+            return GetDeviceResult.builder()
+                    .withDeviceModel(deviceModel)
+                    .build();
+        } catch (DeviceNotFoundException e) {
+            metricsPublisher.addCount(MetricsConstants.GETDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            throw new InvalidAttributeValueException(e.getMessage());
+        }
     }
 }
