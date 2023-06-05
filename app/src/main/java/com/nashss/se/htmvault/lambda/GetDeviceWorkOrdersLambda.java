@@ -17,9 +17,10 @@ public class GetDeviceWorkOrdersLambda
     public LambdaResponse handleRequest(LambdaRequest<GetDeviceWorkOrdersRequest> input, Context context) {
         log.info("handleRequest");
         return super.runActivity(
-                () -> input.fromPath(path ->
+                () -> input.fromPathAndQuery((path, query) ->
                         GetDeviceWorkOrdersRequest.builder()
                                 .withControlNumber(path.get("controlNumber"))
+                                .withSortOrder(query.get("order"))
                                 .build()),
                 (request, serviceComponent) ->
                         serviceComponent.provideGetDeviceWorkOrdersActivity().handleRequest(request)
