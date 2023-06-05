@@ -41,9 +41,9 @@ public class GetDeviceWorkOrdersActivity {
         List<WorkOrder> workOrders = workOrderDao.getWorkOrders(controlNumber);
 
         if (sortOrder.equals(SortOrder.ASCENDING)) {
-            workOrders.sort(new WorkOrderComparator().reversed());
-        } else {
             workOrders.sort(new WorkOrderComparator());
+        } else {
+            workOrders.sort(new WorkOrderComparator().reversed());
         }
 
         return GetDeviceWorkOrdersResult.builder()
