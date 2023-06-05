@@ -40,6 +40,7 @@ public class ModelConverter {
     public WorkOrderModel toWorkOrderModel(WorkOrder workOrder) {
         return WorkOrderModel.builder()
                 .withWorkOrderId(workOrder.getWorkOrderId())
+                .withWorkOrderType(workOrder.getWorkOrderType().toString())
                 .withControlNumber(workOrder.getControlNumber())
                 .withSerialNumber(workOrder.getSerialNumber())
                 .withWorkOrderCompletionStatus(workOrder.getWorkOrderCompletionStatus().toString())

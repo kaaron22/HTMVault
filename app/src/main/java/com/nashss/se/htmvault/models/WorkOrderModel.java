@@ -5,6 +5,7 @@ import java.util.Objects;
 public class WorkOrderModel {
 
     private final String workOrderId;
+    private final String workOrderType;
     private final String controlNumber;
     private final String serialNumber;
     private final String workOrderCompletionStatus;
@@ -24,13 +25,14 @@ public class WorkOrderModel {
     private final String summary;
     private final String completionDateTime;
 
-    private WorkOrderModel(String workOrderId, String controlNumber, String serialNumber,
+    private WorkOrderModel(String workOrderId, String workOrderType, String controlNumber, String serialNumber,
                            String workOrderCompletionStatus, String workOrderAwaitStatus, String manufacturer,
                            String model, String facilityName, String assignedDepartment, String problemReported,
                            String problemFound, String createdById, String createdByName, String creationDateTime,
                            String closedById, String closedByName, String closedDateTime, String summary,
                            String completionDateTime) {
         this.workOrderId = workOrderId;
+        this.workOrderType = workOrderType;
         this.controlNumber = controlNumber;
         this.serialNumber = serialNumber;
         this.workOrderCompletionStatus = workOrderCompletionStatus;
@@ -53,6 +55,10 @@ public class WorkOrderModel {
 
     public String getWorkOrderId() {
         return workOrderId;
+    }
+
+    public String getWorkOrderType() {
+        return workOrderType;
     }
 
     public String getControlNumber() {
@@ -133,6 +139,7 @@ public class WorkOrderModel {
         if (o == null || getClass() != o.getClass()) return false;
         WorkOrderModel that = (WorkOrderModel) o;
         return Objects.equals(workOrderId, that.workOrderId) &&
+                Objects.equals(workOrderType, that.workOrderType) &&
                 Objects.equals(controlNumber, that.controlNumber) &&
                 Objects.equals(serialNumber, that.serialNumber) &&
                 Objects.equals(workOrderCompletionStatus, that.workOrderCompletionStatus) &&
@@ -155,9 +162,10 @@ public class WorkOrderModel {
 
     @Override
     public int hashCode() {
-        return Objects.hash(workOrderId, controlNumber, serialNumber, workOrderCompletionStatus, workOrderAwaitStatus,
-                manufacturer, model, facilityName, assignedDepartment, problemReported, problemFound, createdById,
-                createdByName, creationDateTime, closedById, closedByName, closedDateTime, summary, completionDateTime);
+        return Objects.hash(workOrderId, workOrderType, controlNumber, serialNumber, workOrderCompletionStatus,
+                workOrderAwaitStatus, manufacturer, model, facilityName, assignedDepartment, problemReported,
+                problemFound, createdById, createdByName, creationDateTime, closedById, closedByName, closedDateTime,
+                summary, completionDateTime);
     }
 
     public static Builder builder() {
@@ -166,6 +174,7 @@ public class WorkOrderModel {
 
     public static class Builder {
         private String workOrderId;
+        private String workOrderType;
         private String controlNumber;
         private String serialNumber;
         private String workOrderCompletionStatus;
@@ -189,6 +198,12 @@ public class WorkOrderModel {
             this.workOrderId = workOrderId;
             return this;
         }
+
+        public Builder withWorkOrderType(String workOrderType) {
+            this.workOrderType = workOrderType;
+            return this;
+        }
+
         public Builder withControlNumber(String controlNumber) {
             this.controlNumber = controlNumber;
             return this;
@@ -275,10 +290,10 @@ public class WorkOrderModel {
         }
 
         public WorkOrderModel build() {
-            return new WorkOrderModel(workOrderId, controlNumber, serialNumber, workOrderCompletionStatus,
-                    workOrderAwaitStatus, manufacturer, model, facilityName, assignedDepartment, problemReported,
-                    problemFound, createdById, createdByName, creationDateTime, closedById, closedByName,
-                    closedDateTime, summary, completionDateTime);
+            return new WorkOrderModel(workOrderId, workOrderType, controlNumber, serialNumber,
+                    workOrderCompletionStatus, workOrderAwaitStatus, manufacturer, model, facilityName,
+                    assignedDepartment, problemReported, problemFound, createdById, createdByName, creationDateTime,
+                    closedById, closedByName, closedDateTime, summary, completionDateTime);
         }
     }
 }

@@ -5,6 +5,7 @@ import com.nashss.se.htmvault.converters.LocalDateTimeConverter;
 import com.nashss.se.htmvault.converters.ManufacturerModelConverter;
 import com.nashss.se.htmvault.models.WorkOrderAwaitStatus;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
+import com.nashss.se.htmvault.models.WorkOrderType;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -15,6 +16,7 @@ public class WorkOrder {
     public static final String CONTROL_NUMBER_WORK_ORDERS_INDEX = "ControlNumberWorkOrdersIndex";
 
     private String workOrderId;
+    private WorkOrderType workOrderType;
     private String controlNumber;
     private String serialNumber;
     private WorkOrderCompletionStatus workOrderCompletionStatus;
@@ -40,6 +42,16 @@ public class WorkOrder {
 
     public void setWorkOrderId(String workOrderId) {
         this.workOrderId = workOrderId;
+    }
+
+    @DynamoDBTypeConvertedEnum
+    @DynamoDBAttribute(attributeName = "workOrderType")
+    public WorkOrderType getWorkOrderType() {
+        return workOrderType;
+    }
+
+    public void setWorkOrderType(WorkOrderType workOrderType) {
+        this.workOrderType = workOrderType;
     }
 
     @DynamoDBIndexHashKey(attributeName = "controlNumber", globalSecondaryIndexName = CONTROL_NUMBER_WORK_ORDERS_INDEX)
@@ -208,6 +220,7 @@ public class WorkOrder {
         if (o == null || getClass() != o.getClass()) return false;
         WorkOrder workOrder = (WorkOrder) o;
         return Objects.equals(workOrderId, workOrder.workOrderId) &&
+                workOrderType == workOrder.workOrderType &&
                 Objects.equals(controlNumber, workOrder.controlNumber) &&
                 Objects.equals(serialNumber, workOrder.serialNumber) &&
                 workOrderCompletionStatus == workOrder.workOrderCompletionStatus &&
@@ -229,8 +242,9 @@ public class WorkOrder {
 
     @Override
     public int hashCode() {
-        return Objects.hash(workOrderId, controlNumber, serialNumber, workOrderCompletionStatus, workOrderAwaitStatus,
-                manufacturerModel, facilityName, assignedDepartment, problemReported, problemFound, createdById,
-                createdByName, creationDateTime, closedById, closedByName, closedDateTime, summary, completionDateTime);
+        return Objects.hash(workOrderId, workOrderType, controlNumber, serialNumber, workOrderCompletionStatus,
+                workOrderAwaitStatus, manufacturerModel, facilityName, assignedDepartment, problemReported,
+                problemFound, createdById, createdByName, creationDateTime, closedById, closedByName, closedDateTime,
+                summary, completionDateTime);
     }
 }
