@@ -7,8 +7,8 @@ public class WorkOrderModel {
     private final String workOrderId;
     private final String controlNumber;
     private final String serialNumber;
-    private final String completionStatus;
-    private final String awaitStatus;
+    private final String workOrderCompletionStatus;
+    private final String workOrderAwaitStatus;
     private final String manufacturer;
     private final String model;
     private final String facilityName;
@@ -24,16 +24,17 @@ public class WorkOrderModel {
     private final String summary;
     private final String completionDateTime;
 
-    private WorkOrderModel(String workOrderId, String controlNumber, String serialNumber, String completionStatus,
-                          String awaitStatus, String manufacturer, String model, String facilityName,
-                          String assignedDepartment, String problemReported, String problemFound, String createdById,
-                          String createdByName, String creationDateTime, String closedById, String closedByName,
-                          String closedDateTime, String summary, String completionDateTime) {
+    private WorkOrderModel(String workOrderId, String controlNumber, String serialNumber,
+                           String workOrderCompletionStatus, String workOrderAwaitStatus, String manufacturer,
+                           String model, String facilityName, String assignedDepartment, String problemReported,
+                           String problemFound, String createdById, String createdByName, String creationDateTime,
+                           String closedById, String closedByName, String closedDateTime, String summary,
+                           String completionDateTime) {
         this.workOrderId = workOrderId;
         this.controlNumber = controlNumber;
         this.serialNumber = serialNumber;
-        this.completionStatus = completionStatus;
-        this.awaitStatus = awaitStatus;
+        this.workOrderCompletionStatus = workOrderCompletionStatus;
+        this.workOrderAwaitStatus = workOrderAwaitStatus;
         this.manufacturer = manufacturer;
         this.model = model;
         this.facilityName = facilityName;
@@ -62,12 +63,12 @@ public class WorkOrderModel {
         return serialNumber;
     }
 
-    public String getCompletionStatus() {
-        return completionStatus;
+    public String getWorkOrderCompletionStatus() {
+        return workOrderCompletionStatus;
     }
 
-    public String getAwaitStatus() {
-        return awaitStatus;
+    public String getWorkOrderAwaitStatus() {
+        return workOrderAwaitStatus;
     }
 
     public String getManufacturer() {
@@ -134,8 +135,8 @@ public class WorkOrderModel {
         return Objects.equals(workOrderId, that.workOrderId) &&
                 Objects.equals(controlNumber, that.controlNumber) &&
                 Objects.equals(serialNumber, that.serialNumber) &&
-                Objects.equals(completionStatus, that.completionStatus) &&
-                Objects.equals(awaitStatus, that.awaitStatus) &&
+                Objects.equals(workOrderCompletionStatus, that.workOrderCompletionStatus) &&
+                Objects.equals(workOrderAwaitStatus, that.workOrderAwaitStatus) &&
                 Objects.equals(manufacturer, that.manufacturer) &&
                 Objects.equals(model, that.model) &&
                 Objects.equals(facilityName, that.facilityName) &&
@@ -154,9 +155,9 @@ public class WorkOrderModel {
 
     @Override
     public int hashCode() {
-        return Objects.hash(workOrderId, controlNumber, serialNumber, completionStatus, awaitStatus, manufacturer,
-                model, facilityName, assignedDepartment, problemReported, problemFound, createdById, createdByName,
-                creationDateTime, closedById, closedByName, closedDateTime, summary, completionDateTime);
+        return Objects.hash(workOrderId, controlNumber, serialNumber, workOrderCompletionStatus, workOrderAwaitStatus,
+                manufacturer, model, facilityName, assignedDepartment, problemReported, problemFound, createdById,
+                createdByName, creationDateTime, closedById, closedByName, closedDateTime, summary, completionDateTime);
     }
 
     public static Builder builder() {
@@ -167,8 +168,8 @@ public class WorkOrderModel {
         private String workOrderId;
         private String controlNumber;
         private String serialNumber;
-        private String completionStatus;
-        private String awaitStatus;
+        private String workOrderCompletionStatus;
+        private String workOrderAwaitStatus;
         private String manufacturer;
         private String model;
         private String facilityName;
@@ -198,13 +199,13 @@ public class WorkOrderModel {
             return this;
         }
 
-        public Builder withCompletionStatus(String completionStatus) {
-            this.completionStatus = completionStatus;
+        public Builder withWorkOrderCompletionStatus(String workOrderCompletionStatus) {
+            this.workOrderCompletionStatus = workOrderCompletionStatus;
             return this;
         }
 
-        public Builder withAwaitStatus(String awaitStatus) {
-            this.awaitStatus = awaitStatus;
+        public Builder withWorkOrderAwaitStatus(String workOrderAwaitStatus) {
+            this.workOrderAwaitStatus = workOrderAwaitStatus;
             return this;
         }
 
@@ -274,10 +275,10 @@ public class WorkOrderModel {
         }
 
         public WorkOrderModel build() {
-            return new WorkOrderModel(workOrderId, controlNumber, serialNumber, completionStatus, awaitStatus,
-                    manufacturer, model, facilityName, assignedDepartment, problemReported, problemFound, createdById,
-                    createdByName, creationDateTime, closedById, closedByName, closedDateTime, summary,
-                    completionDateTime);
+            return new WorkOrderModel(workOrderId, controlNumber, serialNumber, workOrderCompletionStatus,
+                    workOrderAwaitStatus, manufacturer, model, facilityName, assignedDepartment, problemReported,
+                    problemFound, createdById, createdByName, creationDateTime, closedById, closedByName,
+                    closedDateTime, summary, completionDateTime);
         }
     }
 }

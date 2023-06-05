@@ -42,8 +42,9 @@ public class ModelConverter {
                 .withWorkOrderId(workOrder.getWorkOrderId())
                 .withControlNumber(workOrder.getControlNumber())
                 .withSerialNumber(workOrder.getSerialNumber())
-                .withCompletionStatus(workOrder.getCompletionStatus().toString())
-                .withAwaitStatus(null == workOrder.getAwaitStatus() ? "" : workOrder.getAwaitStatus().toString())
+                .withWorkOrderCompletionStatus(workOrder.getWorkOrderCompletionStatus().toString())
+                .withWorkOrderAwaitStatus(null == workOrder.getWorkOrderAwaitStatus() ? "" :
+                        workOrder.getWorkOrderAwaitStatus().toString())
                 .withManufacturer(workOrder.getManufacturerModel().getManufacturer())
                 .withModel(workOrder.getManufacturerModel().getModel())
                 .withFacilityName(workOrder.getFacilityName())

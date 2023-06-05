@@ -3,8 +3,8 @@ package com.nashss.se.htmvault.dynamodb.models;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.nashss.se.htmvault.converters.LocalDateTimeConverter;
 import com.nashss.se.htmvault.converters.ManufacturerModelConverter;
-import com.nashss.se.htmvault.models.AwaitStatus;
-import com.nashss.se.htmvault.models.CompletionStatus;
+import com.nashss.se.htmvault.models.WorkOrderAwaitStatus;
+import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -17,8 +17,8 @@ public class WorkOrder {
     private String workOrderId;
     private String controlNumber;
     private String serialNumber;
-    private CompletionStatus completionStatus;
-    private AwaitStatus awaitStatus;
+    private WorkOrderCompletionStatus workOrderCompletionStatus;
+    private WorkOrderAwaitStatus workOrderAwaitStatus;
     private ManufacturerModel manufacturerModel;
     private String facilityName;
     private String assignedDepartment;
@@ -61,23 +61,23 @@ public class WorkOrder {
     }
 
     @DynamoDBTypeConvertedEnum
-    @DynamoDBAttribute(attributeName = "completionStatus")
-    public CompletionStatus getCompletionStatus() {
-        return completionStatus;
+    @DynamoDBAttribute(attributeName = "workOrderCompletionStatus")
+    public WorkOrderCompletionStatus getWorkOrderCompletionStatus() {
+        return workOrderCompletionStatus;
     }
 
-    public void setCompletionStatus(CompletionStatus completionStatus) {
-        this.completionStatus = completionStatus;
+    public void setWorkOrderCompletionStatus(WorkOrderCompletionStatus workOrderCompletionStatus) {
+        this.workOrderCompletionStatus = workOrderCompletionStatus;
     }
 
     @DynamoDBTypeConvertedEnum
-    @DynamoDBAttribute(attributeName = "awaitStatus")
-    public AwaitStatus getAwaitStatus() {
-        return awaitStatus;
+    @DynamoDBAttribute(attributeName = "workOrderAwaitStatus")
+    public WorkOrderAwaitStatus getWorkOrderAwaitStatus() {
+        return workOrderAwaitStatus;
     }
 
-    public void setAwaitStatus(AwaitStatus awaitStatus) {
-        this.awaitStatus = awaitStatus;
+    public void setWorkOrderAwaitStatus(WorkOrderAwaitStatus workOrderAwaitStatus) {
+        this.workOrderAwaitStatus = workOrderAwaitStatus;
     }
 
     @DynamoDBTypeConverted(converter = ManufacturerModelConverter.class)
@@ -210,8 +210,8 @@ public class WorkOrder {
         return Objects.equals(workOrderId, workOrder.workOrderId) &&
                 Objects.equals(controlNumber, workOrder.controlNumber) &&
                 Objects.equals(serialNumber, workOrder.serialNumber) &&
-                completionStatus == workOrder.completionStatus &&
-                awaitStatus == workOrder.awaitStatus &&
+                workOrderCompletionStatus == workOrder.workOrderCompletionStatus &&
+                workOrderAwaitStatus == workOrder.workOrderAwaitStatus &&
                 Objects.equals(manufacturerModel, workOrder.manufacturerModel) &&
                 Objects.equals(facilityName, workOrder.facilityName) &&
                 Objects.equals(assignedDepartment, workOrder.assignedDepartment) &&
@@ -229,8 +229,8 @@ public class WorkOrder {
 
     @Override
     public int hashCode() {
-        return Objects.hash(workOrderId, controlNumber, serialNumber, completionStatus, awaitStatus, manufacturerModel,
-                facilityName, assignedDepartment, problemReported, problemFound, createdById, createdByName,
-                creationDateTime, closedById, closedByName, closedDateTime, summary, completionDateTime);
+        return Objects.hash(workOrderId, controlNumber, serialNumber, workOrderCompletionStatus, workOrderAwaitStatus,
+                manufacturerModel, facilityName, assignedDepartment, problemReported, problemFound, createdById,
+                createdByName, creationDateTime, closedById, closedByName, closedDateTime, summary, completionDateTime);
     }
 }
