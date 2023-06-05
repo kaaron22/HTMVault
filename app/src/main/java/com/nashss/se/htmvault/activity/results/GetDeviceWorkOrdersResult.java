@@ -1,6 +1,6 @@
 package com.nashss.se.htmvault.activity.results;
 
-import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
+import com.nashss.se.htmvault.models.WorkOrderModel;
 
 import java.util.List;
 
@@ -8,13 +8,13 @@ import static com.nashss.se.htmvault.utils.CollectionUtils.copyToList;
 
 public class GetDeviceWorkOrdersResult {
 
-    private final List<WorkOrder> workOrders;
+    private final List<WorkOrderModel> workOrders;
 
-    private GetDeviceWorkOrdersResult(List<WorkOrder> workOrders) {
+    private GetDeviceWorkOrdersResult(List<WorkOrderModel> workOrders) {
         this.workOrders = workOrders;
     }
 
-    public List<WorkOrder> getWorkOrders() {
+    public List<WorkOrderModel> getWorkOrders() {
         return copyToList(workOrders);
     }
 
@@ -30,11 +30,15 @@ public class GetDeviceWorkOrdersResult {
     }
 
     public static class Builder {
-        private List<WorkOrder> workOrders;
+        private List<WorkOrderModel> workOrders;
 
-        public Builder withWorkOrders(List<WorkOrder> workOrders) {
+        public Builder withWorkOrders(List<WorkOrderModel> workOrders) {
             this.workOrders = copyToList(workOrders);
             return this;
+        }
+
+        public GetDeviceWorkOrdersResult build() {
+            return new GetDeviceWorkOrdersResult(workOrders);
         }
     }
 }

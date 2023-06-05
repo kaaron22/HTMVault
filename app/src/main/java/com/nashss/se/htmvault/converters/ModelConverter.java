@@ -1,8 +1,11 @@
 package com.nashss.se.htmvault.converters;
 
 import com.nashss.se.htmvault.dynamodb.models.Device;
+import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.models.DeviceModel;
+import com.nashss.se.htmvault.models.WorkOrderModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.nashss.se.htmvault.utils.CollectionUtils.copyToList;
@@ -32,5 +35,40 @@ public class ModelConverter {
                 .withAddedByName(device.getAddedByName())
                 .withNotes(null == device.getNotes() ? "" : device.getNotes())
                 .build();
+    }
+
+    public WorkOrderModel toWorkOrderModel(WorkOrder workOrder) {
+        return WorkOrderModel.builder()
+                .withWorkOrderId(workOrder.getWorkOrderId())
+                .withControlNumber(workOrder.getControlNumber())
+                .withSerialNumber(workOrder.getSerialNumber())
+                .withCompletionStatus(workOrder.getCompletionStatus().toString())
+                .withAwaitStatus(null == workOrder.getAwaitStatus() ? "" : workOrder.getAwaitStatus().toString())
+                .withManufacturer(workOrder.getManufacturerModel().getManufacturer())
+                .withModel(workOrder.getManufacturerModel().getModel())
+                .withFacilityName(workOrder.getFacilityName())
+                .withAssignedDepartment(workOrder.getAssignedDepartment())
+                .withProblemReported(workOrder.getProblemReported())
+                .withProblemFound(null == workOrder.getProblemFound() ? "" : workOrder.getProblemFound())
+                .withCreatedById(workOrder.getCreatedById())
+                .withCreatedByName(workOrder.getCreatedByName())
+                .withClosedById(null == workOrder.getClosedById() ? "" : workOrder.getClosedById())
+                .withClosedByName(null == workOrder.getClosedByName() ? "" : workOrder.getClosedByName())
+                .withClosedDateTime(null == workOrder.getClosedDateTime() ? "" :
+                        workOrder.getClosedDateTime().toString())
+                .withSummary(null == workOrder.getSummary() ? "" : workOrder.getSummary())
+                .withCompletionDateTime(null == workOrder.getCompletionDateTime() ? "" :
+                        workOrder.getCompletionDateTime().toString())
+                .build();
+    }
+
+    public List<WorkOrderModel> toWorkOrderModels(List<WorkOrder> workOrders) {
+        List<WorkOrderModel> workOrderModels = new ArrayList<>();
+
+        for (WorkOrder workOrder : workOrders) {
+            workOrderModels.add(toWorkOrderModel(workOrder));
+        }
+
+        return workOrderModels;
     }
 }
