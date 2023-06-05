@@ -31,17 +31,12 @@ public class GetDeviceActivity {
         log.info("Received GetDeviceRequest {}", getDeviceRequest);
 
         String controlNumber = getDeviceRequest.getControlNumber();
-        try {
-            Device device = deviceDao.getDevice(controlNumber);
-            metricsPublisher.addCount(MetricsConstants.GETDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
 
-            DeviceModel deviceModel = new ModelConverter().toDeviceModel(device);
-            return GetDeviceResult.builder()
-                    .withDeviceModel(deviceModel)
-                    .build();
-        } catch (DeviceNotFoundException e) {
-            metricsPublisher.addCount(MetricsConstants.GETDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            throw new InvalidAttributeValueException(e.getMessage());
-        }
+        Device device = deviceDao.getDevice(controlNumber);
+
+        DeviceModel deviceModel = new ModelConverter().toDeviceModel(device);
+        return GetDeviceResult.builder()
+                .withDeviceModel(deviceModel)
+                .build();
     }
 }

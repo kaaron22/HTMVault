@@ -10,7 +10,7 @@ public class MetricsConstants {
             "GetFacilityDepartment.FacilityDepartmentNotFoundException.Count";
     public static final String ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT =
             "AddDevice.InvalidAttributeValueException.Count";
-    public static final String GETDEVICE_INVALIDATTRIBUTEVALUE_COUNT = "GetDevice.InvalidAttributeValueException.Count";
+    public static final String GETDEVICE_DEVICENOTFOUND_COUNT = "GetDevice.DeviceNotFoundException.Count";
     public static final String GETDEVICEWORKORDERS_INVALIDATTRIBUTEVALUE_COUNT =
             "GetDeviceWorkOrders.InvalidAttributeValueException.Count";
     public static final String UPDATEPLAYLIST_INVALIDATTRIBUTEVALUE_COUNT =
