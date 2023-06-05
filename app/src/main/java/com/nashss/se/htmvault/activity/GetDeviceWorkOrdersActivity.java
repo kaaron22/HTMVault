@@ -8,6 +8,7 @@ import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrderComparator;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
+import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.SortOrder;
 import org.apache.logging.log4j.LogManager;
@@ -56,9 +57,11 @@ public class GetDeviceWorkOrdersActivity {
         if (null == sortOrder) {
             computedSortOrder = SortOrder.DEFAULT;
         } else if (!Arrays.asList(SortOrder.values()).contains(sortOrder)) {
+            metricsPublisher.addCount(MetricsConstants.GETDEVICEWORKORDERS_INVALIDATTRIBUTEVALUE_COUNT, 1);
             throw new InvalidAttributeValueException(String.format("Unrecognized sort order: '%s'", sortOrder));
         }
 
+        metricsPublisher.addCount(MetricsConstants.GETDEVICEWORKORDERS_INVALIDATTRIBUTEVALUE_COUNT, 0);
         return computedSortOrder;
     }
 }
