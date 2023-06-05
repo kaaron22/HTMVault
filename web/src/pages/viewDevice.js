@@ -68,31 +68,6 @@ class ViewDevice extends BindingClass {
         document.getElementById('added-by-id').innerText = device.addedById;
         document.getElementById('added-by-name').innerText = device.addedByName;
         document.getElementById('device-notes').innerText = device.notes;
-
-        /*let workOrderSummaryHtml = '';
-        // table header row
-        workOrderSummaryHtml += `<table id="work-orders">
-                                   <tr>
-                                       <th>Work Order ID</th>
-                                       <th>Type</th>
-                                       <th>Completion Status</th>
-                                       <th>Created</th>
-                                       <th>Completed</th>
-                                   </tr>`
-
-        let workOrderSummary;
-        for (workOrderSummary of device.workOrderSummaries) {
-            workOrderSummaryHtml += `
-                <tr>
-                    <td>${workOrderSummary.workOrderId}</td>
-                    <td>${workOrderSummary.workOrderType}</td>
-                    <td>${workOrderSummary.completionStatus}</td>
-                    <td>${workOrderSummary.dateTimeCreated}</td>
-                    <td>${workOrderSummary.completionDateTime}</td>
-                </tr>`
-        }
-        workOrderSummaryHtml += `</table>`
-        document.getElementById('work-orders').innerHTML = workOrderSummaryHtml;*/
     }
 
     /**
