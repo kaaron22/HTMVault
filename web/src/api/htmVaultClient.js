@@ -102,6 +102,15 @@ export default class HTMVaultClient extends BindingClass {
         }
     }
 
+    async getDeviceWorkOrders(controlNumber, errorCallback) {
+        try {
+            const response = await this.axiosClient.get(`devices/${controlNumber}/workOrders`);
+            return response.data.workOrders;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
     /**
      * Get the songs on a given playlist by the playlist's identifier.
      * @param id Unique identifier for a playlist

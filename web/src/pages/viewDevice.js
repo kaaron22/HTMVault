@@ -117,13 +117,13 @@ class ViewDevice extends BindingClass {
                                    </tr>`
 
         let workOrderSummary;
-        for (workOrderSummary of device.workOrderSummaries) {
+        for (workOrderSummary of workOrders) {
             workOrderSummaryHtml += `
                 <tr>
                     <td>${workOrderSummary.workOrderId}</td>
                     <td>${workOrderSummary.workOrderType}</td>
-                    <td>${workOrderSummary.completionStatus}</td>
-                    <td>${workOrderSummary.dateTimeCreated}</td>
+                    <td>${workOrderSummary.workOrderCompletionStatus}</td>
+                    <td>${workOrderSummary.creationDateTime}</td>
                     <td>${workOrderSummary.completionDateTime}</td>
                 </tr>`
         }
