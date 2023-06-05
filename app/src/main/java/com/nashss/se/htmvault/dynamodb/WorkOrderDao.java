@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.nashss.se.htmvault.utils.CollectionUtils.copyToList;
+
 @Singleton
 public class WorkOrderDao {
 
@@ -34,6 +36,6 @@ public class WorkOrderDao {
                 .withKeyConditionExpression("controlNumber = :controlNumber")
                 .withExpressionAttributeValues(valueMap);
 
-        return dynamoDBMapper.query(WorkOrder.class, queryExpression);
+        return copyToList(dynamoDBMapper.query(WorkOrder.class, queryExpression));
     }
 }

@@ -269,6 +269,11 @@ public class WorkOrderModel {
             return this;
         }
 
+        public Builder withCreationDateTime(String creationDateTime) {
+            this.creationDateTime = creationDateTime;
+            return this;
+        }
+
         public Builder withClosedByName(String closedByName) {
             this.closedByName = closedByName;
             return this;

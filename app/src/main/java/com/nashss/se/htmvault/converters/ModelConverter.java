@@ -54,6 +54,7 @@ public class ModelConverter {
                 .withProblemFound(null == workOrder.getProblemFound() ? "" : workOrder.getProblemFound())
                 .withCreatedById(workOrder.getCreatedById())
                 .withCreatedByName(workOrder.getCreatedByName())
+                .withCreationDateTime(workOrder.getCreationDateTime().toString())
                 .withClosedById(null == workOrder.getClosedById() ? "" : workOrder.getClosedById())
                 .withClosedByName(null == workOrder.getClosedByName() ? "" : workOrder.getClosedByName())
                 .withClosedDateTime(null == workOrder.getClosedDateTime() ? "" :
