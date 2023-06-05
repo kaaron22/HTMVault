@@ -310,7 +310,7 @@ Resources:
             Auth:
               Authorizer: 'NONE'
 
-  GetWorkOrderLambda:
+  GetDeviceWorkOrdersLambda:
     Type: AWS::Serverless::Function
     Properties:
       Role: !GetAtt AccessRole.Arn
@@ -395,17 +395,22 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-        - AttributeName: "controlNumber"
-          AttributeType: "S"
         - AttributeName: "workOrderId"
+          AttributeType: "S"
+        - AttributeName: "controlNumber"
           AttributeType: "S"
       KeySchema:
-        - AttributeName: "controlNumber"
-          KeyType: "HASH"
         - AttributeName: "workOrderId"
-          KeyType: "RANGE"
+          KeyType: "HASH"
       BillingMode: "PAY_PER_REQUEST"
       TableName: "work_orders"
+      GlobalSecondaryIndexes:
+        - IndexName: "ControlNumberWorkOrdersIndex"
+          KeySchema:
+            - AttributeName: "controlNumber"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "ALL"
 
   WorkOrderSummariesTable:
     Type: AWS::DynamoDB::Table
