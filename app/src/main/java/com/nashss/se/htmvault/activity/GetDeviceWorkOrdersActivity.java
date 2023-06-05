@@ -6,11 +6,16 @@ import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
+import com.nashss.se.htmvault.dynamodb.models.WorkOrderComparator;
+import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
+import com.nashss.se.htmvault.models.SortOrder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class GetDeviceWorkOrdersActivity {
@@ -28,12 +33,32 @@ public class GetDeviceWorkOrdersActivity {
     public GetDeviceWorkOrdersResult handleRequest(final GetDeviceWorkOrdersRequest getDeviceWorkOrdersRequest) {
         log.info("Received GetDeviceWorkOrdersRequest {}", getDeviceWorkOrdersRequest);
 
+        String sortOrder = computeOrder(getDeviceWorkOrdersRequest.getSortOrder());
+
         String controlNumber = getDeviceWorkOrdersRequest.getControlNumber();
 
         List<WorkOrder> workOrders = workOrderDao.getWorkOrders(controlNumber);
 
+        if (sortOrder.equals(SortOrder.ASCENDING)) {
+            workOrders.sort(new WorkOrderComparator().reversed());
+        } else {
+            workOrders.sort(new WorkOrderComparator());
+        }
+
         return GetDeviceWorkOrdersResult.builder()
                 .withWorkOrders(new ModelConverter().toWorkOrderModels(workOrders))
                 .build();
+    }
+
+    private String computeOrder(String sortOrder) {
+        String computedSortOrder = sortOrder;
+
+        if (null == sortOrder) {
+            computedSortOrder = SortOrder.DEFAULT;
+        } else if (!Arrays.asList(SortOrder.values()).contains(sortOrder)) {
+            throw new InvalidAttributeValueException(String.format("Unrecognized sort order: '%s'", sortOrder));
+        }
+
+        return computedSortOrder;
     }
 }

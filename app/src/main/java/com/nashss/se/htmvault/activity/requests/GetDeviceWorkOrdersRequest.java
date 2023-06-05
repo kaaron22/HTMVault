@@ -5,15 +5,19 @@ import com.nashss.se.htmvault.models.SortOrder;
 public class GetDeviceWorkOrdersRequest {
 
     private final String controlNumber;
-    private final SortOrder sortOrder;
+    private final String sortOrder;
 
-    private GetDeviceWorkOrdersRequest(String controlNumber, SortOrder sortOrder) {
+    private GetDeviceWorkOrdersRequest(String controlNumber, String sortOrder) {
         this.controlNumber = controlNumber;
         this.sortOrder = sortOrder;
     }
 
     public String getControlNumber() {
         return controlNumber;
+    }
+
+    public String getSortOrder() {
+        return sortOrder;
     }
 
     @Override
@@ -31,14 +35,14 @@ public class GetDeviceWorkOrdersRequest {
     public static class Builder {
 
         private String controlNumber;
-        private SortOrder sortOrder;
+        private String sortOrder;
 
         public Builder withControlNumber(String controlNumber) {
             this.controlNumber = controlNumber;
             return this;
         }
 
-        public Builder withSortOrder(SortOrder sortOrder) {
+        public Builder withSortOrder(String sortOrder) {
             this.sortOrder = sortOrder;
             return this;
         }
