@@ -9,11 +9,11 @@ import DataStore from "../util/DataStore";
 class ViewDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage'], this);
+        this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage'], this);
         //this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'addSong'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.addDeviceToPage);
-        //this.dataStore.addChangeListener(this.addWorkOrdersToPage);
+        this.dataStore.addChangeListener(this.addWorkOrdersToPage);
         this.header = new Header(this.dataStore);
         console.log("add device constructor");
     }
@@ -27,9 +27,9 @@ class ViewDevice extends BindingClass {
         document.getElementById('control-number').innerText = "Loading Device ...";
         const device = await this.client.getDevice(deviceId);
         this.dataStore.set('device', device);
-        //document.getElementById('work-orders').innerText = "(loading work orders...)";
-        //const workOrders = await this.client.getDeviceWorkOrders(deviceId);
-        //this.dataStore.set('workOrders', workOrders);
+        document.getElementById('work-orders').innerText = "(loading work orders...)";
+        const workOrders = await this.client.getDeviceWorkOrders(deviceId);
+        this.dataStore.set('workOrders', workOrders);
     }
 
     /**
@@ -96,26 +96,39 @@ class ViewDevice extends BindingClass {
     }
 
     /**
-     * When the songs are updated in the datastore, update the list of songs on the page.
+     * When the work orders are updated in the datastore, update the list of work orders on the page.
      */
-    addSongsToPage() {
-        const songs = this.dataStore.get('songs')
+    addWorkOrdersToPage() {
+        const workOrders = this.dataStore.get('workOrders')
 
-        if (songs == null) {
+        if (workOrders == null) {
             return;
         }
 
-        let songHtml = '';
-        let song;
-        for (song of songs) {
-            songHtml += `
-                <li class="song">
-                    <span class="title">${song.title}</span>
-                    <span class="album">${song.album}</span>
-                </li>
-            `;
+        let workOrderSummaryHtml = '';
+        // table header row
+        workOrderSummaryHtml += `<table id="work-orders">
+                                   <tr>
+                                       <th>Work Order ID</th>
+                                       <th>Type</th>
+                                       <th>Completion Status</th>
+                                       <th>Created</th>
+                                       <th>Completed</th>
+                                   </tr>`
+
+        let workOrderSummary;
+        for (workOrderSummary of device.workOrderSummaries) {
+            workOrderSummaryHtml += `
+                <tr>
+                    <td>${workOrderSummary.workOrderId}</td>
+                    <td>${workOrderSummary.workOrderType}</td>
+                    <td>${workOrderSummary.completionStatus}</td>
+                    <td>${workOrderSummary.dateTimeCreated}</td>
+                    <td>${workOrderSummary.completionDateTime}</td>
+                </tr>`
         }
-        document.getElementById('songs').innerHTML = songHtml;
+        workOrderSummaryHtml += `</table>`
+        document.getElementById('work-orders').innerHTML = workOrderSummaryHtml;
     }
 
     /**
