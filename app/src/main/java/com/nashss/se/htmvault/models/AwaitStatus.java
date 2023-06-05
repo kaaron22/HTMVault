@@ -1,0 +1,5 @@
+package com.nashss.se.htmvault.models;
+
+public enum AwaitStatus {
+    AWAITING_PARTS, AWAITING_DIAGNOSIS, AWAITING_REPAIR, AWAITING_CUSTOMER_APPROVAL, AWAITING_PERFORMANCE_TESTING;
+}
