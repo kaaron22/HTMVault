@@ -8,7 +8,7 @@ import static com.nashss.se.htmvault.utils.CollectionUtils.copyToList;
 
 public class GetDeviceWorkOrdersResult {
 
-    private List<WorkOrder> workOrders;
+    private final List<WorkOrder> workOrders;
 
     private GetDeviceWorkOrdersResult(List<WorkOrder> workOrders) {
         this.workOrders = workOrders;
