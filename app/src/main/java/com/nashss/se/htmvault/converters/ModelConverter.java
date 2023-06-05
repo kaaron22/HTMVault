@@ -4,6 +4,7 @@ import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.models.DeviceModel;
 import com.nashss.se.htmvault.models.WorkOrderModel;
+import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,14 +55,14 @@ public class ModelConverter {
                 .withProblemFound(null == workOrder.getProblemFound() ? "" : workOrder.getProblemFound())
                 .withCreatedById(workOrder.getCreatedById())
                 .withCreatedByName(workOrder.getCreatedByName())
-                .withCreationDateTime(workOrder.getCreationDateTime().toString())
+                .withCreationDateTime(HTMVaultServiceUtils.formatLocalDateTime(workOrder.getCreationDateTime()))
                 .withClosedById(null == workOrder.getClosedById() ? "" : workOrder.getClosedById())
                 .withClosedByName(null == workOrder.getClosedByName() ? "" : workOrder.getClosedByName())
                 .withClosedDateTime(null == workOrder.getClosedDateTime() ? "" :
-                        workOrder.getClosedDateTime().toString())
+                        HTMVaultServiceUtils.formatLocalDateTime(workOrder.getClosedDateTime()))
                 .withSummary(null == workOrder.getSummary() ? "" : workOrder.getSummary())
                 .withCompletionDateTime(null == workOrder.getCompletionDateTime() ? "" :
-                        workOrder.getCompletionDateTime().toString())
+                        HTMVaultServiceUtils.formatLocalDateTime(workOrder.getCompletionDateTime()))
                 .build();
     }
 
