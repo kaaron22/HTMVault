@@ -1,10 +1,6 @@
 package com.nashss.se.htmvault.models;
 
 
-import com.nashss.se.htmvault.dynamodb.models.WorkOrderSummary;
-import com.nashss.se.htmvault.utils.CollectionUtils;
-
-import java.util.List;
 import java.util.Objects;
 
 public class DeviceModel {

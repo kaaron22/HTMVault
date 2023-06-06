@@ -2,22 +2,15 @@ package com.nashss.se.htmvault.converters;
 
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
-import com.nashss.se.htmvault.dynamodb.models.WorkOrderSummary;
 import com.nashss.se.htmvault.models.DeviceModel;
 import com.nashss.se.htmvault.models.ServiceStatus;
-import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
-import com.nashss.se.htmvault.models.WorkOrderType;
-import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ModelConverterTest {
 

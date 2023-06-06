@@ -3,15 +3,10 @@ package com.nashss.se.htmvault.dynamodb.models;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.nashss.se.htmvault.converters.LocalDateConverter;
 import com.nashss.se.htmvault.converters.ManufacturerModelConverter;
-import com.nashss.se.htmvault.converters.WorkOrderSummaryListConverter;
 import com.nashss.se.htmvault.models.ServiceStatus;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-
-import static com.nashss.se.htmvault.utils.CollectionUtils.copyToSet;
 
 @DynamoDBTable(tableName = "devices")
 public class Device {
