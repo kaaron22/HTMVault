@@ -17,7 +17,7 @@ class HTMVaultServiceUtilsTest {
     }
 
     @Test
-    void isValidString_validAlphaNumericSpaceOrDashStringProvided_returnsTrue() {
+    public void isValidString_validAlphaNumericSpaceOrDashStringProvided_returnsTrue() {
         // GIVEN
         String serialNumber = "a-valid-alphanumeric-string-with-6-dashes and 3 spaces";
 
@@ -29,7 +29,7 @@ class HTMVaultServiceUtilsTest {
     }
 
     @Test
-    void isValidString_invalidAlphaNumericSpaceOrDashStringProvided_returnsFalse() {
+    public void isValidString_invalidAlphaNumericSpaceOrDashStringProvided_returnsFalse() {
         // GIVEN
         String serialNumber = "abc 1234-+";
 
@@ -41,7 +41,7 @@ class HTMVaultServiceUtilsTest {
     }
 
     @Test
-    void formatLocalDateTime_localDateTimeProvided_returnsExpectedString() {
+    public void formatLocalDateTime_localDateTimeProvided_returnsExpectedString() {
         // GIVEN
         LocalDateTime localDateTime = LocalDateTime.of(LocalDate.of(2023, 5, 31),
                 LocalTime.of(12, 20, 10));
@@ -54,7 +54,7 @@ class HTMVaultServiceUtilsTest {
     }
 
     @Test
-    void formatLocalDateTime_nullLocalDateTimeProvided_returnsEmptyString() {
+    public void formatLocalDateTime_nullLocalDateTimeProvided_returnsEmptyString() {
         // GIVEN
         LocalDateTime localDateTime = null;
 
@@ -63,5 +63,19 @@ class HTMVaultServiceUtilsTest {
 
         // THEN
         assertEquals("", formattedLocalDateTime);
+    }
+
+    @Test
+    public void generateId_withPrefixAndLength_returnsStringWithPrefixAndAppendedNumericOfExpectedLength() {
+        // GIVEN
+        String prefix = "WR";
+        int length = 5;
+
+        // WHEN
+        String result = HTMVaultServiceUtils.generateId(prefix, length);
+
+        // THEN
+        assertTrue(result.startsWith(prefix));
+        assertEquals(length + prefix.length(), result.length());
     }
 }
