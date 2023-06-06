@@ -9,8 +9,6 @@ import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.nashss.se.htmvault.utils.CollectionUtils.copyToList;
-
 public class ModelConverter {
 
     public DeviceModel toDeviceModel(Device device) {

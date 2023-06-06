@@ -3,7 +3,6 @@ package com.nashss.se.htmvault.activity;
 import com.nashss.se.htmvault.activity.requests.GetDeviceWorkOrdersRequest;
 import com.nashss.se.htmvault.activity.results.GetDeviceWorkOrdersResult;
 import com.nashss.se.htmvault.converters.ModelConverter;
-import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrderComparator;
@@ -16,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class GetDeviceWorkOrdersActivity {

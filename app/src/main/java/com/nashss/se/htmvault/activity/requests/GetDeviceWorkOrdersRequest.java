@@ -1,7 +1,5 @@
 package com.nashss.se.htmvault.activity.requests;
 
-import com.nashss.se.htmvault.models.SortOrder;
-
 public class GetDeviceWorkOrdersRequest {
 
     private final String controlNumber;
