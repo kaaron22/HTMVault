@@ -28,7 +28,6 @@ class ViewDevice extends BindingClass {
         const device = await this.client.getDevice(deviceId);
         this.dataStore.set('device', device);
         const order = urlParams.get('order');
-        console.log(order);
         document.getElementById('work-orders').innerText = "(loading work orders...)";
         const workOrders = await this.client.getDeviceWorkOrders(deviceId, order);
         this.dataStore.set('workOrders', workOrders);
