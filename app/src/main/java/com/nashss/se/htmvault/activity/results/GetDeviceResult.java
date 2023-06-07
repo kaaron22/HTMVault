@@ -2,11 +2,11 @@ package com.nashss.se.htmvault.activity.results;
 
 import com.nashss.se.htmvault.models.DeviceModel;
 
-public class AddDeviceResult {
+public class GetDeviceResult {
 
     private final DeviceModel device;
 
-    private AddDeviceResult(DeviceModel device) {
+    private GetDeviceResult(DeviceModel device) {
         this.device = device;
     }
 
@@ -16,7 +16,7 @@ public class AddDeviceResult {
 
     @Override
     public String toString() {
-        return "AddDeviceResult{" +
+        return "GetDeviceResult{" +
                 "deviceModel=" + device +
                 '}';
     }
@@ -26,7 +26,6 @@ public class AddDeviceResult {
     }
 
     public static class Builder {
-
         private DeviceModel deviceModel;
 
         public Builder withDeviceModel(DeviceModel deviceModel) {
@@ -34,9 +33,8 @@ public class AddDeviceResult {
             return this;
         }
 
-        public AddDeviceResult build() {
-            return new AddDeviceResult(deviceModel);
+        public GetDeviceResult build() {
+            return new GetDeviceResult(deviceModel);
         }
     }
-
 }

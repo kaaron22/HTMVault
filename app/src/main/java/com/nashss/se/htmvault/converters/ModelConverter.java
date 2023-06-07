@@ -3,6 +3,10 @@ package com.nashss.se.htmvault.converters;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.models.DeviceModel;
 
+import java.util.List;
+
+import static com.nashss.se.htmvault.utils.CollectionUtils.copyToList;
+
 public class ModelConverter {
 
     public DeviceModel toDeviceModel(Device device) {
@@ -27,7 +31,6 @@ public class ModelConverter {
                 .withAddedById(device.getAddedById())
                 .withAddedByName(device.getAddedByName())
                 .withNotes(null == device.getNotes() ? "" : device.getNotes())
-                .withWorkOrderSummaries(device.getWorkOrders())
                 .build();
     }
 }

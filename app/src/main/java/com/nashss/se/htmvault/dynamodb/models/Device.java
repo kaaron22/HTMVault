@@ -9,6 +9,9 @@ import com.nashss.se.htmvault.models.ServiceStatus;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
+import static com.nashss.se.htmvault.utils.CollectionUtils.copyToSet;
 
 @DynamoDBTable(tableName = "devices")
 public class Device {
@@ -32,7 +35,6 @@ public class Device {
     private String addedById;
     private String addedByName;
     private String notes;
-    private List<WorkOrderSummary> workOrders;
 
     @DynamoDBHashKey(attributeName = "controlNumber")
     public String getControlNumber() {
@@ -174,16 +176,6 @@ public class Device {
         this.notes = notes;
     }
 
-    @DynamoDBTypeConverted(converter = WorkOrderSummaryListConverter.class)
-    @DynamoDBAttribute(attributeName = "workOrders")
-    public List<WorkOrderSummary> getWorkOrders() {
-        return workOrders;
-    }
-
-    public void setWorkOrders(List<WorkOrderSummary> workOrders) {
-        this.workOrders = workOrders;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -202,14 +194,13 @@ public class Device {
                 Objects.equals(inventoryAddDate, device.inventoryAddDate) &&
                 Objects.equals(addedById, device.addedById) &&
                 Objects.equals(addedByName, device.addedByName) &&
-                Objects.equals(notes, device.notes) &&
-                Objects.equals(workOrders, device.workOrders);
+                Objects.equals(notes, device.notes);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(controlNumber, serialNumber, manufacturerModel, manufactureDate, serviceStatus,
                 facilityName, assignedDepartment, complianceThroughDate, lastPmCompletionDate, nextPmDueDate,
-                inventoryAddDate, addedById, addedByName, notes, workOrders);
+                inventoryAddDate, addedById, addedByName, notes);
     }
 }

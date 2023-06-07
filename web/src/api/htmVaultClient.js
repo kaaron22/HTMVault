@@ -3,19 +3,20 @@ import BindingClass from "../util/bindingClass";
 import Authenticator from "./authenticator";
 
 /**
- * Client to call the MusicPlaylistService.
+ * Client to call the HTMVaultService.
  *
  * This could be a great place to explore Mixins. Currently the client is being loaded multiple times on each page,
  * which we could avoid using inheritance or Mixins.
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes#Mix-ins
  * https://javascript.info/mixins
   */
-export default class MusicPlaylistClient extends BindingClass {
+export default class HTMVaultClient extends BindingClass {
 
     constructor(props = {}) {
         super();
 
-        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPlaylist', 'getPlaylistSongs', 'createPlaylist', 'addDevice'];
+        //const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPlaylist', 'getPlaylistSongs', 'createPlaylist', 'addDevice'];
+        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -72,6 +73,21 @@ export default class MusicPlaylistClient extends BindingClass {
     }
 
     /**
+     * Gets the device for the given ID.
+     * @param controlNumber Unique identifier for a device
+     * @param errorCallback (Optional) A function to execute if the call fails.
+     * @returns The device's metadata.
+     */
+    async getDevice(controlNumber, errorCallback) {
+        try {
+            const response = await this.axiosClient.get(`devices/${controlNumber}`);
+            return response.data.device;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
+    /**
      * Gets the playlist for the given ID.
      * @param id Unique identifier for a playlist
      * @param errorCallback (Optional) A function to execute if the call fails.
@@ -102,29 +118,17 @@ export default class MusicPlaylistClient extends BindingClass {
     }
 
     /**
-     * Create a new playlist owned by the current user.
-     * @param name The name of the playlist to create.
-     * @param tags Metadata tags to associate with a playlist.
+     * Add a new device to the inventory.
+     * @param serialNumber The serial number of the device.
+     * @param manufacturer The manufacturer of the device.
+     * @param model The model of the device.
+     * @param facilityName The facility where this device is located.
+     * @param assignedDepartment The department within the facility to which this device is assigned.
+     * @param manufactureDate The date of manufacture of this device.
+     * @param notes Pertinent information on the device not otherwise stored in an attribute.
      * @param errorCallback (Optional) A function to execute if the call fails.
-     * @returns The playlist that has been created.
+     * @returns The device that has been added to the inventory.
      */
-    async createPlaylist(name, tags, errorCallback) {
-        try {
-            const token = await this.getTokenOrThrow("Only authenticated users can create playlists.");
-            const response = await this.axiosClient.post(`playlists`, {
-                name: name,
-                tags: tags
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data.playlist;
-        } catch (error) {
-            this.handleError(error, errorCallback)
-        }
-    }
-
     async addDevice(serialNumber, manufacturer, model, facilityName, assignedDepartment,
      manufactureDate, notes, errorCallback) {
         try {

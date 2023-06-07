@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" src="assets/viewDevice.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body class="background">
+    <header class="header" id="header"></header>
+    <div class="card">
+        <h2>Device Record</h2>
+        <h4>Control Number: <span id="control-number"></span></h4>
+        <h4>Serial Number: <span id="serial-number"></span></h4>
+        <h4>Manufacturer: <span id="manufacturer"></span></h4>
+        <h4>Model: <span id="model"></span></h4>
+        <h4>Manufacture Date: <span id="manufacture-date"></span></h4>
+        <h4>Service Status: <span id="service-status"></span></h4>
+        <h4>Facility Name: <span id="facility-name"></span></h4>
+        <h4>Assigned Department: <span id="assigned-department"></span></h4>
+        <h4>Compliance Through: <span id="compliance-through-date"></span></h4>
+        <h4>Last PM Completed: <span id="last-pm-completion-date"></span></h4>
+        <h4>Next PM Due: <span id="next-pm-due-date"></span></h4>
+        <h4>PM Frequency (months): <span id="pm-frequency-months"></span></h4>
+        <h4>Inventory Add Date: <span id="inventory-add-date"></span></h4>
+        <h4>Added By (ID): <span id="added-by-id"></span></h4>
+        <h4>Added By (Name): <span id="added-by-name"></span></h4>
+        <h4>Notes: <span id="device-notes"></span></h4>
+        <ol id="work-orders"></ol>
+    </div>
+    <div class="card">
+        <h2>Create New Work Order</h2>
+        <form class="card-content" id="create-new-work-order-form">
+            <p class="hidden error" id="error-message"> </p>
+            <p class="form-field">
+                <label for="workOrderType">Work Order Type</label>
+                <select class=validated-field id="workOrderType" required>
+                    <option value="">Select a Work Order Type</option>
+                    <option value="ACCEPTANCE_TESTING">Acceptance Testing</option>
+                    <option value="PREVENTATIVE_MAINTENANCE">Preventative Maintenance</option>
+                    <option value="REPAIR">Repair</option>
+                </select>
+            </p>
+            <p class="form-field">
+                <label>Problem Reported</label>
+                <input type="text" class=validated-field id="problem-reported" required>
+            </p>
+            <p class="form-field">
+                <label>Problem Found</label>
+                <input type="text" id="problem-found">
+            </p>
+        </form>
+        <a href="#" class="button" id="add-new-work-order">Create New Work Order</a>
+    </div>
+</body>
+
+</html>

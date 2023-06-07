@@ -25,13 +25,12 @@ public class DeviceModel {
     private final String addedById;
     private final String addedByName;
     private final String notes;
-    private final List<WorkOrderSummary> workOrderSummaries;
 
     private DeviceModel(String controlNumber, String serialNumber, String manufacturer, String model,
                        String manufactureDate, String serviceStatus, String facilityName, String assignedDepartment,
                        String complianceThroughDate, String lastPmCompletionDate, String nextPmDueDate,
                        int maintenanceFrequencyInMonths, String inventoryAddDate, String addedById, String addedByName,
-                       String notes, List<WorkOrderSummary> workOrderSummaries) {
+                       String notes) {
         this.controlNumber = controlNumber;
         this.serialNumber = serialNumber;
         this.manufacturer = manufacturer;
@@ -48,7 +47,6 @@ public class DeviceModel {
         this.addedById = addedById;
         this.addedByName = addedByName;
         this.notes = notes;
-        this.workOrderSummaries = workOrderSummaries;
     }
 
     public String getControlNumber() {
@@ -115,10 +113,6 @@ public class DeviceModel {
         return notes;
     }
 
-    public List<WorkOrderSummary> getWorkOrderSummaries() {
-        return CollectionUtils.copyToList(workOrderSummaries);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -139,15 +133,14 @@ public class DeviceModel {
                 Objects.equals(inventoryAddDate, that.inventoryAddDate) &&
                 Objects.equals(addedById, that.addedById) &&
                 Objects.equals(addedByName, that.addedByName) &&
-                Objects.equals(notes, that.notes) &&
-                Objects.equals(workOrderSummaries, that.workOrderSummaries);
+                Objects.equals(notes, that.notes);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(controlNumber, serialNumber, manufacturer, model, manufactureDate, serviceStatus,
                 facilityName, assignedDepartment, complianceThroughDate, lastPmCompletionDate, nextPmDueDate,
-                maintenanceFrequencyInMonths, inventoryAddDate, addedById, addedByName, notes, workOrderSummaries);
+                maintenanceFrequencyInMonths, inventoryAddDate, addedById, addedByName, notes);
     }
 
     public static Builder builder() {
@@ -171,7 +164,6 @@ public class DeviceModel {
         private String addedById;
         private String addedByName;
         private String notes;
-        private List<WorkOrderSummary> workOrderSummaries;
 
         public Builder withControlNumber(String controlNumber) {
             this.controlNumber = controlNumber;
@@ -253,15 +245,10 @@ public class DeviceModel {
             return this;
         }
 
-        public Builder withWorkOrderSummaries(List<WorkOrderSummary> workOrderSummaries) {
-            this.workOrderSummaries = CollectionUtils.copyToList(workOrderSummaries);
-            return this;
-        }
-
         public DeviceModel build() {
             return new DeviceModel(controlNumber, serialNumber, manufacturer, model, manufactureDate, serviceStatus,
                     facilityName, assignedDepartment, complianceThroughDate, lastPmCompletionDate, nextPmDueDate,
-                    maintenanceFrequencyInMonths, inventoryAddDate, addedById, addedByName, notes, workOrderSummaries);
+                    maintenanceFrequencyInMonths, inventoryAddDate, addedById, addedByName, notes);
         }
     }
 }

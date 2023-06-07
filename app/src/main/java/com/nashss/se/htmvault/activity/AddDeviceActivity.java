@@ -131,11 +131,10 @@ public class AddDeviceActivity {
         device.setAddedById(addDeviceRequest.getCustomerId());
         device.setAddedByName(addDeviceRequest.getCustomerName());
         device.setNotes(null == addDeviceRequest.getNotes() ? "" : addDeviceRequest.getNotes());
-        device.setWorkOrders(new ArrayList<>());
 
         Device savedDevice = deviceDao.saveDevice(device);
 
-        return new AddDeviceResult.Builder()
+        return AddDeviceResult.builder()
                 .withDeviceModel(new ModelConverter().toDeviceModel(savedDevice))
                 .build();
     }
