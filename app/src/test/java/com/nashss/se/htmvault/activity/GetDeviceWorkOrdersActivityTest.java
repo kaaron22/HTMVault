@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,8 +60,31 @@ class GetDeviceWorkOrdersActivityTest {
                 getDeviceWorkOrdersActivity.handleRequest(getDeviceWorkOrdersRequest);
         List<WorkOrderModel> workOrderModels = getDeviceWorkOrdersResult.getWorkOrders();
 
+        // list of workOrderIds assigned to generated work orders
+        List<String> expectedSortedWorkOrderIds = sortedWorkOrderIds(workOrders);
+
+        // expected descending sort order with no sort order set in request
+        Collections.reverse(expectedSortedWorkOrderIds);
+
         // THEN
         WorkOrderTestHelper.assertWorkOrdersEqualWorkOrderModels(workOrders, workOrderModels);
+        assertWorkOrderModelsSortedCorrectly(expectedSortedWorkOrderIds, workOrderModels);
+    }
+
+    private List<String> sortedWorkOrderIds(List<WorkOrder> generatedWorkOrders) {
+        List<String> workOrderIds = new ArrayList<>();
+        for (WorkOrder workOrder : generatedWorkOrders) {
+            workOrderIds.add(workOrder.getWorkOrderId());
+        }
+        Collections.sort(workOrderIds);
+        return workOrderIds;
+    }
+
+    private void assertWorkOrderModelsSortedCorrectly(List<String> expectedSortedWorkOrderIds,
+                                                       List<WorkOrderModel> sortedWorkOrderModels) {
+        for(int i = 0; i < sortedWorkOrderModels.size(); i++) {
+            assertEquals(expectedSortedWorkOrderIds.get(i), sortedWorkOrderModels.get(i).getWorkOrderId());
+        }
     }
 
 }
