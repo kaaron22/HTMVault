@@ -2,13 +2,19 @@ package com.nashss.se.htmvault.converters;
 
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
+import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.models.DeviceModel;
 import com.nashss.se.htmvault.models.ServiceStatus;
 
+import com.nashss.se.htmvault.models.WorkOrderModel;
+import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
+import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -77,7 +83,7 @@ class ModelConverterTest {
     }
 
     @Test
-    void toDeviceModel_deviceWithAllValuesPopulated_convertsAndReturnsDeviceModelSuccessfully() {
+    public void toDeviceModel_deviceWithAllValuesPopulated_convertsAndReturnsDeviceModelSuccessfully() {
         // GIVEN
         // setup
 
@@ -143,5 +149,36 @@ class ModelConverterTest {
         assertEquals(addedById, deviceModel.getAddedById());
         assertEquals(addedByName, deviceModel.getAddedByName());
         assertEquals("", deviceModel.getNotes());
+    }
+
+    @Test
+    public void toWorkOrderModel_withWorkOrder_convertsToWorkOrderModel() {
+        // GIVEN
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1,
+                HTMVaultServiceUtils.generateId("", 6), "a serial number",
+                device.getManufacturerModel(), facilityName, assignedDepartment);
+
+        // WHEN
+        WorkOrderModel workOrderModel = modelConverter.toWorkOrderModel(workOrder);
+
+        // THEN
+        WorkOrderTestHelper.assertWorkOrderEqualsWorkOrderModel(workOrder, workOrderModel);
+    }
+
+    @Test
+    public void toWorkOrderModel_withListWorkOrders_convertsToListWorkOrderModels() {
+        // GIVEN
+        List<WorkOrder> workOrders = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            workOrders.add(WorkOrderTestHelper.generateWorkOrder(1,
+                    HTMVaultServiceUtils.generateId("", 6), "a serial number",
+                    device.getManufacturerModel(), facilityName, assignedDepartment));
+        }
+
+        // WHEN
+        List<WorkOrderModel> workOrderModels = modelConverter.toWorkOrderModels(workOrders);
+
+        // THEN
+        WorkOrderTestHelper.assertWorkOrdersEqualWorkOrderModels(workOrders, workOrderModels);
     }
 }
