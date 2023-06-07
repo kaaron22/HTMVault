@@ -2,6 +2,7 @@ package com.nashss.se.htmvault.activity;
 
 import com.nashss.se.htmvault.activity.requests.RetireDeviceRequest;
 import com.nashss.se.htmvault.activity.results.RetireDeviceResult;
+import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
@@ -9,6 +10,7 @@ import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.exceptions.RetireDeviceWithOpenWorkOrdersException;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
+import com.nashss.se.htmvault.models.ServiceStatus;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,11 +54,14 @@ public class RetireDeviceActivity {
         }
 
         // if these conditions are met, we can proceed to perform a soft delete (update the service status to 'RETIRED')
-
+        device.setServiceStatus(ServiceStatus.RETIRED);
 
         // save the device changes to the database
-
+        deviceDao.saveDevice(device);
 
         // convert and return the device
+        return RetireDeviceResult.builder()
+                .withDeviceModel(new ModelConverter().toDeviceModel(device))
+                .build();
     }
 }
