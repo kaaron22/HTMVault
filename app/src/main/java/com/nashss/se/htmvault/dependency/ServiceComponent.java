@@ -16,4 +16,6 @@ public interface ServiceComponent {
     GetDeviceActivity provideGetDeviceActivity();
 
     GetDeviceWorkOrdersActivity provideGetDeviceWorkOrdersActivity();
+
+    RetireDeviceActivity provideRetireDeviceActivity();
 }
