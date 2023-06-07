@@ -174,6 +174,32 @@ class GetDeviceWorkOrdersActivityTest {
         verify(metricsPublisher).addCount(MetricsConstants.GETDEVICEWORKORDERS_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
+    @Test
+    public void handleRequest_noWorkOrdersFoundForControlNumber_returnsEmptyListWorkOrderModelsInResult() {
+        // GIVEN
+        GetDeviceWorkOrdersRequest getDeviceWorkOrdersRequest = GetDeviceWorkOrdersRequest.builder()
+                .withControlNumber("123")
+                .build();
+
+        List<WorkOrder> workOrders = new ArrayList<>();
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+
+        when(workOrderDao.getWorkOrders(anyString())).thenReturn(workOrders);
+
+        // WHEN
+        GetDeviceWorkOrdersResult getDeviceWorkOrdersResult =
+                getDeviceWorkOrdersActivity.handleRequest(getDeviceWorkOrdersRequest);
+        List<WorkOrderModel> workOrderModels = getDeviceWorkOrdersResult.getWorkOrders();
+
+        // THEN
+        assertTrue(workOrderModels.isEmpty());
+        verify(workOrderDao).getWorkOrders("123");
+        verify(metricsPublisher).addCount(MetricsConstants.GETDEVICEWORKORDERS_INVALIDATTRIBUTEVALUE_COUNT, 0);
+    }
+
+
     private List<String> sortWorkOrderIds(List<WorkOrder> generatedWorkOrders) {
         List<String> workOrderIds = new ArrayList<>();
         for (WorkOrder workOrder : generatedWorkOrders) {
