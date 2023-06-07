@@ -4,6 +4,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 
 public class HTMVaultServiceUtils {
 
@@ -47,5 +48,10 @@ public class HTMVaultServiceUtils {
 
     public static String generateId(String prefix, int length) {
         return prefix + RandomStringUtils.randomNumeric(length);
+    }
+
+    public static int generateRandomIntWithLimit(int exclusiveLimit) {
+        Random random = new Random();
+        return random.nextInt(exclusiveLimit);
     }
 }

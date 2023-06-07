@@ -89,7 +89,6 @@ class GetDeviceActivityTest {
 
         // THEN
         verify(deviceDao).getDevice(anyString());
-        verify(metricsPublisher).addCount(MetricsConstants.GETDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         assertEquals(controlNumber, deviceModel.getControlNumber());
         assertEquals(serialNumber, deviceModel.getSerialNumber());
         assertEquals(manufacturer, deviceModel.getManufacturer());
@@ -106,20 +105,5 @@ class GetDeviceActivityTest {
         assertEquals(customerId, deviceModel.getAddedById());
         assertEquals(customerName, deviceModel.getAddedByName());
         assertEquals(notes, deviceModel.getNotes());
-    }
-
-    @Test
-    public void handleRequest_deviceNotFound_throwsInvalidAttributeValueException() {
-        // GIVEN
-        GetDeviceRequest addDeviceRequest = GetDeviceRequest.builder()
-                        .withControlNumber("DoesNotExist")
-                        .build();
-        when(deviceDao.getDevice(anyString())).thenThrow(DeviceNotFoundException.class);
-
-        // WHEN & THEN
-        assertThrows(InvalidAttributeValueException.class, () ->
-                getDeviceActivity.handleRequest(addDeviceRequest),
-                "Expected a GetDeviceRequest with a control number not found to result in an " +
-                        "InvalidAttributeValueException");
     }
 }

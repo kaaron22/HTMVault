@@ -78,7 +78,7 @@ class AddDevice extends BindingClass {
     redirectToViewDevice() {
         const device = this.dataStore.get('device');
         if (device != null) {
-            window.location.href = `/device.html?controlNumber=${device.controlNumber}`;
+            window.location.href = `/device.html?controlNumber=${device.controlNumber}&order=DESCENDING`;
         }
     }
 }

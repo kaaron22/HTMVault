@@ -9,11 +9,11 @@ import DataStore from "../util/DataStore";
 class ViewDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage'], this);
+        this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage'], this);
         //this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'addSong'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.addDeviceToPage);
-        //this.dataStore.addChangeListener(this.addWorkOrdersToPage);
+        this.dataStore.addChangeListener(this.addWorkOrdersToPage);
         this.header = new Header(this.dataStore);
         console.log("add device constructor");
     }
@@ -27,9 +27,10 @@ class ViewDevice extends BindingClass {
         document.getElementById('control-number').innerText = "Loading Device ...";
         const device = await this.client.getDevice(deviceId);
         this.dataStore.set('device', device);
-        //document.getElementById('work-orders').innerText = "(loading work orders...)";
-        //const workOrders = await this.client.getDeviceWorkOrders(deviceId);
-        //this.dataStore.set('workOrders', workOrders);
+        const order = urlParams.get('order');
+        document.getElementById('work-orders').innerText = "(loading work orders...)";
+        const workOrders = await this.client.getDeviceWorkOrders(deviceId, order);
+        this.dataStore.set('workOrders', workOrders);
     }
 
     /**
@@ -68,8 +69,19 @@ class ViewDevice extends BindingClass {
         document.getElementById('added-by-id').innerText = device.addedById;
         document.getElementById('added-by-name').innerText = device.addedByName;
         document.getElementById('device-notes').innerText = device.notes;
+    }
 
-        /*let workOrderSummaryHtml = '';
+    /**
+     * When the work orders are updated in the datastore, update the list of work orders on the page.
+     */
+    addWorkOrdersToPage() {
+        const workOrders = this.dataStore.get('workOrders')
+
+        if (workOrders == null) {
+            return;
+        }
+
+        let workOrderSummaryHtml = '';
         // table header row
         workOrderSummaryHtml += `<table id="work-orders">
                                    <tr>
@@ -81,41 +93,18 @@ class ViewDevice extends BindingClass {
                                    </tr>`
 
         let workOrderSummary;
-        for (workOrderSummary of device.workOrderSummaries) {
+        for (workOrderSummary of workOrders) {
             workOrderSummaryHtml += `
                 <tr>
                     <td>${workOrderSummary.workOrderId}</td>
                     <td>${workOrderSummary.workOrderType}</td>
-                    <td>${workOrderSummary.completionStatus}</td>
-                    <td>${workOrderSummary.dateTimeCreated}</td>
+                    <td>${workOrderSummary.workOrderCompletionStatus}</td>
+                    <td>${workOrderSummary.creationDateTime}</td>
                     <td>${workOrderSummary.completionDateTime}</td>
                 </tr>`
         }
         workOrderSummaryHtml += `</table>`
-        document.getElementById('work-orders').innerHTML = workOrderSummaryHtml;*/
-    }
-
-    /**
-     * When the songs are updated in the datastore, update the list of songs on the page.
-     */
-    addSongsToPage() {
-        const songs = this.dataStore.get('songs')
-
-        if (songs == null) {
-            return;
-        }
-
-        let songHtml = '';
-        let song;
-        for (song of songs) {
-            songHtml += `
-                <li class="song">
-                    <span class="title">${song.title}</span>
-                    <span class="album">${song.album}</span>
-                </li>
-            `;
-        }
-        document.getElementById('songs').innerHTML = songHtml;
+        document.getElementById('work-orders').innerHTML = workOrderSummaryHtml;
     }
 
     /**

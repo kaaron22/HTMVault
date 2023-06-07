@@ -39,10 +39,10 @@ public class DeviceDao {
         Device device = dynamoDBMapper.load(Device.class, controlNumber);
 
         if (null == device) {
-            metricsPublisher.addCount(MetricsConstants.GETDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            metricsPublisher.addCount(MetricsConstants.GETDEVICE_DEVICENOTFOUND_COUNT, 1);
             throw new DeviceNotFoundException("Could not find device with control number " + controlNumber);
         }
-        metricsPublisher.addCount(MetricsConstants.GETDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
+        metricsPublisher.addCount(MetricsConstants.GETDEVICE_DEVICENOTFOUND_COUNT, 0);
         return device;
     }
 

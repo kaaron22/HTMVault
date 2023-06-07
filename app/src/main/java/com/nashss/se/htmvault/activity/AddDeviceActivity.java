@@ -23,7 +23,6 @@ import org.apache.logging.log4j.Logger;
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 
 import static com.nashss.se.htmvault.utils.NullUtils.ifNull;
 
