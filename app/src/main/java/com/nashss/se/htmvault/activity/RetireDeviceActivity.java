@@ -48,7 +48,7 @@ public class RetireDeviceActivity {
         for (WorkOrder workOrder : workOrders) {
             if (workOrder.getWorkOrderCompletionStatus() == WorkOrderCompletionStatus.OPEN) {
                 throw new RetireDeviceWithOpenWorkOrdersException("Work order " + workOrder.getWorkOrderId() +
-                        "has not yet been completed/closed. All work orders for device (" + controlNumber + ") must " +
+                        " has not yet been completed/closed. All work orders for device (" + controlNumber + ") must " +
                         "be completed and closed before device can be retired");
             }
         }
