@@ -7,7 +7,9 @@ import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
+import com.nashss.se.htmvault.exceptions.RetireDeviceWithOpenWorkOrdersException;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
+import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,11 +43,19 @@ public class RetireDeviceActivity {
         List<WorkOrder> workOrders = workOrderDao.getWorkOrders(controlNumber);
 
         // ensure none of the work orders are still open (if so, they need to be completed/closed first)
-
+        for (WorkOrder workOrder : workOrders) {
+            if (workOrder.getWorkOrderCompletionStatus() == WorkOrderCompletionStatus.OPEN) {
+                throw new RetireDeviceWithOpenWorkOrdersException("Work order " + workOrder.getWorkOrderId() +
+                        "has not yet been completed/closed. All work orders for device (" + controlNumber + ") must " +
+                        "be completed and closed before device can be retired");
+            }
+        }
 
         // if these conditions are met, we can proceed to perform a soft delete (update the service status to 'RETIRED')
 
+
         // save the device changes to the database
+
 
         // convert and return the device
     }
