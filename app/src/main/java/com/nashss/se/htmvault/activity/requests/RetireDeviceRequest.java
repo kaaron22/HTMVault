@@ -12,6 +12,10 @@ public class RetireDeviceRequest {
         this.controlNumber = controlNumber;
     }
 
+    public String getControlNumber() {
+        return controlNumber;
+    }
+
     @Override
     public String toString() {
         return "RetireDeviceRequest{" +
