@@ -3,6 +3,7 @@ package com.nashss.se.htmvault.dependency;
 import com.nashss.se.htmvault.activity.AddDeviceActivity;
 import com.nashss.se.htmvault.activity.GetDeviceActivity;
 import com.nashss.se.htmvault.activity.GetDeviceWorkOrdersActivity;
+import com.nashss.se.htmvault.activity.RetireDeviceActivity;
 import dagger.Component;
 
 import javax.inject.Singleton;

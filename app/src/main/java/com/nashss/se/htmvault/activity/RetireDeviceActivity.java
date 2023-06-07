@@ -29,7 +29,7 @@ public class RetireDeviceActivity {
     @Inject
     public RetireDeviceActivity(DeviceDao deviceDao, WorkOrderDao workOrderDao, MetricsPublisher metricsPublisher) {
         this.deviceDao = deviceDao;
-        this.workOrderDao = workOrderDao
+        this.workOrderDao = workOrderDao;
         this.metricsPublisher = metricsPublisher;
     }
 
