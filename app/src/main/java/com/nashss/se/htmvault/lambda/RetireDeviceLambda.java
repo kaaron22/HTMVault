@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class RetireDeviceLambda
         extends LambdaActivityRunner<RetireDeviceRequest, RetireDeviceResult>
-        implements RequestHandler<AuthenticatedLambdaRequest<RetireDeviceRequest>, LambdaResponse> {
+        implements RequestHandler<LambdaRequest<RetireDeviceRequest>, LambdaResponse> {
 
     private final Logger log = LogManager.getLogger();
 
@@ -23,16 +23,13 @@ public class RetireDeviceLambda
      * @return The Lambda Function output
      */
     @Override
-    public LambdaResponse handleRequest(AuthenticatedLambdaRequest<RetireDeviceRequest> input, Context context) {
+    public LambdaResponse handleRequest(LambdaRequest<RetireDeviceRequest> input, Context context) {
         log.info("handleRequest");
         return super.runActivity(
-                () -> {
-                    Map<String, String> queryStringParameters = input.getQueryStringParameters();
-                    return input.fromUserClaims(claims ->
-                            RetireDeviceRequest.builder()
-                                    .withControlNumber(queryStringParameters.get("controlNumber"))
-                                    .build());
-                },
+                () -> input.fromPath(path ->
+                        RetireDeviceRequest.builder()
+                                .withControlNumber(path.get("controlNumber"))
+                                .build()),
                 (request, serviceComponent) -> serviceComponent.provideRetireDeviceActivity().handleRequest(request)
         );
     }

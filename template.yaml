@@ -351,6 +351,8 @@ Resources:
           Properties:
             Path: /devices/{controlNumber}
             Method: delete
+            Auth:
+              Authorizer: 'NONE'
 
   #-----------------------------------------------------
   # DynamoDB Configuration
