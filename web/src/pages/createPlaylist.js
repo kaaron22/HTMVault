@@ -9,9 +9,11 @@ import DataStore from '../util/DataStore';
 class CreatePlaylist extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['mount', 'submit', 'redirectToViewPlaylist'], this);
+        this.bindClassMethods(['mount', 'submit', 'redirectToViewDevice'], this);
+        //this.bindClassMethods(['mount', 'submit', 'redirectToViewPlaylist'], this);
         this.dataStore = new DataStore();
-        this.dataStore.addChangeListener(this.redirectToViewPlaylist);
+        //this.dataStore.addChangeListener(this.redirectToViewPlaylist);
+        this.dataStore.addChangeListener(this.redirectToViewDevice);
         this.header = new Header(this.dataStore);
     }
 
@@ -41,22 +43,42 @@ class CreatePlaylist extends BindingClass {
         const origButtonText = createButton.innerText;
         createButton.innerText = 'Loading...';
 
-        const playlistName = document.getElementById('playlist-name').value;
-        const tagsText = document.getElementById('tags').value;
+        const deviceSerialNumber = document.getElementById('serial-number').value;
+        const deviceManufacturer = document.getElementById('manufacturer').value;
+        const deviceModel = document.getElementById('model').value;
+        const deviceFacilityName = document.getElementById('facility-name').value;
+        const deviceAssignedDepartment = document.getElementById('assigned-department').value;
+        const deviceManufactureDate = document.getElementById('manufacture-date').value;
+        const deviceNotes = document.getElementById('notes').value;
 
-        let tags;
-        if (tagsText.length < 1) {
-            tags = null;
+        let manufactureDate;
+        if (deviceManufactureDate.length < 1) {
+            manufactureDate = null;
         } else {
-            tags = tagsText.split(/\s*,\s*/);
+            manufactureDate = deviceManufactureDate;
         }
 
-        const playlist = await this.client.createPlaylist(playlistName, tags, (error) => {
+        let notes;
+        if (deviceNotes.length < 1) {
+            notes = null;
+        } else {
+            notes = deviceNotes;
+        }
+
+        const device = await this.client.addDevice(deviceSerialNumber, deviceManufacturer,
+         deviceModel, deviceFacilityName, deviceAssignedDepartment, manufactureDate, notes, (error) => {
             createButton.innerText = origButtonText;
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');
         });
-        this.dataStore.set('playlist', playlist);
+        this.dataStore.set('device', device);
+    }
+
+    redirectToViewDevice() {
+        const device = this.dataStore.get('device');
+        if (device != null) {
+            window.location.href = `/device.html?controlNumber=${device.controlNumber}`;
+        }
     }
 
     /**

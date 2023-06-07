@@ -9,21 +9,45 @@
 <body class="background">
     <header class="header" id="header"></header>
     <div class="card">
-        <h2>Create Playlist</h2>
-        <form class="card-content" id="create-playlist-form">
+        <h2>Add New Device</h2>
+        <form class="card-content" id="add-device-form">
             <p class="hidden error" id="error-message"> </p>
             <p class="form-field">
-                <label>Playlist Name</label>
-                <input type="text" required class="validated-field" id="playlist-name" placeholder="smooth-jamz"
-                    autofocus>
+                <label>Serial Number (numbers, letters, and dashes only)</label>
+                <input type="text" required class="validated-field" id="serial-number" placeholder="i.e. S-1234, B567, etc."
+                       autofocus>
             </p>
             <p class="form-field">
-                <label>Tags</label>
-                <input type="text" id="tags" class="tags" placeholder="tag1,tag2"
-                    data-tip="Must be a comma separated list of tags">
+                <label>Manufacturer</label>
+                <input type="text" required class="validated-field" id="manufacturer" placeholder="i.e. Defib Corp, IV Pump Corp, etc."
+                       autofocus>
+            </p>
+            <p class="form-field">
+                <label>Model</label>
+                <input type="text" required class="validated-field" id="model" placeholder="i.e. X-1000, LP-200, etc"
+                       autofocus>
+            </p>
+            <p class="form-field">
+                <label>Facility Name</label>
+                <input type="text" required class="validated-field" id="facility-name" placeholder="i.e. General Hospital, Eastside Family Practice, etc."
+                       autofocus>
+            </p>
+            <p class="form-field">
+                <label>Assigned Department</label>
+                <input type="text" required class="validated-field" id="assigned-department" placeholder="i.e. ICU, Surgery, ER, etc."
+                       autofocus>
+            </p>
+            <p class="form-field">
+                <label>Manufacture Date (optional)</label>
+                <input type="date" id="manufacture-date" >
+            </p>
+            <p class="form-field">
+                <label>Notes (optional)</label>
+                <input type="text" id="notes" placeholder="i.e. kept in storage A when not in use"
+                       autofocus>
             </p>
             <p>
-                <a href="#" class="button" id="create">Create Playlist</a>
+                <a href="#" class="button" id="create">Add</a>
             </p>
         </form>
     </div>

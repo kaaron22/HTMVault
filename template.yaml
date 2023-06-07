@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  Music Playlist Service
+  HTM Vault
 
 Parameters:
 
@@ -200,32 +200,80 @@ Resources:
                   - logs:PutLogEvents
                   - cloudwatch:PutMetricData
                 Resource: '*'
-        - PolicyName: 'AccessPlaylistsTable'
+        - PolicyName: 'AccessDevicesTable'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action: dynamodb:*
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/playlists"
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/devices"
 
-        - PolicyName: 'AccessAlbumTracksTable'
+        - PolicyName: 'AccessDevicesTableFacilityNameAndAssignedDepartmentIndex'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action: dynamodb:*
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/album_tracks"
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/devices/index/FacilityNameAndAssignedDepartmentIndex"
+
+        - PolicyName: 'AccessDevicesTableFacilityNameAndManufacturerModelIndex'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: dynamodb:*
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/devices/index/FacilityNameAndManufacturerModelIndex"
+
+        - PolicyName: 'AccessDevicesTableFacilityNameAndPmDueDateIndex'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: dynamodb:*
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/devices/index/FacilityNameAndPmDueDateIndex"
+
+        - PolicyName: 'AccessDevicesTableManufacturerModelAndSerialNumberIndex'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: dynamodb:*
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/devices/index/ManufacturerModelAndSerialNumberIndex"
+
+        - PolicyName: 'AccessManufacturerModelTable'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: dynamodb:*
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/manufacturer_models"
+
+        - PolicyName: 'AccessFacilityDepartmentsTable'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: dynamodb:*
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/facility_departments"
+
+        - PolicyName: 'AccessWorkOrderSummariesTable'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: dynamodb:*
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/work_order_summaries"
 
   #-----------------------------------------------------
   # Lambda Functions Configuration
   #-----------------------------------------------------
 
-  GetPlaylistLambda:
+  AddDeviceLambda:
     Type: AWS::Serverless::Function
     Properties:
       Role: !GetAtt AccessRole.Arn
-      CodeUri: MusicPlaylistServiceLambda
-      Handler: com.nashss.se.musicplaylistservice.lambda.GetPlaylistLambda::handleRequest
+      CodeUri: app
+      Handler: com.nashss.se.htmvault.lambda.AddDeviceLambda::handleRequest
       Runtime: java11
       Architectures:
         - x86_64
@@ -234,149 +282,114 @@ Resources:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
       Events:
-        MusicPlaylistService:
+        HTMVault:
           Type: Api
           Properties:
-            Path: /playlists/{id}
-            Method: get
-            Auth:
-              Authorizer: 'NONE'
-
-  SearchPlaylistsLambda:
-    Type: AWS::Serverless::Function
-    Properties:
-      Role: !GetAtt AccessRole.Arn
-      CodeUri: MusicPlaylistServiceLambda
-      Handler: com.nashss.se.musicplaylistservice.lambda.SearchPlaylistsLambda::handleRequest
-      Runtime: java11
-      Architectures:
-        - x86_64
-      MemorySize: 512
-      Environment:
-        Variables:
-          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
-      Events:
-        MusicPlaylistService:
-          Type: Api
-          Properties:
-            Path: /playlists/search
-            Method: get
-            Auth:
-              Authorizer: 'NONE'
-
-  GetPlaylistSongsLambda:
-    Type: AWS::Serverless::Function
-    Properties:
-      Role: !GetAtt AccessRole.Arn
-      CodeUri: MusicPlaylistServiceLambda
-      Handler: com.nashss.se.musicplaylistservice.lambda.GetPlaylistSongsLambda::handleRequest
-      Runtime: java11
-      Architectures:
-        - x86_64
-      MemorySize: 512
-      Environment:
-        Variables:
-          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
-      Events:
-        MusicPlaylistService:
-          Type: Api
-          Properties:
-            Path: /playlists/{id}/songs
-            Method: get
-            Auth:
-              Authorizer: 'NONE'
-
-  CreatePlaylistLambda:
-    Type: AWS::Serverless::Function
-    Properties:
-      Role: !GetAtt AccessRole.Arn
-      CodeUri: MusicPlaylistServiceLambda
-      Handler: com.nashss.se.musicplaylistservice.lambda.CreatePlaylistLambda::handleRequest
-      Runtime: java11
-      Architectures:
-        - x86_64
-      MemorySize: 512
-      Environment:
-        Variables:
-          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
-      Events:
-        MusicPlaylistService:
-          Type: Api
-          Properties:
-            Path: /playlists
-            Method: post
-
-  UpdatePlaylistLambda:
-    Type: AWS::Serverless::Function
-    Properties:
-      Role: !GetAtt AccessRole.Arn
-      CodeUri: MusicPlaylistServiceLambda
-      Handler: com.nashss.se.musicplaylistservice.lambda.UpdatePlaylistLambda::handleRequest
-      Runtime: java11
-      Architectures:
-        - x86_64
-      MemorySize: 512
-      Environment:
-        Variables:
-          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
-      Events:
-        MusicPlaylistService:
-          Type: Api
-          Properties:
-            Path: /playlists/{id}
-            Method: put
-
-  AddSongToPlaylistLambda:
-    Type: AWS::Serverless::Function
-    Properties:
-      Role: !GetAtt AccessRole.Arn
-      CodeUri: MusicPlaylistServiceLambda
-      Handler: com.nashss.se.musicplaylistservice.lambda.AddSongToPlaylistLambda::handleRequest
-      Runtime: java11
-      Architectures:
-        - x86_64
-      MemorySize: 512
-      Environment:
-        Variables:
-          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
-      Events:
-        MusicPlaylistService:
-          Type: Api
-          Properties:
-            Path: /playlists/{id}/songs
+            Path: /devices
             Method: post
 
   #-----------------------------------------------------
   # DynamoDB Configuration
   #-----------------------------------------------------
-  
-  PlaylistsTable:
+
+  DevicesTable:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-        - AttributeName: "id"
+        - AttributeName: "controlNumber"
+          AttributeType: "S"
+        - AttributeName: "serialNumber"
+          AttributeType: "S"
+        - AttributeName: "manufacturerModel"
+          AttributeType: "S"
+        - AttributeName: "facilityName"
+          AttributeType: "S"
+        - AttributeName: "assignedDepartment"
+          AttributeType: "S"
+        - AttributeName: "nextPmDueDate"
           AttributeType: "S"
       KeySchema:
-        - AttributeName: "id"
+        - AttributeName: "controlNumber"
           KeyType: "HASH"
       BillingMode: "PAY_PER_REQUEST"
-      TableName: "playlists"
+      TableName: "devices"
+      GlobalSecondaryIndexes:
+        - IndexName: "FacilityNameAndAssignedDepartmentIndex"
+          KeySchema:
+            - AttributeName: "facilityName"
+              KeyType: "HASH"
+            - AttributeName: "assignedDepartment"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+        - IndexName: "FacilityNameAndManufacturerModelIndex"
+          KeySchema:
+            - AttributeName: "facilityName"
+              KeyType: "HASH"
+            - AttributeName: "manufacturerModel"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+        - IndexName: "FacilityNameAndPmDueDateIndex"
+          KeySchema:
+            - AttributeName: "facilityName"
+              KeyType: "HASH"
+            - AttributeName: "nextPmDueDate"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+        - IndexName: "ManufacturerModelAndSerialNumberIndex"
+          KeySchema:
+            - AttributeName: "manufacturerModel"
+              KeyType: "HASH"
+            - AttributeName: "serialNumber"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "KEYS_ONLY"
 
-  AlbumTracksTable:
+  WorkOrderSummariesTable:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-        - AttributeName: "asin"
+        - AttributeName: "workOrderId"
           AttributeType: "S"
-        - AttributeName: "track_number"
-          AttributeType: "N"
       KeySchema:
-        - AttributeName: "asin"
+        - AttributeName: "workOrderId"
           KeyType: "HASH"
-        - AttributeName: "track_number"
+      BillingMode: "PAY_PER_REQUEST"
+      TableName: "work_order_summaries"
+
+  ManufacturerModelsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "manufacturer"
+          AttributeType: "S"
+        - AttributeName: "model"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "manufacturer"
+          KeyType: "HASH"
+        - AttributeName: "model"
           KeyType: "RANGE"
       BillingMode: "PAY_PER_REQUEST"
-      TableName: "album_tracks"
+      TableName: "manufacturer_models"
+
+  FacilityDepartmentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "facilityName"
+          AttributeType: "S"
+        - AttributeName: "assignedDepartment"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "facilityName"
+          KeyType: "HASH"
+        - AttributeName: "assignedDepartment"
+          KeyType: "RANGE"
+      BillingMode: "PAY_PER_REQUEST"
+      TableName: "facility_departments"
 
 #-----------------------------------------------------
 # The outputs defined below will be printed

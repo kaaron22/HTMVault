@@ -1,0 +1,292 @@
+{
+  "facility_departments": [
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "ER"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "Cath Lab"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "EEG"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "MRI"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "Renal Dialysis"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "Sterile Processing"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "OB"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "NICU"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "Telemetry"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "ICU"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "Surgery"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "Endoscopy"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "Open Heart"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "PACU"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "Therapy"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "Valley Surgery Center"
+          },
+          "assignedDepartment": {
+            "S": "Surgical Services"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "Valley Surgery Center"
+          },
+          "assignedDepartment": {
+            "S": "Endoscopy"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "Valley Surgery Center"
+          },
+          "assignedDepartment": {
+            "S": "Sterile Processing"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "Valley Surgery Center"
+          },
+          "assignedDepartment": {
+            "S": "Recovery"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "Eastside Outpatient"
+          },
+          "assignedDepartment": {
+            "S": "Convenient Care"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "Eastside Outpatient"
+          },
+          "assignedDepartment": {
+            "S": "Family Practice"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "Eastside Outpatient"
+          },
+          "assignedDepartment": {
+            "S": "Lab Services"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "Valley Bone and Joint"
+          },
+          "assignedDepartment": {
+            "S": "Orthopedics"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "facilityName": {
+            "S": "Valley Bone and Joint"
+          },
+          "assignedDepartment": {
+            "S": "Outpatient Physical Therapy"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -15,7 +15,7 @@ export default class MusicPlaylistClient extends BindingClass {
     constructor(props = {}) {
         super();
 
-        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPlaylist', 'getPlaylistSongs', 'createPlaylist'];
+        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPlaylist', 'getPlaylistSongs', 'createPlaylist', 'addDevice'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -120,6 +120,29 @@ export default class MusicPlaylistClient extends BindingClass {
                 }
             });
             return response.data.playlist;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
+    async addDevice(serialNumber, manufacturer, model, facilityName, assignedDepartment,
+     manufactureDate, notes, errorCallback) {
+        try {
+            const token = await this.getTokenOrThrow("Only authenticated users can add devices.");
+            const response = await this.axiosClient.post(`devices`, {
+                serialNumber: serialNumber,
+                manufacturer: manufacturer,
+                model: model,
+                facilityName: facilityName,
+                assignedDepartment: assignedDepartment,
+                manufactureDate: manufactureDate,
+                notes: notes
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data.device;
         } catch (error) {
             this.handleError(error, errorCallback)
         }
