@@ -13,39 +13,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static com.nashss.se.htmvault.utils.HTMVaultServiceUtils.generateRandomIntWithLimit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class WorkOrderTestHelper {
 
-    private final Map<Integer, WorkOrderType> workOrderTypeOptions;
-    private final Map<Integer, WorkOrderCompletionStatus> workOrderCompletionStatusOptions;
 
     private WorkOrderTestHelper() {
-        workOrderTypeOptions = new HashMap<>();
-        int optionNumber = 0;
-        for (WorkOrderType workOrderType : WorkOrderType.values()) {
-            workOrderTypeOptions.put(optionNumber, workOrderType);
-            optionNumber++;
-        }
-
-        workOrderCompletionStatusOptions = new HashMap<>();
-        optionNumber = 0;
-        for (WorkOrderCompletionStatus workOrderCompletionStatus : WorkOrderCompletionStatus.values()) {
-            workOrderCompletionStatusOptions.put(optionNumber, workOrderCompletionStatus);
-            optionNumber++;
-        }
     }
 
-    public WorkOrder generateWorkOrder(int sequenceNumber, String identifyingNumber,
+    public static WorkOrder generateWorkOrder(int sequenceNumber, String controlNumber, String serialNumber,
                                        ManufacturerModel manufacturerModel, String facilityName,
                                        String assignedDepartment) {
+
         WorkOrder workOrder = new WorkOrder();
-        workOrder.setWorkOrderId("WR" + sequenceNumber);
-        workOrder.setWorkOrderType(workOrderTypeOptions.get(generateRandomIntWithLimit(workOrderTypeOptions.size())));
-        workOrder.setControlNumber("CN" + identifyingNumber);
-        workOrder.setSerialNumber("SN" + identifyingNumber);
-        workOrder.setWorkOrderCompletionStatus(workOrderCompletionStatusOptions
-                .get(generateRandomIntWithLimit(workOrderCompletionStatusOptions.size())));
+        workOrder.setWorkOrderId(HTMVaultServiceUtils.generateId("WR",6));
+        workOrder.setWorkOrderType(getRandomEnumValue(WorkOrderType.values()));
+        workOrder.setControlNumber(controlNumber);
+        workOrder.setSerialNumber(serialNumber);
+        workOrder.setWorkOrderCompletionStatus(getRandomEnumValue(WorkOrderCompletionStatus.values()));
         workOrder.setManufacturerModel(manufacturerModel);
         workOrder.setFacilityName(facilityName);
         workOrder.setAssignedDepartment(assignedDepartment);
@@ -58,9 +44,9 @@ public final class WorkOrderTestHelper {
         return workOrder;
     }
 
-    public static int generateRandomIntWithLimit(int exclusiveLimit) {
-        Random random = new Random();
-        return random.nextInt(exclusiveLimit);
+    private static <T> T getRandomEnumValue(T[] values) {
+        int randomIndex = generateRandomIntWithLimit(values.length);
+        return values[randomIndex];
     }
 
     public static void assertWorkOrdersEqualWorkOrderModels(List<WorkOrder> workOrders,
@@ -98,7 +84,7 @@ public final class WorkOrderTestHelper {
         assertEquals(null == workOrder.getWorkOrderAwaitStatus() ? "" : workOrder.getWorkOrderAwaitStatus(),
                 workOrderModel.getWorkOrderAwaitStatus(), message);
         assertEquals(workOrder.getManufacturerModel().getManufacturer(), workOrderModel.getManufacturer(), message);
-        assertEquals(workOrder.getManufacturerModel().getManufacturer(), workOrderModel.getModel(), message);
+        assertEquals(workOrder.getManufacturerModel().getModel(), workOrderModel.getModel(), message);
         assertEquals(workOrder.getFacilityName(), workOrderModel.getFacilityName(), message);
         assertEquals(workOrder.getAssignedDepartment(), workOrderModel.getAssignedDepartment(), message);
         assertEquals(workOrder.getProblemReported(), workOrderModel.getProblemReported(), message);
