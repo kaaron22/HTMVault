@@ -2,7 +2,6 @@ package com.nashss.se.htmvault.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
