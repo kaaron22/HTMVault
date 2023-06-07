@@ -5,7 +5,7 @@ import com.nashss.se.htmvault.activity.results.GetDeviceWorkOrdersResult;
 import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
-import com.nashss.se.htmvault.dynamodb.models.WorkOrderIdComparator;
+import com.nashss.se.htmvault.dynamodb.models.WorkOrderCompletionDateComparator;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
@@ -39,9 +39,9 @@ public class GetDeviceWorkOrdersActivity {
         List<WorkOrder> workOrders = workOrderDao.getWorkOrders(controlNumber);
 
         if (sortOrder.equals(SortOrder.ASCENDING)) {
-            workOrders.sort(new WorkOrderIdComparator());
+            workOrders.sort(new WorkOrderCompletionDateComparator());
         } else {
-            workOrders.sort(new WorkOrderIdComparator().reversed());
+            workOrders.sort(new WorkOrderCompletionDateComparator().reversed());
         }
 
         return GetDeviceWorkOrdersResult.builder()

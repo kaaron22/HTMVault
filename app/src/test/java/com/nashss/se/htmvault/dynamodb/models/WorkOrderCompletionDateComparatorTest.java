@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class WorkOrderIdComparatorTest {
+class WorkOrderCompletionDateComparatorTest {
 
-    WorkOrderIdComparator workOrderIdComparator = new WorkOrderIdComparator();
+    WorkOrderCompletionDateComparator workOrderIdComparator = new WorkOrderCompletionDateComparator();
 
     @Test
     void compare_nonEqualWorkOrderIds_returnsCorrectComparisonValue() {
