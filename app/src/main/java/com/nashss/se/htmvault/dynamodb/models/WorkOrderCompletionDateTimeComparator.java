@@ -2,7 +2,7 @@ package com.nashss.se.htmvault.dynamodb.models;
 
 import java.util.Comparator;
 
-public class WorkOrderCompletionDateComparator implements Comparator<WorkOrder> {
+public class WorkOrderCompletionDateTimeComparator implements Comparator<WorkOrder> {
     @Override
     public int compare(WorkOrder o1, WorkOrder o2) {
         if (null == o1.getCompletionDateTime() && null == o2.getCompletionDateTime()) {
