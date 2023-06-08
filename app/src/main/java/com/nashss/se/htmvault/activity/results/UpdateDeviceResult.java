@@ -6,7 +6,7 @@ public class UpdateDeviceResult {
 
     private final DeviceModel device;
 
-    public UpdateDeviceResult(DeviceModel device) {
+    private UpdateDeviceResult(DeviceModel device) {
         this.device = device;
     }
 
