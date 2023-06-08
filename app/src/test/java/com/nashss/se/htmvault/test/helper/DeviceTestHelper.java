@@ -2,10 +2,13 @@ package com.nashss.se.htmvault.test.helper;
 
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
+import com.nashss.se.htmvault.models.DeviceModel;
 import com.nashss.se.htmvault.models.ServiceStatus;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 
 import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class DeviceTestHelper {
     private DeviceTestHelper() {
@@ -57,6 +60,31 @@ public final class DeviceTestHelper {
                 return nextPmDueDatePlusOneMonth.minusDays(dayOfMonth + 1);
             }
         }
+    }
+
+    public static void assertDeviceEqualsDeviceModel(Device device, DeviceModel deviceModel) {
+        assertEquals(device.getControlNumber(), deviceModel.getControlNumber());
+        assertEquals(device.getSerialNumber(), deviceModel.getSerialNumber());
+        assertEquals(device.getManufacturerModel().getManufacturer(), deviceModel.getManufacturer());
+        assertEquals(device.getManufacturerModel().getModel(), deviceModel.getModel());
+        assertEquals(null == device.getManufactureDate() ? "" : device.getManufactureDate().toString(),
+                deviceModel.getManufactureDate());
+        assertEquals(device.getServiceStatus().toString(), deviceModel.getServiceStatus());
+        assertEquals(device.getFacilityName(), deviceModel.getFacilityName());
+        assertEquals(device.getAssignedDepartment(), deviceModel.getAssignedDepartment());
+        assertEquals(null == device.getComplianceThroughDate() ? "" : device.getComplianceThroughDate().toString(),
+                deviceModel.getComplianceThroughDate());
+        assertEquals(null == device.getLastPmCompletionDate() ? "" : device.getLastPmCompletionDate().toString(),
+                deviceModel.getLastPmCompletionDate());
+        assertEquals(null == device.getNextPmDueDate() ? "" : device.getNextPmDueDate().toString(),
+                deviceModel.getNextPmDueDate());
+        assertEquals(null == device.getManufacturerModel()
+                .getRequiredMaintenanceFrequencyInMonths() ? 0 : device.getManufacturerModel()
+                .getRequiredMaintenanceFrequencyInMonths(), deviceModel.getMaintenanceFrequencyInMonths());
+        assertEquals(device.getInventoryAddDate().toString(), deviceModel.getInventoryAddDate());
+        assertEquals(device.getAddedById(), deviceModel.getAddedById());
+        assertEquals(device.getAddedByName(), deviceModel.getAddedByName());
+        assertEquals(null == device.getNotes() ? "" : device.getNotes(), deviceModel.getNotes());
     }
 
 }
