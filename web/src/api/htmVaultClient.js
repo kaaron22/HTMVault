@@ -72,6 +72,15 @@ export default class HTMVaultClient extends BindingClass {
         return await this.authenticator.getUserToken();
     }
 
+    async retireDevice(controlNumber, errorCallback) {
+        try {
+            const response = await this.axiosClient.delete(`devices/${controlNumber}`);
+            return response.data.device;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
     /**
      * Gets the device for the given ID.
      * @param controlNumber Unique identifier for a device
