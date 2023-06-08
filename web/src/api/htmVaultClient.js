@@ -74,7 +74,12 @@ export default class HTMVaultClient extends BindingClass {
 
     async retireDevice(controlNumber, errorCallback) {
         try {
-            const response = await this.axiosClient.delete(`devices/${controlNumber}`);
+            const token = await this.getTokenOrThrow("Only authenticated users can add devices.");
+            const response = await this.axiosClient.delete(`devices/${controlNumber}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             return response.data.device;
         } catch (error) {
             this.handleError(error, errorCallback)
