@@ -9,13 +9,13 @@ import DataStore from "../util/DataStore";
 class ViewDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage'], this);
+        this.bindClassMethods(['clientLoaded', 'submitRetire', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage'], this);
         //this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'addSong'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.addDeviceToPage);
         this.dataStore.addChangeListener(this.addWorkOrdersToPage);
         this.header = new Header(this.dataStore);
-        console.log("add device constructor");
+        console.log("view device constructor");
     }
 
     /**
@@ -33,10 +33,39 @@ class ViewDevice extends BindingClass {
         this.dataStore.set('workOrders', workOrders);
     }
 
+    async submitRetire(evt) {
+        evt.preventDefault();
+
+        const errorMessageDisplay = document.getElementById('error-message-device-record-change');
+        errorMessageDisplay.innerText = ``;
+        errorMessageDisplay.classList.add('hidden');
+
+        const retireButton = document.getElementById('retire-device');
+        const origButtonText = retireButton.innerText;
+        retireButton.innerText = 'Retiring...';
+
+        const deviceControlNumber = document.getElementById('control-number');
+
+        let controlNumber;
+        if (deviceControlNumber.length < 1) {
+            controlNumber = "";
+        } else {
+            controlNumber = deviceControlNumber;
+        }
+
+        const device = await this.client.retireDevice(controlNumber, (error) => {
+            errorMessageDisplay.innerText = `Error: ${error.message}`
+            errorMessageDisplay.classList.remove('hidden');
+        });
+        this.dataStore.set('device', device);
+        retireButton.innerText = origButtonText;
+    }
+
     /**
      * Add the header to the page and load the HTMVaultClient.
      */
     mount() {
+        document.getElementById('retire-device').addEventListener('click', this.submitRetire);
         document.getElementById('add-new-work-order').addEventListener('click', this.addWorkOrder);
 
         this.header.addHeaderToPage();
