@@ -7,7 +7,6 @@ import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.FacilityDepartmentDao;
 import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
-import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
@@ -29,18 +28,15 @@ import static com.nashss.se.htmvault.utils.NullUtils.ifNull;
 public class UpdateDeviceActivity {
 
     private final DeviceDao deviceDao;
-    private final WorkOrderDao workOrderDao;
     private final ManufacturerModelDao manufacturerModelDao;
     private final FacilityDepartmentDao facilityDepartmentDao;
     private final MetricsPublisher metricsPublisher;
     private final Logger log = LogManager.getLogger();
 
     @Inject
-    public UpdateDeviceActivity(DeviceDao deviceDao, WorkOrderDao workOrderDao,
-                                ManufacturerModelDao manufacturerModelDao, FacilityDepartmentDao facilityDepartmentDao,
-                                MetricsPublisher metricsPublisher) {
+    public UpdateDeviceActivity(DeviceDao deviceDao, ManufacturerModelDao manufacturerModelDao,
+                                FacilityDepartmentDao facilityDepartmentDao, MetricsPublisher metricsPublisher) {
         this.deviceDao = deviceDao;
-        this.workOrderDao = workOrderDao;
         this.manufacturerModelDao = manufacturerModelDao;
         this.facilityDepartmentDao = facilityDepartmentDao;
         this.metricsPublisher = metricsPublisher;
