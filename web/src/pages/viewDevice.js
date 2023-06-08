@@ -44,7 +44,8 @@ class ViewDevice extends BindingClass {
         const origButtonText = retireButton.innerText;
         retireButton.innerText = 'Retiring...';
 
-        const deviceControlNumber = document.getElementById('control-number');
+        const device = this.dataStore.get('device');
+        const deviceControlNumber = device.controlNumber;
 
         let controlNumber;
         if (deviceControlNumber.length < 1) {
@@ -53,11 +54,11 @@ class ViewDevice extends BindingClass {
             controlNumber = deviceControlNumber;
         }
 
-        const device = await this.client.retireDevice(controlNumber, (error) => {
+        const retiredDevice = await this.client.retireDevice(controlNumber, (error) => {
             errorMessageDisplay.innerText = `Error: ${error.message}`
             errorMessageDisplay.classList.remove('hidden');
         });
-        this.dataStore.set('device', device);
+        this.dataStore.set('device', retiredDevice);
         retireButton.innerText = origButtonText;
     }
 
