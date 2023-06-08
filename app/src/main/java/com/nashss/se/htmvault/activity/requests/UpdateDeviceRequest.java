@@ -1,6 +1,7 @@
 package com.nashss.se.htmvault.activity.requests;
 
 public class UpdateDeviceRequest {
+    private final String controlNumber;
     private final String serialNumber;
     private final String manufacturer;
     private final String model;
@@ -10,8 +11,10 @@ public class UpdateDeviceRequest {
     private final String nextPmDueDate;
     private final String notes;
 
-    private UpdateDeviceRequest(String serialNumber, String manufacturer, String model, String manufactureDate,
-                                String facilityName, String assignedDepartment, String nextPmDueDate, String notes) {
+    private UpdateDeviceRequest(String controlNumber, String serialNumber, String manufacturer, String model,
+                                String manufactureDate, String facilityName, String assignedDepartment,
+                                String nextPmDueDate, String notes) {
+        this.controlNumber = controlNumber;
         this.serialNumber = serialNumber;
         this.manufacturer = manufacturer;
         this.model = model;
@@ -20,6 +23,10 @@ public class UpdateDeviceRequest {
         this.assignedDepartment = assignedDepartment;
         this.nextPmDueDate = nextPmDueDate;
         this.notes = notes;
+    }
+
+    public String getControlNumber() {
+        return controlNumber;
     }
 
     public String getSerialNumber() {
@@ -57,7 +64,8 @@ public class UpdateDeviceRequest {
     @Override
     public String toString() {
         return "UpdateDeviceRequest{" +
-                "serialNumber='" + serialNumber + '\'' +
+                "controlNumber='" + controlNumber + '\'' +
+                ", serialNumber='" + serialNumber + '\'' +
                 ", manufacturer='" + manufacturer + '\'' +
                 ", model='" + model + '\'' +
                 ", manufactureDate='" + manufactureDate + '\'' +
@@ -73,6 +81,7 @@ public class UpdateDeviceRequest {
     }
 
     public static class Builder {
+        private String controlNumber;
         private String serialNumber;
         private String manufacturer;
         private String model;
@@ -81,6 +90,11 @@ public class UpdateDeviceRequest {
         private String assignedDepartment;
         private String nextPmDueDate;
         private String notes;
+
+        public Builder withControlNumber(String controlNumber) {
+            this.controlNumber = controlNumber;
+            return this;
+        }
 
         public Builder withserialNumber(String serialNumber) {
             this.serialNumber = serialNumber;
@@ -123,8 +137,8 @@ public class UpdateDeviceRequest {
         }
 
         public UpdateDeviceRequest build() {
-            return new UpdateDeviceRequest(serialNumber, manufacturer, model, manufactureDate, facilityName,
-                    assignedDepartment, nextPmDueDate, notes);
+            return new UpdateDeviceRequest(controlNumber, serialNumber, manufacturer, model, manufactureDate,
+                    facilityName, assignedDepartment, nextPmDueDate, notes);
         }
     }
 }
