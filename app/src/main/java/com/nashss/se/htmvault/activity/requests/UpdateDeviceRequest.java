@@ -8,12 +8,11 @@ public class UpdateDeviceRequest {
     private final String manufactureDate;
     private final String facilityName;
     private final String assignedDepartment;
-    private final String nextPmDueDate;
     private final String notes;
 
     private UpdateDeviceRequest(String controlNumber, String serialNumber, String manufacturer, String model,
                                 String manufactureDate, String facilityName, String assignedDepartment,
-                                String nextPmDueDate, String notes) {
+                                String notes) {
         this.controlNumber = controlNumber;
         this.serialNumber = serialNumber;
         this.manufacturer = manufacturer;
@@ -21,7 +20,6 @@ public class UpdateDeviceRequest {
         this.manufactureDate = manufactureDate;
         this.facilityName = facilityName;
         this.assignedDepartment = assignedDepartment;
-        this.nextPmDueDate = nextPmDueDate;
         this.notes = notes;
     }
 
@@ -53,10 +51,6 @@ public class UpdateDeviceRequest {
         return assignedDepartment;
     }
 
-    public String getNextPmDueDate() {
-        return nextPmDueDate;
-    }
-
     public String getNotes() {
         return notes;
     }
@@ -71,7 +65,6 @@ public class UpdateDeviceRequest {
                 ", manufactureDate='" + manufactureDate + '\'' +
                 ", facilityName='" + facilityName + '\'' +
                 ", assignedDepartment='" + assignedDepartment + '\'' +
-                ", nextPmDueDate='" + nextPmDueDate + '\'' +
                 ", notes='" + notes + '\'' +
                 '}';
     }
@@ -88,7 +81,6 @@ public class UpdateDeviceRequest {
         private String manufactureDate;
         private String facilityName;
         private String assignedDepartment;
-        private String nextPmDueDate;
         private String notes;
 
         public Builder withControlNumber(String controlNumber) {
@@ -126,11 +118,6 @@ public class UpdateDeviceRequest {
             return this;
         }
 
-        public Builder withNextPmDueDate(String nextPmDueDate) {
-            this.nextPmDueDate = nextPmDueDate;
-            return this;
-        }
-
         public Builder withNotes(String notes) {
             this.notes = notes;
             return this;
@@ -138,7 +125,7 @@ public class UpdateDeviceRequest {
 
         public UpdateDeviceRequest build() {
             return new UpdateDeviceRequest(controlNumber, serialNumber, manufacturer, model, manufactureDate,
-                    facilityName, assignedDepartment, nextPmDueDate, notes);
+                    facilityName, assignedDepartment, notes);
         }
     }
 }
