@@ -3,6 +3,7 @@ package com.nashss.se.htmvault.activity;
 import com.nashss.se.htmvault.activity.requests.UpdateDeviceRequest;
 import com.nashss.se.htmvault.activity.results.UpdateDeviceResult;
 import com.nashss.se.htmvault.converters.LocalDateConverter;
+import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.FacilityDepartmentDao;
 import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
@@ -107,12 +108,46 @@ public class UpdateDeviceActivity {
             }
         }
 
-        // verify the next pm due date, if being updated, has the correct format. additionally, ensure it is not beyond
-        // the compliance-through-date, based on the last PM completion date AND the required maintenance frequency;
-        // note, the frequency will be based on the manufacturer/model in the request, if it is being updated (i.e. the
-        // frequency could change from every 12 months to every 6 months for the given manufacturer/model)
+        metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
 
+        // valid request received - update device and save changes
+        device.setSerialNumber(serialNumber);
+        device.setManufacturerModel(manufacturerModel);
+        device.setManufactureDate(null == manufactureDate ? null : new LocalDateConverter().unconvert(manufactureDate));
+        device.setFacilityName(facilityName);
+        device.setAssignedDepartment(assignedDepartment);
+        device.setNotes(null == updateDeviceRequest.getNotes() ? "" : updateDeviceRequest.getNotes());
 
+        // if the updated maintenance frequency is 0 (no pm required), update the compliance through date and
+        // the next pm due date to null
+        if (requiredMaintenanceFrequencyInMonths == 0) {
+            device.setComplianceThroughDate(null);
+            device.setNextPmDueDate(null);
+        // otherwise, update the compliance through date based on the last pm completion date, if there was one (if not,
+        // the complianceThroughDate and nextPmDueDate were already set as needed during device creation)
+        } else {
+            if (!(null == device.getLastPmCompletionDate())) {
+                // set the next compliance through date to the last day of the month, "maintenance frequency" number of
+                // months after the month in which the last pm was completed
+                int dayOfMonth = device.getLastPmCompletionDate().getDayOfMonth();
+                LocalDate updatedComplianceThroughDate =
+                        device.getLastPmCompletionDate()
+                                .plusMonths(requiredMaintenanceFrequencyInMonths + 1)
+                                .minusDays(dayOfMonth);
+                device.setComplianceThroughDate(updatedComplianceThroughDate);
+                // if the next pm due date is already prior to the new compliance through date, we don't need to modify
+                // it; otherwise, we need to adjust it to the compliance through date
+                if (device.getNextPmDueDate().isAfter(updatedComplianceThroughDate)) {
+                    device.setNextPmDueDate(updatedComplianceThroughDate);
+                }
+            }
+        }
+
+        Device updatedDevice = deviceDao.saveDevice(device);
+
+        return UpdateDeviceResult.builder()
+                .withDeviceModel(new ModelConverter().toDeviceModel(updatedDevice))
+                .build();
     }
 
     private void validateRequestAttribute(String attributeName, String attribute, String validCharacterPattern) {
