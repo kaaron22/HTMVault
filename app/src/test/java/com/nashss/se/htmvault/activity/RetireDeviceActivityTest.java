@@ -36,7 +36,6 @@ class RetireDeviceActivityTest {
     private DeviceDao deviceDao;
     @Mock
     private WorkOrderDao workOrderDao;
-    @Mock
 
     @InjectMocks
     private RetireDeviceActivity retireDeviceActivity;
