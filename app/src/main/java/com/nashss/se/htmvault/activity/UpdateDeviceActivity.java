@@ -7,6 +7,7 @@ import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.FacilityDepartmentDao;
 import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
+import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
@@ -46,6 +47,9 @@ public class UpdateDeviceActivity {
 
     public UpdateDeviceResult handleRequest(final UpdateDeviceRequest updateDeviceRequest) {
         log.info("Received UpdateDeviceRequest {}", updateDeviceRequest);
+
+        // verify the device being updated exists and is found in the database
+        Device device = deviceDao.getDevice(updateDeviceRequest.getControlNumber());
 
         // validate the serial number in the request. it should not be null, blank, or empty. additionally, it should
         // contain alphanumeric characters, spaces, and dashes only
@@ -102,6 +106,13 @@ public class UpdateDeviceActivity {
                 throw new InvalidAttributeValueException("The date provided must be formatted as YYYY-MM-DD");
             }
         }
+
+        // verify the next pm due date, if being updated, has the correct format. additionally, ensure it is not beyond
+        // the compliance-through-date, based on the last PM completion date AND the required maintenance frequency;
+        // note, the frequency will be based on the manufacturer/model in the request, if it is being updated (i.e. the
+        // frequency could change from every 12 months to every 6 months for the given manufacturer/model)
+
+
     }
 
     private void validateRequestAttribute(String attributeName, String attribute, String validCharacterPattern) {
