@@ -133,6 +133,42 @@ class RetireDeviceActivityTest {
         DeviceTestHelper.assertDeviceEqualsDeviceModel(expectedDevice, result.getDevice());
     }
 
+    @Test
+    public void handleRequest_noWorkOrdersForDevice_softDeletesDeviceAndReturnsInResult() {
+        // GIVEN
+        // a mock device to return when our method under test mocks the call to look for it by control number
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
+        Device device = DeviceTestHelper.generateActiveDevice(1, manufacturerModel,
+                "TestFacility", "TestDepartment");
+
+        // our final expected device (used to ensure the only thing that ultimately changed was the service status)
+        Device expectedDevice = copyDevice(device);
+        expectedDevice.setServiceStatus(ServiceStatus.RETIRED);
+
+        RetireDeviceRequest retireDeviceRequest = RetireDeviceRequest.builder()
+                .withControlNumber(device.getControlNumber())
+                .withCustomerId("an ID")
+                .withCustomerName("a name")
+                .build();
+        when(deviceDao.getDevice(anyString())).thenReturn(device);
+
+        // the device has no work orders
+        when(workOrderDao.getWorkOrders("123")).thenReturn(new ArrayList<>());
+
+        // WHEN
+        RetireDeviceResult result = retireDeviceActivity.handleRequest(retireDeviceRequest);
+
+        // THEN
+        verify(deviceDao).saveDevice(device);
+        assertEquals("RETIRED", result.getDevice().getServiceStatus());
+
+        // verify no other device information was modified by our method under test
+        DeviceTestHelper.assertDeviceEqualsDeviceModel(expectedDevice, result.getDevice());
+    }
+
     private Device copyDevice(Device device) {
         Device deviceCopy = new Device();
         deviceCopy.setControlNumber(device.getControlNumber());
