@@ -23,7 +23,7 @@ public class ModelConverter {
                 .withAssignedDepartment(device.getAssignedDepartment())
                 .withComplianceThroughDate(null == device.getComplianceThroughDate() ? "" :
                         device.getComplianceThroughDate().toString())
-                .withLastPmCompletionDate(null == device.getComplianceThroughDate() ? "" :
+                .withLastPmCompletionDate(null == device.getLastPmCompletionDate() ? "" :
                         device.getLastPmCompletionDate().toString())
                 .withNextPmDueDate(null == device.getNextPmDueDate() ? "" : device.getNextPmDueDate().toString())
                 .withMaintenanceFrequencyInMonths(null == device.getManufacturerModel()
