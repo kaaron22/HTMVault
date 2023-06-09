@@ -30,9 +30,7 @@ class UpdateDevice extends BindingClass {
         const origButtonText = updateButton.innerText;
         updateButton.innerText = 'Loading...';
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const deviceId = urlParams.get('controlNumber');
-        const deviceControlNumber = deviceId;
+        const deviceControlNumber = document.getElementById('control-number').innerText;
         const deviceSerialNumber = document.getElementById('serial-number').value;
         const deviceManufacturer = document.getElementById('manufacturer').value;
         const deviceModel = document.getElementById('model').value;
