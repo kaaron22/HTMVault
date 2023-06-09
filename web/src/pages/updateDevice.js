@@ -30,6 +30,10 @@ class UpdateDevice extends BindingClass {
 
     mount() {
         document.getElementById('update-device-record').addEventListener('click', this.submit);
+
+        this.header.addHeaderToPage();
+
+        this.client = new HTMVaultClient();
     }
 
 }
