@@ -141,7 +141,7 @@ class ViewDevice extends BindingClass {
     async redirectToUpdateDevice() {
         const device = this.dataStore.get('device');
         if (device != null) {
-            window.location.ref = `updateDevice.html?controlNumber=${device.controlNumber}`;
+            window.location.href = `updateDevice.html?controlNumber=${device.controlNumber}`;
         }
     }
 
