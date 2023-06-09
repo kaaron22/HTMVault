@@ -1,5 +1,9 @@
 package com.nashss.se.htmvault.activity.requests;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+
+@JsonDeserialize
 public class UpdateDeviceRequest {
     private final String controlNumber;
     private final String serialNumber;
@@ -9,10 +13,12 @@ public class UpdateDeviceRequest {
     private final String facilityName;
     private final String assignedDepartment;
     private final String notes;
+    private final String customerId;
+    private final String customerName;
 
     private UpdateDeviceRequest(String controlNumber, String serialNumber, String manufacturer, String model,
                                 String manufactureDate, String facilityName, String assignedDepartment,
-                                String notes) {
+                                String notes, String customerId, String customerName) {
         this.controlNumber = controlNumber;
         this.serialNumber = serialNumber;
         this.manufacturer = manufacturer;
@@ -21,6 +27,8 @@ public class UpdateDeviceRequest {
         this.facilityName = facilityName;
         this.assignedDepartment = assignedDepartment;
         this.notes = notes;
+        this.customerId = customerId;
+        this.customerName = customerName;
     }
 
     public String getControlNumber() {
@@ -55,6 +63,14 @@ public class UpdateDeviceRequest {
         return notes;
     }
 
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
     @Override
     public String toString() {
         return "UpdateDeviceRequest{" +
@@ -66,6 +82,8 @@ public class UpdateDeviceRequest {
                 ", facilityName='" + facilityName + '\'' +
                 ", assignedDepartment='" + assignedDepartment + '\'' +
                 ", notes='" + notes + '\'' +
+                ", customerId='" + customerId + '\'' +
+                ", customerName='" + customerName + '\'' +
                 '}';
     }
 
@@ -73,6 +91,7 @@ public class UpdateDeviceRequest {
         return new Builder();
     }
 
+    @JsonPOJOBuilder
     public static class Builder {
         private String controlNumber;
         private String serialNumber;
@@ -82,6 +101,8 @@ public class UpdateDeviceRequest {
         private String facilityName;
         private String assignedDepartment;
         private String notes;
+        private String customerId;
+        private String customerName;
 
         public Builder withControlNumber(String controlNumber) {
             this.controlNumber = controlNumber;
@@ -123,9 +144,19 @@ public class UpdateDeviceRequest {
             return this;
         }
 
+        public Builder withCustomerId(String customerId) {
+            this.customerId = customerId;
+            return this;
+        }
+
+        public Builder withCustomerName(String customerName) {
+            this.customerName = customerName;
+            return this;
+        }
+
         public UpdateDeviceRequest build() {
             return new UpdateDeviceRequest(controlNumber, serialNumber, manufacturer, model, manufactureDate,
-                    facilityName, assignedDepartment, notes);
+                    facilityName, assignedDepartment, notes, customerId, customerName);
         }
     }
 }
