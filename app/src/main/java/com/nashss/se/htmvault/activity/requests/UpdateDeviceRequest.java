@@ -109,7 +109,7 @@ public class UpdateDeviceRequest {
             return this;
         }
 
-        public Builder withserialNumber(String serialNumber) {
+        public Builder withSerialNumber(String serialNumber) {
             this.serialNumber = serialNumber;
             return this;
         }

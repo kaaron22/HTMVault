@@ -24,7 +24,7 @@ public class UpdateDeviceLambda
                     return input.fromUserClaims(claims ->
                             UpdateDeviceRequest.builder()
                                     .withControlNumber(unauthenticatedRequest.getControlNumber())
-                                    .withserialNumber(unauthenticatedRequest.getSerialNumber())
+                                    .withSerialNumber(unauthenticatedRequest.getSerialNumber())
                                     .withManufacturer(unauthenticatedRequest.getManufacturer())
                                     .withModel(unauthenticatedRequest.getModel())
                                     .withManufactureDate(unauthenticatedRequest.getManufactureDate())
