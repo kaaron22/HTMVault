@@ -12,8 +12,10 @@ import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
+import com.nashss.se.htmvault.exceptions.UpdateRetiredDeviceException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
+import com.nashss.se.htmvault.models.ServiceStatus;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,6 +49,10 @@ public class UpdateDeviceActivity {
 
         // verify the device being updated exists and is found in the database
         Device device = deviceDao.getDevice(updateDeviceRequest.getControlNumber());
+
+        if (device.getServiceStatus() == ServiceStatus.RETIRED) {
+            throw new UpdateRetiredDeviceException("Cannot update a retired device");
+        }
 
         // validate the serial number in the request. it should not be null, blank, or empty. additionally, it should
         // contain alphanumeric characters, spaces, and dashes only
