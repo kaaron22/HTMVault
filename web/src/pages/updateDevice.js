@@ -34,6 +34,7 @@ class UpdateDevice extends BindingClass {
         this.header.addHeaderToPage();
 
         this.client = new HTMVaultClient();
+        this.clientLoaded();
     }
 
 }
