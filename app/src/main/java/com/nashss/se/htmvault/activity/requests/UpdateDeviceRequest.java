@@ -3,7 +3,7 @@ package com.nashss.se.htmvault.activity.requests;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
-@JsonDeserialize
+@JsonDeserialize(builder = UpdateDeviceRequest.Builder.class)
 public class UpdateDeviceRequest {
     private final String controlNumber;
     private final String serialNumber;
