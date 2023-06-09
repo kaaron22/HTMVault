@@ -7,7 +7,8 @@ class UpdateDevice extends BindingClass {
     constructor() {
         super();
         this.bindClassMethods(['clientLoaded', 'submit', 'mount', 'redirectToViewDevice'], this);
-        this.DataStore = new DataStore();
+        this.dataStore = new DataStore();
+        this.dataStore.addChangeListener(this.redirectToViewDevice);
         this.header = new Header(this.DataStore);
         console.log("update device constructor");
     }
@@ -15,10 +16,7 @@ class UpdateDevice extends BindingClass {
     async clientLoaded() {
         const urlParams = new URLSearchParams(window.location.search);
         const deviceId = urlParams.get('controlNumber');
-        document.getElementById('control-number').innerText = "Loading...";
-        const device = await this.client.getDevice(deviceId);
-        this.DataStore.set('device', device);
-        document.getElementById('control-number').innerText = device.controlNumber;
+        document.getElementById('control-number').innerText = deviceId;
     }
 
     async submit(evt) {
@@ -32,7 +30,9 @@ class UpdateDevice extends BindingClass {
         const origButtonText = updateButton.innerText;
         updateButton.innerText = 'Loading...';
 
-        const deviceControlNumber = document.getElementById('control-number').value;
+        const urlParams = new URLSearchParams(window.location.search);
+        const deviceId = urlParams.get('controlNumber');
+        const deviceControlNumber = deviceId;
         const deviceSerialNumber = document.getElementById('serial-number').value;
         const deviceManufacturer = document.getElementById('manufacturer').value;
         const deviceModel = document.getElementById('model').value;
@@ -57,7 +57,7 @@ class UpdateDevice extends BindingClass {
 
         const device = await this.client.updateDevice(deviceControlNumber, deviceSerialNumber, deviceManufacturer,
             deviceModel, deviceFacilityName, deviceAssignedDepartment, manufactureDate, notes, (error) => {
-            createButton.innerText = origButtonText;
+            updateButton.innerText = origButtonText;
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');
         });
@@ -72,7 +72,7 @@ class UpdateDevice extends BindingClass {
     }
 
     mount() {
-        document.getElementById('update-device-record').addEventListener('click', this.submit);
+        document.getElementById('update-device').addEventListener('click', this.submit);
 
         this.header.addHeaderToPage();
 
