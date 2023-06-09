@@ -21,6 +21,13 @@ class UpdateDevice extends BindingClass {
         this.DataStore.set('device', device);
     }
 
+    redirectToViewDevice() {
+        const device = this.dataStore.get('device');
+        if (device != null) {
+            window.location.href = `/device.html?controlNumber=${device.controlNumber}&order=DESCENDING`;
+        }
+    }
+
     mount() {
         document.getElementById('update-device-record').addEventListener('click', this.submit);
     }
