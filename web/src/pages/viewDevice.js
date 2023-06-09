@@ -58,7 +58,10 @@ class ViewDevice extends BindingClass {
             errorMessageDisplay.innerText = `Error: ${error.message}`
             errorMessageDisplay.classList.remove('hidden');
         });
-        this.dataStore.set('device', retiredDevice);
+
+        if (retiredDevice != null) {
+            this.dataStore.set('device', retiredDevice);
+        }
         retireButton.innerText = origButtonText;
     }
 
