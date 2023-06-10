@@ -292,15 +292,6 @@ class UpdateDeviceActivityTest {
     public void handleRequest_deviceNotFound_throwsDeviceNotFoundException() {
         // GIVEN
         // an update request, including updated manufacturer/model and facility/department
-        ManufacturerModel updatedManufacturerModel = new ManufacturerModel();
-        updatedManufacturerModel.setManufacturer(manufacturer + "updated");
-        updatedManufacturerModel.setModel(model + "updated");
-        updatedManufacturerModel.setRequiredMaintenanceFrequencyInMonths(6);
-
-        FacilityDepartment updatedFacilityDepartment = new FacilityDepartment();
-        updatedFacilityDepartment.setFacilityName(facilityName + "updated");
-        updatedFacilityDepartment.setAssignedDepartment(assignedDepartment + "updated");
-
         LocalDate updatedManufactureDate = LocalDate.now();
 
         UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
