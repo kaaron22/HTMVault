@@ -12,6 +12,7 @@ import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.FacilityDepartment;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
+import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.DeviceModel;
@@ -285,5 +286,41 @@ class UpdateDeviceActivityTest {
         verify(dynamoDBMapper).save(any(Device.class));
         verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         DeviceTestHelper.assertDeviceEqualsDeviceModel(updatedDevice, deviceModel);
+    }
+
+    @Test
+    public void handleRequest_deviceNotFound_throwsDeviceNotFoundException() {
+        // GIVEN
+        // an update request, including updated manufacturer/model and facility/department
+        ManufacturerModel updatedManufacturerModel = new ManufacturerModel();
+        updatedManufacturerModel.setManufacturer(manufacturer + "updated");
+        updatedManufacturerModel.setModel(model + "updated");
+        updatedManufacturerModel.setRequiredMaintenanceFrequencyInMonths(6);
+
+        FacilityDepartment updatedFacilityDepartment = new FacilityDepartment();
+        updatedFacilityDepartment.setFacilityName(facilityName + "updated");
+        updatedFacilityDepartment.setAssignedDepartment(assignedDepartment + "updated");
+
+        LocalDate updatedManufactureDate = LocalDate.now();
+
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber + "updated")
+                .withManufacturer(manufacturer + "updated")
+                .withModel(model + "updated")
+                .withManufactureDate(updatedManufactureDate.toString())
+                .withFacilityName(facilityName + "updated")
+                .withAssignedDepartment(assignedDepartment + "updated")
+                .withNotes(notes + "updated")
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+        when(dynamoDBMapper.load(Mockito.eq(Device.class), anyString())).thenReturn(null);
+
+        // WHEN & THEN
+        assertThrows(DeviceNotFoundException.class, () ->
+                updateDeviceActivity.handleRequest(updateDeviceRequest),
+                "Expected device not found to result in a DeviceNotFoundException thrown");
+        verify(dynamoDBMapper).load(eq(Device.class), anyString());
     }
 }
