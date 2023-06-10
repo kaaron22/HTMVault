@@ -18,4 +18,6 @@ public interface ServiceComponent {
     RetireDeviceActivity provideRetireDeviceActivity();
 
     UpdateDeviceActivity provideUpdateDeviceActivity();
+
+    SearchDevicesActivity provideSearchDevicesActivity();
 }

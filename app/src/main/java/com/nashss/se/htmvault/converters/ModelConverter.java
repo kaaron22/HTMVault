@@ -36,6 +36,14 @@ public class ModelConverter {
                 .build();
     }
 
+    public List<DeviceModel> toDeviceModelList(List<Device> devices) {
+        List<DeviceModel> deviceModelList = new ArrayList<>();
+        for (Device device : devices) {
+            deviceModelList.add(toDeviceModel(device));
+        }
+        return deviceModelList;
+    }
+
     public WorkOrderModel toWorkOrderModel(WorkOrder workOrder) {
         return WorkOrderModel.builder()
                 .withWorkOrderId(workOrder.getWorkOrderId())
