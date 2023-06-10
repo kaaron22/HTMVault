@@ -12,8 +12,7 @@ import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.FacilityDepartment;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
-import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
-import com.nashss.se.htmvault.exceptions.UpdateRetiredDeviceException;
+import com.nashss.se.htmvault.exceptions.*;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.DeviceModel;
@@ -27,11 +26,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 class UpdateDeviceActivityTest {
@@ -54,7 +54,6 @@ class UpdateDeviceActivityTest {
     private final String manufacturer = "a manufacturer";
     private final String model = "a model";
     private final ManufacturerModel manufacturerModel = new ManufacturerModel();
-    private final String manufactureDate = "2023-05-26";
     private final String facilityName = "a hospital";
     private final String assignedDepartment = "ER";
     private final String notes = "some notes";
@@ -343,5 +342,318 @@ class UpdateDeviceActivityTest {
                         updateDeviceActivity.handleRequest(updateDeviceRequest),
                 "Expected device not found to result in a UpdateRetiredDeviceException thrown");
         verify(dynamoDBMapper).load(eq(Device.class), anyString());
+    }
+
+    @Test
+    public void handleRequest_withRequiredValueNull_throwsInvalidAttributeValueException() {
+        // GIVEN
+        LocalDate updatedManufactureDate = LocalDate.now();
+
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(null)
+                .withManufacturer(manufacturer + "updated")
+                .withModel(model + "updated")
+                .withManufactureDate(updatedManufactureDate.toString())
+                .withFacilityName(facilityName + "updated")
+                .withAssignedDepartment(assignedDepartment + "updated")
+                .withNotes(notes + "updated")
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+        when(dynamoDBMapper.load(Mockito.eq(Device.class), anyString())).thenReturn(device);
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        updateDeviceActivity.handleRequest(updateDeviceRequest),
+                "Expected a null value for control number to result in an InvalidAttributeValueException " +
+                        "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
+    public void handleRequest_withOptionalValueNull_createsAndSavesDevice() {
+        // GIVEN
+        // an update request and expected updated device
+        ManufacturerModel updatedManufacturerModel = new ManufacturerModel();
+        updatedManufacturerModel.setManufacturer(manufacturer + "updated");
+        updatedManufacturerModel.setModel(model + "updated");
+        updatedManufacturerModel.setRequiredMaintenanceFrequencyInMonths(6);
+
+        FacilityDepartment updatedFacilityDepartment = new FacilityDepartment();
+        updatedFacilityDepartment.setFacilityName(facilityName + "updated");
+        updatedFacilityDepartment.setAssignedDepartment(assignedDepartment + "updated");
+
+        Device updatedDevice = new Device();
+        updatedDevice.setControlNumber(controlNumber);
+        updatedDevice.setSerialNumber(serialNumber + "updated");
+        updatedDevice.setManufacturerModel(updatedManufacturerModel);
+        updatedDevice.setServiceStatus(ServiceStatus.IN_SERVICE);
+        updatedDevice.setFacilityName(facilityName + "updated");
+        updatedDevice.setAssignedDepartment(assignedDepartment + "updated");
+        updatedDevice.setManufactureDate(null);
+        updatedDevice.setNotes(notes + "updated");
+        updatedDevice.setComplianceThroughDate(null);
+        updatedDevice.setLastPmCompletionDate(null);
+        updatedDevice.setNextPmDueDate(LocalDate.of(2023, 6, 1));
+        updatedDevice.setInventoryAddDate(LocalDate.of(2023, 6, 1));
+        updatedDevice.setAddedById(customerId);
+        updatedDevice.setAddedByName(customerName);
+
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber + "updated")
+                .withManufacturer(manufacturer + "updated")
+                .withModel(model + "updated")
+                .withManufactureDate(null)
+                .withFacilityName(facilityName + "updated")
+                .withAssignedDepartment(assignedDepartment + "updated")
+                .withNotes(notes + "updated")
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+
+        when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(updatedManufacturerModel);
+        when(facilityDepartmentDao.getFacilityDepartment(anyString(), anyString()))
+                .thenReturn(updatedFacilityDepartment);
+        when(dynamoDBMapper.load(Mockito.eq(Device.class), anyString())).thenReturn(device);
+
+        // WHEN
+        UpdateDeviceResult updateDeviceResult = updateDeviceActivity.handleRequest(updateDeviceRequest);
+        DeviceModel deviceModel = updateDeviceResult.getDevice();
+
+        // THEN
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
+        verify(dynamoDBMapper).load(eq(Device.class), anyString());
+        verify(dynamoDBMapper).save(any(Device.class));
+        DeviceTestHelper.assertDeviceEqualsDeviceModel(updatedDevice, deviceModel);
+    }
+
+    @Test
+    public void handleRequest_withRequiredValueEmpty_throwsInvalidAttributeValueException() {
+        // GIVEN
+        LocalDate updatedManufactureDate = LocalDate.now();
+
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber("")
+                .withManufacturer(manufacturer + "updated")
+                .withModel(model + "updated")
+                .withManufactureDate(updatedManufactureDate.toString())
+                .withFacilityName(facilityName + "updated")
+                .withAssignedDepartment(assignedDepartment + "updated")
+                .withNotes(notes + "updated")
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+
+        when(dynamoDBMapper.load(Mockito.eq(Device.class), anyString())).thenReturn(device);
+
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        updateDeviceActivity.handleRequest(updateDeviceRequest),
+                "Expected an empty value for control number to result in an InvalidAttributeValueException " +
+                        "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
+    public void handleRequest_withRequiredValueBlank_throwsInvalidAttributeValueException() {
+        // GIVEN
+        LocalDate updatedManufactureDate = LocalDate.now();
+
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber("   ")
+                .withManufacturer(manufacturer + "updated")
+                .withModel(model + "updated")
+                .withManufactureDate(updatedManufactureDate.toString())
+                .withFacilityName(facilityName + "updated")
+                .withAssignedDepartment(assignedDepartment + "updated")
+                .withNotes(notes + "updated")
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+
+        when(dynamoDBMapper.load(Mockito.eq(Device.class), anyString())).thenReturn(device);
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        updateDeviceActivity.handleRequest(updateDeviceRequest),
+                "Expected a blank value for serial number to result in an InvalidAttributeValueException " +
+                        "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
+    public void handleRequest_withSerialNumberContainsAnInvalidCharacter_throwsInvalidAttributeValueException() {
+        // GIVEN
+        LocalDate updatedManufactureDate = LocalDate.now();
+
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber("1234-+")
+                .withManufacturer(manufacturer + "updated")
+                .withModel(model + "updated")
+                .withManufactureDate(updatedManufactureDate.toString())
+                .withFacilityName(facilityName + "updated")
+                .withAssignedDepartment(assignedDepartment + "updated")
+                .withNotes(notes + "updated")
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+
+        when(dynamoDBMapper.load(Mockito.eq(Device.class), anyString())).thenReturn(device);
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        updateDeviceActivity.handleRequest(updateDeviceRequest),
+                "Expected a serial number containing an invalid character to result in an " +
+                        "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
+    public void handleRequest_withManufacturerModelDoesNotExist_throwsInvalidAttributeValueException() {
+        // GIVEN
+        LocalDate updatedManufactureDate = LocalDate.now();
+
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber)
+                .withManufacturer("not a real manufacturer")
+                .withModel("not a real model")
+                .withManufactureDate(updatedManufactureDate.toString())
+                .withFacilityName(facilityName + "updated")
+                .withAssignedDepartment(assignedDepartment + "updated")
+                .withNotes(notes + "updated")
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+
+        when(dynamoDBMapper.load(Mockito.eq(Device.class), anyString())).thenReturn(device);
+        doThrow(ManufacturerModelNotFoundException.class)
+                .when(manufacturerModelDao).getManufacturerModel(anyString(), anyString());
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        updateDeviceActivity.handleRequest(updateDeviceRequest),
+                "Expected a manufacturer/model not found to result in an InvalidAttributeValueException " +
+                        "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
+    public void handleRequest_withFacilityDepartmentDoesNotExist_throwsInvalidAttributeValueException() {
+        // GIVEN
+        LocalDate updatedManufactureDate = LocalDate.now();
+
+        ManufacturerModel updatedManufacturerModel = new ManufacturerModel();
+        updatedManufacturerModel.setManufacturer(manufacturer + "updated");
+        updatedManufacturerModel.setModel(model + "updated");
+        updatedManufacturerModel.setRequiredMaintenanceFrequencyInMonths(6);
+
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber + "updated")
+                .withManufacturer(manufacturer + "updated")
+                .withModel(model + "updated")
+                .withManufactureDate(updatedManufactureDate.toString())
+                .withFacilityName("not a facility")
+                .withAssignedDepartment("not a department")
+                .withNotes(notes + "updated")
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+
+        when(dynamoDBMapper.load(Mockito.eq(Device.class), anyString())).thenReturn(device);
+        when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(updatedManufacturerModel);
+        doThrow(FacilityDepartmentNotFoundException.class)
+                .when(facilityDepartmentDao).getFacilityDepartment(anyString(), anyString());
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        updateDeviceActivity.handleRequest(updateDeviceRequest),
+                "Expected a facility/department not found to result in an InvalidAttributeValueException " +
+                        "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
+    public void handleRequest_withManufactureDateWrongFormat_throwsInvalidAttributeValueException() {
+        // GIVEN
+        ManufacturerModel updatedManufacturerModel = new ManufacturerModel();
+        updatedManufacturerModel.setManufacturer(manufacturer + "updated");
+        updatedManufacturerModel.setModel(model + "updated");
+        updatedManufacturerModel.setRequiredMaintenanceFrequencyInMonths(6);
+
+        FacilityDepartment updatedFacilityDepartment = new FacilityDepartment();
+        updatedFacilityDepartment.setFacilityName(facilityName + "updated");
+        updatedFacilityDepartment.setAssignedDepartment(assignedDepartment + "updated");
+
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber + "updated")
+                .withManufacturer(manufacturer + "updated")
+                .withModel(model + "updated")
+                .withManufactureDate("5-26-2023")
+                .withFacilityName(facilityName + "updated")
+                .withAssignedDepartment(assignedDepartment + "updated")
+                .withNotes(notes + "updated")
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+        when(dynamoDBMapper.load(Mockito.eq(Device.class), anyString())).thenReturn(device);
+        when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(updatedManufacturerModel);
+        when(facilityDepartmentDao.getFacilityDepartment(anyString(), anyString()))
+                .thenReturn(updatedFacilityDepartment);
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        updateDeviceActivity.handleRequest(updateDeviceRequest),
+                "Expected a manufacture date with incorrect format to result in an " +
+                        "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
+    public void handleRequest_withFutureManufactureDate_throwsInvalidAttributeValueException() {
+        // GIVEN
+        ManufacturerModel updatedManufacturerModel = new ManufacturerModel();
+        updatedManufacturerModel.setManufacturer(manufacturer + "updated");
+        updatedManufacturerModel.setModel(model + "updated");
+        updatedManufacturerModel.setRequiredMaintenanceFrequencyInMonths(6);
+
+        FacilityDepartment updatedFacilityDepartment = new FacilityDepartment();
+        updatedFacilityDepartment.setFacilityName(facilityName + "updated");
+        updatedFacilityDepartment.setAssignedDepartment(assignedDepartment + "updated");
+
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber + "updated")
+                .withManufacturer(manufacturer + "updated")
+                .withModel(model + "updated")
+                .withManufactureDate(futureDate.toString())
+                .withFacilityName(facilityName + "updated")
+                .withAssignedDepartment(assignedDepartment + "updated")
+                .withNotes(notes + "updated")
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+
+        when(dynamoDBMapper.load(eq(Device.class), anyString())).thenReturn(device);
+        when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(updatedManufacturerModel);
+        when(facilityDepartmentDao.getFacilityDepartment(anyString(), anyString()))
+                .thenReturn(updatedFacilityDepartment);
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        updateDeviceActivity.handleRequest(updateDeviceRequest),
+                "Expected an add device request with a future manufacture date to result in an " +
+                        "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 }
