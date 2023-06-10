@@ -1,7 +1,5 @@
 package com.nashss.se.htmvault.activity.requests;
 
-import com.nashss.se.htmvault.lambda.AuthenticatedLambdaRequest;
-
 public class SearchDevicesRequest {
 
     private final String criteria;
@@ -21,5 +19,21 @@ public class SearchDevicesRequest {
                 '}';
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
 
+    public static class Builder {
+
+        private String criteria;
+
+        public Builder withCriteria(String criteria) {
+            this.criteria = criteria;
+            return this;
+        }
+
+        public SearchDevicesRequest build() {
+            return new SearchDevicesRequest(criteria);
+        }
+    }
 }
