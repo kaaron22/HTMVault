@@ -112,7 +112,7 @@ class SearchDevices extends BindingClass {
             return '<h4>No results found</h4>';
         }
 
-        let html = '<table><tr><th>ID</th><th>S/N</th><th>Mfg</th><th>Model</th><th>Status</th><th>Facility</th><th>Dept</th><th>Compliant Through</th><th>Next PM</th></tr>';
+        let html = '<table><tr><th>ID</th><th>S/N</th><th>Mfg</th><th>Model</th><th>Status</th><th>Facility</th><th>Dept</th><th>Last PM</th><th>Compliant Through</th><th>Next PM</th></tr>';
         for (const res of searchResults) {
             html += `
             <tr>
@@ -125,6 +125,7 @@ class SearchDevices extends BindingClass {
                 <td>${res.serviceStatus}</td>
                 <td>${res.facilityName}</td>
                 <td>${res.assignedDepartment}</td>
+                <td>${res.lastPmCompletionDate}</td>
                 <td>${res.complianceThroughDate}</td>
                 <td>${res.nextPmDueDate}</td>
             </tr>`;
