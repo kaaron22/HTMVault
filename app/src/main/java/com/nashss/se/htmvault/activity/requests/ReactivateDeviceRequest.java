@@ -3,7 +3,7 @@ package com.nashss.se.htmvault.activity.requests;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
-@JsonDeserialize(builder = RetireDeviceRequest.Builder.class)
+@JsonDeserialize(builder = ReactivateDeviceRequest.Builder.class)
 public class ReactivateDeviceRequest {
 
     private final String controlNumber;
