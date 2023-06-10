@@ -20,4 +20,6 @@ public interface ServiceComponent {
     UpdateDeviceActivity provideUpdateDeviceActivity();
 
     SearchDevicesActivity provideSearchDevicesActivity();
+
+    ReactivateDeviceActivity provideReactivateDeviceActivity();
 }
