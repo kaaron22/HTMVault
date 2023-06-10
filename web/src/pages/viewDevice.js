@@ -9,7 +9,7 @@ import DataStore from "../util/DataStore";
 class ViewDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'submitRetire', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'redirectToUpdateDevice'], this);
+        this.bindClassMethods(['clientLoaded', 'submitRetire', 'submitReactivate', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'redirectToUpdateDevice'], this);
         //this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'addSong'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.addDeviceToPage);
@@ -65,11 +65,44 @@ class ViewDevice extends BindingClass {
         retireButton.innerText = origButtonText;
     }
 
+    async submitReactivate(evt) {
+        evt.preventDefault();
+
+        const errorMessageDisplay = document.getElementById('error-message-device-record-change');
+        errorMessageDisplay.innerText = ``;
+        errorMessageDisplay.classList.add('hidden');
+
+        const reactivateButton = document.getElementById('reactivate-device');
+        const origButtonText = reactivateButton.innerText;
+        reactivateButton.innerText = 'Reactivating...';
+
+        const device = this.dataStore.get('device');
+        const deviceControlNumber = device.controlNumber;
+
+        let controlNumber;
+        if (deviceControlNumber.length < 1) {
+            controlNumber = "";
+        } else {
+            controlNumber = deviceControlNumber;
+        }
+
+        const reactivatedDevice = await this.client.reactivateDevice(controlNumber, (error) => {
+            errorMessageDisplay.innerText = `Error: ${error.message}`
+            errorMessageDisplay.classList.remove('hidden');
+        });
+
+        if (reactivatedDevice != null) {
+            this.dataStore.set('device', reactivatedDevice);
+        }
+        reactivateButton.innerText = origButtonText;
+    }
+
     /**
      * Add the header to the page and load the HTMVaultClient.
      */
     mount() {
         document.getElementById('retire-device').addEventListener('click', this.submitRetire);
+        document.getElementById('reactivate-device').addEventListener('click', this.submitReactivate);
         document.getElementById('add-new-work-order').addEventListener('click', this.addWorkOrder);
         document.getElementById('update-device').addEventListener('click', this.redirectToUpdateDevice);
 
