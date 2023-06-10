@@ -26,6 +26,12 @@ class ViewDevice extends BindingClass {
         const deviceId = urlParams.get('controlNumber');
         document.getElementById('control-number').innerText = "Loading Device ...";
         const device = await this.client.getDevice(deviceId);
+        if (device.serviceStatus == "IN_SERVICE") {
+            document.getElementById('reactivate-device').classList.add('hidden');
+        } else {
+            document.getElementById('retire-device').classList.add('hidden');
+            document.getElementById('update-device').classList.add('hidden');
+        }
         this.dataStore.set('device', device);
         const order = urlParams.get('order');
         document.getElementById('work-orders').innerText = "(loading work orders...)";
@@ -61,6 +67,10 @@ class ViewDevice extends BindingClass {
 
         if (retiredDevice != null) {
             this.dataStore.set('device', retiredDevice);
+            document.getElementById('retire-device').classList.add('hidden');
+            document.getElementById('update-device').classList.add('hidden');
+            document.getElementById('reactivate-device').classList.remove('hidden');
+            document.getElementById('create-work-order').classList.add('hidden');
         }
         retireButton.innerText = origButtonText;
     }
@@ -93,6 +103,10 @@ class ViewDevice extends BindingClass {
 
         if (reactivatedDevice != null) {
             this.dataStore.set('device', reactivatedDevice);
+            document.getElementById('retire-device').classList.remove('hidden');
+            document.getElementById('update-device').classList.remove('hidden');
+            document.getElementById('reactivate-device').classList.add('hidden');
+            document.getElementById('create-work-order').classList.remove('hidden');
         }
         reactivateButton.innerText = origButtonText;
     }
