@@ -9,7 +9,7 @@ import DataStore from "../util/DataStore";
 class ViewDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'submitRetire', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage'], this);
+        this.bindClassMethods(['clientLoaded', 'submitRetire', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'redirectToUpdateDevice'], this);
         //this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'addSong'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.addDeviceToPage);
@@ -58,7 +58,10 @@ class ViewDevice extends BindingClass {
             errorMessageDisplay.innerText = `Error: ${error.message}`
             errorMessageDisplay.classList.remove('hidden');
         });
-        this.dataStore.set('device', retiredDevice);
+
+        if (retiredDevice != null) {
+            this.dataStore.set('device', retiredDevice);
+        }
         retireButton.innerText = origButtonText;
     }
 
@@ -68,6 +71,7 @@ class ViewDevice extends BindingClass {
     mount() {
         document.getElementById('retire-device').addEventListener('click', this.submitRetire);
         document.getElementById('add-new-work-order').addEventListener('click', this.addWorkOrder);
+        document.getElementById('update-device').addEventListener('click', this.redirectToUpdateDevice);
 
         this.header.addHeaderToPage();
 
@@ -135,6 +139,13 @@ class ViewDevice extends BindingClass {
         }
         workOrderSummaryHtml += `</table>`
         document.getElementById('work-orders').innerHTML = workOrderSummaryHtml;
+    }
+
+    async redirectToUpdateDevice() {
+        const device = this.dataStore.get('device');
+        if (device != null) {
+            window.location.href = `updateDevice.html?controlNumber=${device.controlNumber}`;
+        }
     }
 
     /**

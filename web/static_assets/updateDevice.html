@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" src="assets/updateDevice.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body class="background">
+    <header class="header" id="header"></header>
+    <div class="card">
+        <h2>Update Device Record</h2>
+        <form class="card-content" id="update-device-form">
+            <p class="hidden error" id="error-message"></p>
+            <h4>Control Number: <span id="control-number"></span></h4>
+            <p class="form-field">
+                <label>Serial Number (numbers, letters, and dashes only)</label>
+                <input type="text" required class="validated-field" id="serial-number" placeholder="i.e. S-1234, B567, etc." autofocus>
+            </p>
+            <p class="form-field">
+                <label>Manufacturer</label>
+                <input type="text" required class="validated-field" id="manufacturer" placeholder="i.e. Defib Corp, IV Pump Corp, etc."
+                       autofocus>
+            </p>
+            <p class="form-field">
+                <label>Model</label>
+                <input type="text" required class="validated-field" id="model" placeholder="i.e. X-1000, LP-200, etc"
+                       autofocus>
+            </p>
+            <p class="form-field">
+                <label>Facility Name</label>
+                <input type="text" required class="validated-field" id="facility-name" placeholder="i.e. General Hospital, Eastside Family Practice, etc."
+                       autofocus>
+            </p>
+            <p class="form-field">
+                <label>Assigned Department</label>
+                <input type="text" required class="validated-field" id="assigned-department" placeholder="i.e. ICU, Surgery, ER, etc."
+                       autofocus>
+            </p>
+            <p class="form-field">
+                <label>Manufacture Date (optional)</label>
+                <input type="date" id="manufacture-date" >
+            </p>
+            <p class="form-field">
+                <label>Notes (optional)</label>
+                <input type="text" id="notes" placeholder="i.e. kept in storage A when not in use"
+                       autofocus>
+            </p>
+            <a href="#" class="button" id="update-device">Update</a>
+        </form>
+    </div>
+</body>
+
+</html>

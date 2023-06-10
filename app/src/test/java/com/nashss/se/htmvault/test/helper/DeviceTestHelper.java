@@ -57,7 +57,7 @@ public final class DeviceTestHelper {
                 LocalDate nextPmDueDatePlusOneMonth =
                         lastPmCompletionDate.plusMonths(maintenanceFrequency + 1);
                 int dayOfMonth = nextPmDueDatePlusOneMonth.getDayOfMonth();
-                return nextPmDueDatePlusOneMonth.minusDays(dayOfMonth + 1);
+                return nextPmDueDatePlusOneMonth.minusDays(dayOfMonth);
             }
         }
     }

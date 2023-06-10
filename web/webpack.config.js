@@ -26,6 +26,7 @@ module.exports = {
     addDevice: path.resolve(__dirname, 'src', 'pages', 'addDevice.js'),
     viewDevice: path.resolve(__dirname, 'src', 'pages', 'viewDevice.js'),
     searchPlaylists: path.resolve(__dirname, 'src', 'pages', 'searchPlaylists.js'),
+    updateDevice: path.resolve(__dirname, 'src', 'pages', 'updateDevice.js'),
   },
   output: {
     path: path.resolve(__dirname, 'build', 'assets'),

@@ -16,7 +16,7 @@ export default class HTMVaultClient extends BindingClass {
         super();
 
         //const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPlaylist', 'getPlaylistSongs', 'createPlaylist', 'addDevice'];
-        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice'];
+        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice', 'getDevice', 'getDeviceWorkOrders', 'retireDevice', 'updateDevice'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -72,9 +72,33 @@ export default class HTMVaultClient extends BindingClass {
         return await this.authenticator.getUserToken();
     }
 
+    async updateDevice(controlNumber, serialNumber, manufacturer, model, facilityName, assignedDepartment,
+        manufactureDate, notes, errorCallback) {
+        try {
+            const token = await this.getTokenOrThrow("Only authenticated users can update devices.");
+            const response = await this.axiosClient.put(`devices/${controlNumber}`, {
+                controlNumber: controlNumber,
+                serialNumber: serialNumber,
+                manufacturer: manufacturer,
+                model: model,
+                facilityName: facilityName,
+                assignedDepartment: assignedDepartment,
+                manufactureDate: manufactureDate,
+                notes: notes
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data.device;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
     async retireDevice(controlNumber, errorCallback) {
         try {
-            const token = await this.getTokenOrThrow("Only authenticated users can add devices.");
+            const token = await this.getTokenOrThrow("Only authenticated users can retire devices.");
             const response = await this.axiosClient.delete(`devices/${controlNumber}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -153,7 +177,7 @@ export default class HTMVaultClient extends BindingClass {
      * @returns The device that has been added to the inventory.
      */
     async addDevice(serialNumber, manufacturer, model, facilityName, assignedDepartment,
-     manufactureDate, notes, errorCallback) {
+        manufactureDate, notes, errorCallback) {
         try {
             const token = await this.getTokenOrThrow("Only authenticated users can add devices.");
             const response = await this.axiosClient.post(`devices`, {
