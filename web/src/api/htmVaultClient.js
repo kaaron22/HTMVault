@@ -16,7 +16,7 @@ export default class HTMVaultClient extends BindingClass {
         super();
 
         //const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPlaylist', 'getPlaylistSongs', 'createPlaylist', 'addDevice'];
-        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice', 'getDevice', 'getDeviceWorkOrders', 'retireDevice', 'updateDevice'];
+        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice', 'getDevice', 'getDeviceWorkOrders', 'retireDevice', 'reactivateDevice', 'updateDevice'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -112,8 +112,10 @@ export default class HTMVaultClient extends BindingClass {
 
     async reactivateDevice(controlNumber, errorCallback) {
         try {
-            cons token = await this.getTokenOrThrow("Only authenticated users can reactivate devices.");
+            const token = await this.getTokenOrThrow("Only authenticated users can reactivate devices.");
             const response = await this.axiosClient.put(`devices/reactivate/${controlNumber}`, {
+                controlNumber: controlNumber
+            }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
