@@ -19,10 +19,7 @@ public class ReactivateDeviceLambda
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<ReactivateDeviceRequest> input, Context context) {
         return super.runActivity(
                 () -> {
-                    ReactivateDeviceRequest unauthenticatedRequest = input.fromPath(path ->
-                            ReactivateDeviceRequest.builder()
-                                    .withControlNumber(path.get("controlNumber"))
-                                    .build());
+                    ReactivateDeviceRequest unauthenticatedRequest = input.fromBody(ReactivateDeviceRequest.class);
                     return input.fromUserClaims(claims ->
                             ReactivateDeviceRequest.builder()
                                     .withControlNumber(unauthenticatedRequest.getControlNumber())
