@@ -10,6 +10,7 @@ import com.nashss.se.htmvault.models.DeviceModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static com.nashss.se.htmvault.utils.NullUtils.ifNull;
@@ -20,6 +21,7 @@ public class SearchDevicesActivity {
     private final MetricsPublisher metricsPublisher;
     private final Logger log = LogManager.getLogger();
 
+    @Inject
     public SearchDevicesActivity(DeviceDao deviceDao, MetricsPublisher metricsPublisher) {
         this.deviceDao = deviceDao;
         this.metricsPublisher = metricsPublisher;
