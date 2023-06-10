@@ -110,6 +110,20 @@ export default class HTMVaultClient extends BindingClass {
         }
     }
 
+    async reactivateDevice(controlNumber, errorCallback) {
+        try {
+            cons token = await this.getTokenOrThrow("Only authenticated users can reactivate devices.");
+            const response = await this.axiosClient.put(`devices/reactivate/${controlNumber}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data.device;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
     /**
      * Gets the device for the given ID.
      * @param controlNumber Unique identifier for a device
