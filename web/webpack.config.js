@@ -25,7 +25,7 @@ module.exports = {
   entry: {
     addDevice: path.resolve(__dirname, 'src', 'pages', 'addDevice.js'),
     viewDevice: path.resolve(__dirname, 'src', 'pages', 'viewDevice.js'),
-    searchPlaylists: path.resolve(__dirname, 'src', 'pages', 'searchPlaylists.js'),
+    searchDevices: path.resolve(__dirname, 'src', 'pages', 'searchDevices.js'),
     updateDevice: path.resolve(__dirname, 'src', 'pages', 'updateDevice.js'),
   },
   output: {

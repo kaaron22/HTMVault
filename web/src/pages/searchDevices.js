@@ -25,7 +25,7 @@ const EMPTY_DATASTORE_STATE = {
 /**
  * Logic needed for the view playlist page of the website.
  */
-class SearchPlaylists extends BindingClass {
+class SearchDevices extends BindingClass {
     constructor() {
         super();
 
@@ -35,7 +35,7 @@ class SearchPlaylists extends BindingClass {
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.header = new Header(this.dataStore);
         this.dataStore.addChangeListener(this.displaySearchResults);
-        console.log("searchPlaylists constructor");
+        console.log("searchDevices constructor");
     }
 
     /**
@@ -43,7 +43,7 @@ class SearchPlaylists extends BindingClass {
      */
     mount() {
         // Wire up the form's 'submit' event and the button's 'click' event to the search method.
-        document.getElementById('search-playlists-form').addEventListener('submit', this.search);
+        document.getElementById('search-devices-form').addEventListener('submit', this.search);
         document.getElementById('search-btn').addEventListener('click', this.search);
 
         this.header.addHeaderToPage();
@@ -112,15 +112,21 @@ class SearchPlaylists extends BindingClass {
             return '<h4>No results found</h4>';
         }
 
-        let html = '<table><tr><th>Name</th><th>Song Count</th><th>Tags</th></tr>';
+        let html = '<table><tr><th>ID</th><th>S/N</th><th>Mfg</th><th>Model</th><th>Status</th><th>Facility</th><th>Dept</th><th>Compliant Through</th><th>Next PM</th></tr>';
         for (const res of searchResults) {
             html += `
             <tr>
                 <td>
-                    <a href="playlist.html?id=${res.id}">${res.name}</a>
+                    <a href="device.html?id=${res.controlNumber}">${res.controlNumber}</a>
                 </td>
-                <td>${res.songCount}</td>
-                <td>${res.tags?.join(', ')}</td>
+                <td>${res.serialNumber}</td>
+                <td>${res.manufacturer}</td>
+                <td>${res.model}</td>
+                <td>${res.serviceStatus}</td>
+                <td>${res.facilityName}</td>
+                <td>${res.assignedDepartment}</td>
+                <td>${res.complianceThroughDate}</td>
+                <td>${res.lastPmCompletionDate}</td>
             </tr>`;
         }
         html += '</table>';
@@ -134,8 +140,8 @@ class SearchPlaylists extends BindingClass {
  * Main method to run when the page contents have loaded.
  */
 const main = async () => {
-    const searchPlaylists = new SearchPlaylists();
-    searchPlaylists.mount();
+    const searchDevices = new SearchDevices();
+    searchDevices.mount();
 };
 
 window.addEventListener('DOMContentLoaded', main);
