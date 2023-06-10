@@ -126,7 +126,7 @@ class SearchDevices extends BindingClass {
                 <td>${res.facilityName}</td>
                 <td>${res.assignedDepartment}</td>
                 <td>${res.complianceThroughDate}</td>
-                <td>${res.lastPmCompletionDate}</td>
+                <td>${res.nextPmDueDate}</td>
             </tr>`;
         }
         html += '</table>';
