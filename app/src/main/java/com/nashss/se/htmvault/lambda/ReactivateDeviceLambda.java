@@ -17,6 +17,20 @@ public class ReactivateDeviceLambda
      */
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<ReactivateDeviceRequest> input, Context context) {
-        return null;
+        return super.runActivity(
+                () -> {
+                    ReactivateDeviceRequest unauthenticatedRequest = input.fromPath(path ->
+                            ReactivateDeviceRequest.builder()
+                                    .withControlNumber(path.get("controlNumber"))
+                                    .build());
+                    return input.fromUserClaims(claims ->
+                            ReactivateDeviceRequest.builder()
+                                    .withControlNumber(unauthenticatedRequest.getControlNumber())
+                                    .withCustomerId(claims.get("email"))
+                                    .withCustomerName(claims.get("name"))
+                                    .build());
+                },
+                (request, serviceComponent) -> serviceComponent.provideReactivateDeviceActivity().handleRequest(request)
+        );
     }
 }
