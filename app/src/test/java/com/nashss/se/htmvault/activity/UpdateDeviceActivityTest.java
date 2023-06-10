@@ -13,6 +13,7 @@ import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.FacilityDepartment;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
+import com.nashss.se.htmvault.exceptions.UpdateRetiredDeviceException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.DeviceModel;
@@ -312,6 +313,35 @@ class UpdateDeviceActivityTest {
         assertThrows(DeviceNotFoundException.class, () ->
                 updateDeviceActivity.handleRequest(updateDeviceRequest),
                 "Expected device not found to result in a DeviceNotFoundException thrown");
+        verify(dynamoDBMapper).load(eq(Device.class), anyString());
+    }
+
+    @Test
+    public void handleRequest_deviceRetired_throwsUpdateRetiredDeviceException() {
+        // GIVEN
+        // an update request, including updated manufacturer/model and facility/department
+        device.setServiceStatus(ServiceStatus.RETIRED);
+
+        LocalDate updatedManufactureDate = LocalDate.now();
+
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber + "updated")
+                .withManufacturer(manufacturer + "updated")
+                .withModel(model + "updated")
+                .withManufactureDate(updatedManufactureDate.toString())
+                .withFacilityName(facilityName + "updated")
+                .withAssignedDepartment(assignedDepartment + "updated")
+                .withNotes(notes + "updated")
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+        when(dynamoDBMapper.load(Mockito.eq(Device.class), anyString())).thenReturn(device);
+
+        // WHEN & THEN
+        assertThrows(UpdateRetiredDeviceException.class, () ->
+                        updateDeviceActivity.handleRequest(updateDeviceRequest),
+                "Expected device not found to result in a UpdateRetiredDeviceException thrown");
         verify(dynamoDBMapper).load(eq(Device.class), anyString());
     }
 }
