@@ -158,7 +158,8 @@ class ViewDevice extends BindingClass {
     addWorkOrdersToPage() {
         const workOrders = this.dataStore.get('workOrders')
 
-        if (workOrders == null) {
+        if (workOrders == null || workOrders.length == 0) {
+            document.getElementById('work-orders').innerHTML = 'No work orders found';
             return;
         }
 
