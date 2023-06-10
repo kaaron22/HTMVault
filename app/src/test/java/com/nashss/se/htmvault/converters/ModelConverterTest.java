@@ -7,6 +7,7 @@ import com.nashss.se.htmvault.models.DeviceModel;
 import com.nashss.se.htmvault.models.ServiceStatus;
 
 import com.nashss.se.htmvault.models.WorkOrderModel;
+import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
 import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -152,6 +153,22 @@ class ModelConverterTest {
     }
 
     @Test
+    public void toDeviceModelList_withListDevices_convertsToListDeviceModels() {
+        // GIVEN
+        List<Device> devices = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            devices.add(DeviceTestHelper.generateActiveDevice(i, device.getManufacturerModel(), facilityName,
+                    assignedDepartment));
+        }
+
+        // WHEN
+        List<DeviceModel> deviceModelList = new ModelConverter().toDeviceModelList(devices);
+
+        // THEN
+        DeviceTestHelper.assertDevicesEqualDeviceModels(devices, deviceModelList);
+    }
+
+    @Test
     public void toWorkOrderModel_withWorkOrder_convertsToWorkOrderModel() {
         // GIVEN
         WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1,
@@ -166,7 +183,7 @@ class ModelConverterTest {
     }
 
     @Test
-    public void toWorkOrderModel_withListWorkOrders_convertsToListWorkOrderModels() {
+    public void toWorkOrderModels_withListWorkOrders_convertsToListWorkOrderModels() {
         // GIVEN
         List<WorkOrder> workOrders = new ArrayList<>();
         for (int i = 0; i < 4; i++) {

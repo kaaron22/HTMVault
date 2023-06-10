@@ -7,6 +7,7 @@ import com.nashss.se.htmvault.models.ServiceStatus;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -62,7 +63,7 @@ public final class DeviceTestHelper {
         }
     }
 
-    public static void assertDeviceEqualsDeviceModel(Device device, DeviceModel deviceModel) {
+    public static void assertDeviceEqualsDeviceModel(Device device, DeviceModel deviceModel, String message) {
         assertEquals(device.getControlNumber(), deviceModel.getControlNumber());
         assertEquals(device.getSerialNumber(), deviceModel.getSerialNumber());
         assertEquals(device.getManufacturerModel().getManufacturer(), deviceModel.getManufacturer());
@@ -85,6 +86,26 @@ public final class DeviceTestHelper {
         assertEquals(device.getAddedById(), deviceModel.getAddedById());
         assertEquals(device.getAddedByName(), deviceModel.getAddedByName());
         assertEquals(null == device.getNotes() ? "" : device.getNotes(), deviceModel.getNotes());
+    }
+
+    public static void assertDeviceEqualsDeviceModel(Device device, DeviceModel deviceModel) {
+        String message = String.format("Expected device %s to match device model %s", device,
+                deviceModel);
+        assertDeviceEqualsDeviceModel(device, deviceModel, message);
+    }
+
+    public static void assertDevicesEqualDeviceModels(List<Device> devices, List<DeviceModel> deviceModelList) {
+        assertEquals(devices.size(), deviceModelList.size(),
+                String.format("Expected list of devices (%s) and list of device models (%s) to match",
+                        devices, deviceModelList)); {
+        }
+        for (int i = 0; i < devices.size(); i++) {
+            assertDeviceEqualsDeviceModel(devices.get(i), deviceModelList.get(i),
+                    String.format("Expected %dth device (%s) to match corresponding work order model (%s)",
+                            i,
+                            devices.get(i),
+                            deviceModelList.get(i)));
+        }
     }
 
 }
