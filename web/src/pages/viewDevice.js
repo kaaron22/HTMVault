@@ -9,7 +9,7 @@ import DataStore from "../util/DataStore";
 class ViewDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'submitRetire', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'redirectToUpdateDevice'], this);
+        this.bindClassMethods(['clientLoaded', 'submitRetire', 'submitReactivate', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'redirectToUpdateDevice'], this);
         //this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'addSong'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.addDeviceToPage);
@@ -26,6 +26,12 @@ class ViewDevice extends BindingClass {
         const deviceId = urlParams.get('controlNumber');
         document.getElementById('control-number').innerText = "Loading Device ...";
         const device = await this.client.getDevice(deviceId);
+        if (device.serviceStatus == "IN_SERVICE") {
+            document.getElementById('reactivate-device').classList.add('hidden');
+        } else {
+            document.getElementById('retire-device').classList.add('hidden');
+            document.getElementById('update-device').classList.add('hidden');
+        }
         this.dataStore.set('device', device);
         const order = urlParams.get('order');
         document.getElementById('work-orders').innerText = "(loading work orders...)";
@@ -61,8 +67,48 @@ class ViewDevice extends BindingClass {
 
         if (retiredDevice != null) {
             this.dataStore.set('device', retiredDevice);
+            document.getElementById('retire-device').classList.add('hidden');
+            document.getElementById('update-device').classList.add('hidden');
+            document.getElementById('reactivate-device').classList.remove('hidden');
+            document.getElementById('create-work-order').classList.add('hidden');
         }
         retireButton.innerText = origButtonText;
+    }
+
+    async submitReactivate(evt) {
+        evt.preventDefault();
+
+        const errorMessageDisplay = document.getElementById('error-message-device-record-change');
+        errorMessageDisplay.innerText = ``;
+        errorMessageDisplay.classList.add('hidden');
+
+        const reactivateButton = document.getElementById('reactivate-device');
+        const origButtonText = reactivateButton.innerText;
+        reactivateButton.innerText = 'Reactivating...';
+
+        const device = this.dataStore.get('device');
+        const deviceControlNumber = device.controlNumber;
+
+        let controlNumber;
+        if (deviceControlNumber.length < 1) {
+            controlNumber = "";
+        } else {
+            controlNumber = deviceControlNumber;
+        }
+
+        const reactivatedDevice = await this.client.reactivateDevice(controlNumber, (error) => {
+            errorMessageDisplay.innerText = `Error: ${error.message}`
+            errorMessageDisplay.classList.remove('hidden');
+        });
+
+        if (reactivatedDevice != null) {
+            this.dataStore.set('device', reactivatedDevice);
+            document.getElementById('retire-device').classList.remove('hidden');
+            document.getElementById('update-device').classList.remove('hidden');
+            document.getElementById('reactivate-device').classList.add('hidden');
+            document.getElementById('create-work-order').classList.remove('hidden');
+        }
+        reactivateButton.innerText = origButtonText;
     }
 
     /**
@@ -70,6 +116,7 @@ class ViewDevice extends BindingClass {
      */
     mount() {
         document.getElementById('retire-device').addEventListener('click', this.submitRetire);
+        document.getElementById('reactivate-device').addEventListener('click', this.submitReactivate);
         document.getElementById('add-new-work-order').addEventListener('click', this.addWorkOrder);
         document.getElementById('update-device').addEventListener('click', this.redirectToUpdateDevice);
 
@@ -111,7 +158,8 @@ class ViewDevice extends BindingClass {
     addWorkOrdersToPage() {
         const workOrders = this.dataStore.get('workOrders')
 
-        if (workOrders == null) {
+        if (workOrders == null || workOrders.length == 0) {
+            document.getElementById('work-orders').innerHTML = 'No work orders found';
             return;
         }
 
