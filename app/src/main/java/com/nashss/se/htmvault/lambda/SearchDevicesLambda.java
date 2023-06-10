@@ -17,6 +17,13 @@ public class SearchDevicesLambda
      */
     @Override
     public LambdaResponse handleRequest(LambdaRequest<SearchDevicesRequest> input, Context context) {
-        return null;
+        return super.runActivity(
+                () -> input.fromQuery(query ->
+                        SearchDevicesRequest.builder()
+                                .withCriteria(query.get("q"))
+                                .build()),
+                (request, serviceComponent) ->
+                        serviceComponent.provideSearchDevicesActivity().handleRequest(request)
+        );
     }
 }
