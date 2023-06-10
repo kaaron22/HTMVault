@@ -12,6 +12,7 @@ import com.nashss.se.htmvault.models.DeviceModel;
 import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -66,5 +67,24 @@ class SearchDevicesActivityTest {
 
         // THEN
         DeviceTestHelper.assertDevicesEqualDeviceModels(devices, deviceModelList);
+    }
+
+    @Test
+    public void handleRequest_withNullCriteria_isIdenticalToEmptyCriteria() {
+        // GIVEN
+        String criteria = null;
+        ArgumentCaptor<String[]> criteriaArray = ArgumentCaptor.forClass(String[].class);
+
+        when(deviceDao.searchDevices(criteriaArray.capture())).thenReturn(List.of());
+
+        SearchDevicesRequest request = SearchDevicesRequest.builder()
+                .withCriteria(criteria)
+                .build();
+
+        // WHEN
+        SearchDevicesResult result = searchDevicesActivity.handleRequest(request);
+
+        // THEN
+        assertEquals(0, criteriaArray.getValue().length, "Criteria Array should be empty");
     }
 }
