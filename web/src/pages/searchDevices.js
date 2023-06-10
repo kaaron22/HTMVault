@@ -117,7 +117,7 @@ class SearchDevices extends BindingClass {
             html += `
             <tr>
                 <td>
-                    <a href="device.html?id=${res.controlNumber}">${res.controlNumber}</a>
+                    <a href="device.html?controlNumber=${res.controlNumber}&order=DESCENDING">${res.controlNumber}</a>
                 </td>
                 <td>${res.serialNumber}</td>
                 <td>${res.manufacturer}</td>
