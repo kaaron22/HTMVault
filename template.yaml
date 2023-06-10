@@ -413,8 +413,6 @@ Resources:
           Properties:
             Path: /devices/reactivate/{controlNumber}
             Method: put
-            Auth:
-              Authorizer: 'NONE'
 
   #-----------------------------------------------------
   # DynamoDB Configuration
