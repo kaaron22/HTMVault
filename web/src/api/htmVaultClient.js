@@ -225,18 +225,18 @@ export default class HTMVaultClient extends BindingClass {
     }
 
     /**
-     * Search for a soong.
+     * Search for a device.
      * @param criteria A string containing search criteria to pass to the API.
-     * @returns The playlists that match the search criteria.
+     * @returns The devices that match the search criteria.
      */
     async search(criteria, errorCallback) {
         try {
             const queryParams = new URLSearchParams({ q: criteria })
             const queryString = queryParams.toString();
 
-            const response = await this.axiosClient.get(`playlists/search?${queryString}`);
+            const response = await this.axiosClient.get(`devices/search?${queryString}`);
 
-            return response.data.playlists;
+            return response.data.devices;
         } catch (error) {
             this.handleError(error, errorCallback)
         }
