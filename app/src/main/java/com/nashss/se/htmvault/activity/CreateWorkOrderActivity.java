@@ -3,7 +3,9 @@ package com.nashss.se.htmvault.activity;
 import com.nashss.se.htmvault.activity.requests.CreateWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.CreateWorkOrderResult;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
+import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
+import com.nashss.se.htmvault.models.WorkOrderType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,6 +28,16 @@ public class CreateWorkOrderActivity {
 
         // verify the work order type is one of the types allowed
 
+        boolean validWorkOrderType = false;
+        for (WorkOrderType workOrderType : WorkOrderType.values()) {
+            if (createWorkOrderRequest.getWorkOrderType().equals(workOrderType.toString())) {
+                validWorkOrderType = true;
+                break;
+            }
+        }
+        if (!validWorkOrderType) {
+            throw new InvalidAttributeValueException("");
+        }
 
         // verify the problem reported is not null or blank
 
