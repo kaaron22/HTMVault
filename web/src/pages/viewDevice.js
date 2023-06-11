@@ -178,7 +178,7 @@ class ViewDevice extends BindingClass {
         for (workOrderSummary of workOrders) {
             workOrderSummaryHtml += `
                 <tr>
-                    <td>${workOrderSummary.workOrderId}</td>
+                    <td><a href="viewWorkOrder.html?workOrderId=${workOrderSummary.workOrderId}">${workOrderSummary.workOrderId}</a></td>
                     <td>${workOrderSummary.workOrderType}</td>
                     <td>${workOrderSummary.workOrderCompletionStatus}</td>
                     <td>${workOrderSummary.creationDateTime}</td>
