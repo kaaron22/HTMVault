@@ -16,7 +16,7 @@ export default class HTMVaultClient extends BindingClass {
         super();
 
         //const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPlaylist', 'getPlaylistSongs', 'createPlaylist', 'addDevice'];
-        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice', 'getDevice', 'getDeviceWorkOrders', 'retireDevice', 'reactivateDevice', 'updateDevice'];
+        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice', 'getDevice', 'getDeviceWorkOrders', 'retireDevice', 'reactivateDevice', 'updateDevice', 'createWorkOrder'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -151,6 +151,25 @@ export default class HTMVaultClient extends BindingClass {
         try {
             const response = await this.axiosClient.get(`playlists/${id}`);
             return response.data.playlist;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
+    async createWorkOrder(controlNumber, workOrderType, problemReported, problemFound, errorCallback) {
+        try {
+            const token = await this.getTokenOrThrow("Only authenticated users can add devices.");
+            const response = await this.axiosClient.post(`workOrders`, {
+                controlNumber: controlNumber,
+                workOrderType: workOrderType,
+                problemReported: problemReported,
+                problemFound: problemFound
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data.workOrder;
         } catch (error) {
             this.handleError(error, errorCallback)
         }
