@@ -116,7 +116,7 @@ class ViewDevice extends BindingClass {
     mount() {
         document.getElementById('retire-device').addEventListener('click', this.submitRetire);
         document.getElementById('reactivate-device').addEventListener('click', this.submitReactivate);
-        document.getElementById('add-new-work-order').addEventListener('click', this.addWorkOrder);
+        document.getElementById('add-new-work-order').addEventListener('click', this.createWorkOrder);
         document.getElementById('update-device').addEventListener('click', this.redirectToUpdateDevice);
 
         this.header.addHeaderToPage();
