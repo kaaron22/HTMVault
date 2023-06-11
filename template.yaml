@@ -256,14 +256,6 @@ Resources:
                 Action: dynamodb:*
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/facility_departments"
 
-        - PolicyName: 'AccessWorkOrderSummariesTable'
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action: dynamodb:*
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/work_order_summaries"
-
   #-----------------------------------------------------
   # Lambda Functions Configuration
   #-----------------------------------------------------
