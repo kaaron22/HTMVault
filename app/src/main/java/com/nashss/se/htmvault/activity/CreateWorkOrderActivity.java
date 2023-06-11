@@ -4,12 +4,14 @@ import com.nashss.se.htmvault.activity.requests.CreateWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.CreateWorkOrderResult;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
+import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.WorkOrderType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 
 public class CreateWorkOrderActivity {
 
@@ -36,7 +38,9 @@ public class CreateWorkOrderActivity {
             }
         }
         if (!validWorkOrderType) {
-            throw new InvalidAttributeValueException("");
+            metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            throw new InvalidAttributeValueException("The work order type provided must be one of: " +
+                    Arrays.toString(WorkOrderType.values()));
         }
 
         // verify the problem reported is not null or blank
