@@ -2,6 +2,7 @@ package com.nashss.se.htmvault.activity;
 
 import com.nashss.se.htmvault.activity.requests.CreateWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.CreateWorkOrderResult;
+import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
@@ -17,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 public class CreateWorkOrderActivity {
@@ -82,10 +84,21 @@ public class CreateWorkOrderActivity {
         workOrder.setFacilityName(device.getFacilityName());
         workOrder.setAssignedDepartment(device.getAssignedDepartment());
         workOrder.setProblemReported(createWorkOrderRequest.getProblemReported());
-        workOrder.setProblemFound(null == createWorkOrderRequest.getProblemFound() ? "" :
-                createWorkOrderRequest.getProblemFound());
-        workOrder.setCreatedById();
+        workOrder.setProblemFound(createWorkOrderRequest.getProblemFound());
+        workOrder.setCreatedById(createWorkOrderRequest.getCreatedById());
+        workOrder.setCreatedByName(createWorkOrderRequest.getCreatedByName());
+        workOrder.setCreationDateTime(LocalDateTime.now());
+        workOrder.setClosedById(null);
+        workOrder.setClosedByName(null);
+        workOrder.setClosedDateTime(null);
+        workOrder.setSummary(null);
+        workOrder.setCompletionDateTime(null);
+
+        workOrder = workOrderDao.saveWorkOrder(workOrder);
 
         // convert the work order, build and return the result with the work order model
+        return CreateWorkOrderResult.builder()
+                .withWorkOrderModel(new ModelConverter().toWorkOrderModel(workOrder))
+                .build();
     }
 }
