@@ -10,13 +10,17 @@ public class CreateWorkOrderRequest {
     private final String workOrderType;
     private final String problemReported;
     private final String problemFound;
+    private final String createdById;
+    private final String createdByName;
 
     private CreateWorkOrderRequest(String controlNumber, String workOrderType, String problemReported,
-                                   String problemFound) {
+                                   String problemFound, String createdById, String createdByName) {
         this.controlNumber = controlNumber;
         this.workOrderType = workOrderType;
         this.problemReported = problemReported;
         this.problemFound = problemFound;
+        this.createdById = createdById;
+        this.createdByName = createdByName;
     }
 
     public String getControlNumber() {
@@ -35,6 +39,14 @@ public class CreateWorkOrderRequest {
         return problemFound;
     }
 
+    public String getCreatedById() {
+        return createdById;
+    }
+
+    public String getCreatedByName() {
+        return createdByName;
+    }
+
     @Override
     public String toString() {
         return "CreateWorkOrderRequest{" +
@@ -42,6 +54,8 @@ public class CreateWorkOrderRequest {
                 ", workOrderType='" + workOrderType + '\'' +
                 ", problemReported='" + problemReported + '\'' +
                 ", problemFound='" + problemFound + '\'' +
+                ", createdById='" + createdById + '\'' +
+                ", createdByName='" + createdByName + '\'' +
                 '}';
     }
 
@@ -55,6 +69,8 @@ public class CreateWorkOrderRequest {
         private String workOrderType;
         private String problemReported;
         private String problemFound;
+        private String createdById;
+        private String createdByName;
 
         public Builder withControlNumber(String controlNumber) {
             this.controlNumber = controlNumber;
@@ -76,8 +92,19 @@ public class CreateWorkOrderRequest {
             return this;
         }
 
+        public Builder withCreatedById(String createdById) {
+            this.createdById = createdById;
+            return this;
+        }
+
+        public Builder withCreatedByName(String createdByName) {
+            this.createdByName = createdByName;
+            return this;
+        }
+
         public CreateWorkOrderRequest build() {
-            return new CreateWorkOrderRequest(controlNumber, workOrderType, problemReported, problemFound);
+            return new CreateWorkOrderRequest(controlNumber, workOrderType, problemReported, problemFound,
+                    createdById, createdByName);
         }
     }
 }
