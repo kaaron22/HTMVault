@@ -9,8 +9,7 @@ import DataStore from "../util/DataStore";
 class ViewDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'submitRetire', 'submitReactivate', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'redirectToUpdateDevice'], this);
-        //this.bindClassMethods(['clientLoaded', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'addSong'], this);
+        this.bindClassMethods(['clientLoaded', 'submitRetire', 'submitReactivate', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'redirectToUpdateDevice', 'createWorkOrder'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.addDeviceToPage);
         this.dataStore.addChangeListener(this.addWorkOrdersToPage);
@@ -200,31 +199,32 @@ class ViewDevice extends BindingClass {
      * Method to run when the add song playlist submit button is pressed. Call the MusicPlaylistService to add a song to the
      * playlist.
      */
-    async addSong() {
+    async createWorkOrder() {
 
         const errorMessageDisplay = document.getElementById('error-message');
         errorMessageDisplay.innerText = ``;
         errorMessageDisplay.classList.add('hidden');
 
-        const playlist = this.dataStore.get('playlist');
+        const device = this.dataStore.get('device');
         if (playlist == null) {
             return;
         }
 
-        document.getElementById('add-song').innerText = 'Adding...';
-        const asin = document.getElementById('album-asin').value;
-        const trackNumber = document.getElementById('track-number').value;
-        const playlistId = playlist.id;
+        document.getElementById('add-new-work-order').innerText = 'Adding...';
+        const controlNumber = document.getElementById('control-number').innerText;
+        const workOrderType = document.getElementById('workOrderType').value;
+        const problemReported = document.getElementById('problem-reported').value;
+        const problemFound = document.getElementById('problem-found').value;
 
-        const songList = await this.client.addSongToPlaylist(playlistId, asin, trackNumber, (error) => {
+        const workOrderList = await this.client.createWorkOrder(controlNumber, workOrderType, problemReported, problemFound, (error) => {
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');           
         });
 
-        this.dataStore.set('songs', songList);
+        this.dataStore.set('work-orders', workOrderList);
 
-        document.getElementById('add-song').innerText = 'Add Song';
-        document.getElementById("add-song-form").reset();
+        document.getElementById('add-new-work-order').innerText = 'Create New Work Order';
+        document.getElementById("create-new-work-order-form").reset();
     }
 }
 
