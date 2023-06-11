@@ -42,6 +42,19 @@ class WorkOrderDaoTest {
     }
 
     @Test
+    void saveWorkOrder_withWorkOrder_callsMapperWithWorkOrder() {
+        // GIVEN
+        WorkOrder workOrder = new WorkOrder();
+
+        // WHEN
+        WorkOrder result = workOrderDao.saveWorkOrder(workOrder);
+
+        // THEN
+        verify(dynamoDBMapper).save(workOrder);
+        assertEquals(workOrder, result);
+    }
+
+    @Test
     void getWorkOrders_workOrdersExistForControlNumber_returnsListWorkOrders() {
         // GIVEN
         String controlNumber = "123";
