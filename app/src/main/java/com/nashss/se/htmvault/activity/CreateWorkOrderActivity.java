@@ -10,6 +10,7 @@ import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
+import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderType;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 import org.apache.logging.log4j.LogManager;
@@ -37,8 +38,9 @@ public class CreateWorkOrderActivity {
 
         // verify the control number is for a device that exists and is found in the database
         String controlNumber = createWorkOrderRequest.getControlNumber();
+        Device device;
         try {
-            deviceDao.getDevice(controlNumber);
+            device = deviceDao.getDevice(controlNumber);
         } catch (DeviceNotFoundException e){
             metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
             throw new InvalidAttributeValueException(String.format("A device for control number %s could not be " +
@@ -72,7 +74,17 @@ public class CreateWorkOrderActivity {
         WorkOrder workOrder = new WorkOrder();
         workOrder.setWorkOrderId(HTMVaultServiceUtils.generateId("WR", 8));
         workOrder.setWorkOrderType(WorkOrderType.valueOf(createWorkOrderRequest.getWorkOrderType()));
-        workOrder.setControlNumber(createWorkOrderRequest.);
+        workOrder.setControlNumber(createWorkOrderRequest.getControlNumber());
+        workOrder.setSerialNumber(device.getSerialNumber());
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+        workOrder.setWorkOrderAwaitStatus(null);
+        workOrder.setManufacturerModel(device.getManufacturerModel());
+        workOrder.setFacilityName(device.getFacilityName());
+        workOrder.setAssignedDepartment(device.getAssignedDepartment());
+        workOrder.setProblemReported(createWorkOrderRequest.getProblemReported());
+        workOrder.setProblemFound(null == createWorkOrderRequest.getProblemFound() ? "" :
+                createWorkOrderRequest.getProblemFound());
+        workOrder.setCreatedById();
 
         // convert the work order, build and return the result with the work order model
     }
