@@ -206,7 +206,7 @@ class ViewDevice extends BindingClass {
         errorMessageDisplay.classList.add('hidden');
 
         const device = this.dataStore.get('device');
-        if (playlist == null) {
+        if (device == null) {
             return;
         }
 
