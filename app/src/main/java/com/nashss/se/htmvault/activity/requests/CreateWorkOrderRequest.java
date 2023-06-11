@@ -1,6 +1,7 @@
 package com.nashss.se.htmvault.activity.requests;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 @JsonDeserialize(builder = CreateWorkOrderRequest.Builder.class)
 public class CreateWorkOrderRequest {
@@ -40,6 +41,7 @@ public class CreateWorkOrderRequest {
         return new Builder();
     }
 
+    @JsonPOJOBuilder
     public static class Builder {
         private String workOrderType;
         private String problemReported;
