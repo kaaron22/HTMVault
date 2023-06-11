@@ -201,7 +201,7 @@ class ViewDevice extends BindingClass {
      */
     async createWorkOrder() {
 
-        const errorMessageDisplay = document.getElementById('error-message');
+        const errorMessageDisplay = document.getElementById('error-message-device-record-change');
         errorMessageDisplay.innerText = ``;
         errorMessageDisplay.classList.add('hidden');
 
@@ -221,7 +221,7 @@ class ViewDevice extends BindingClass {
             errorMessageDisplay.classList.remove('hidden');           
         });
 
-        this.dataStore.set('work-orders', workOrderList);
+        this.dataStore.set('workOrders', workOrderList);
 
         document.getElementById('add-new-work-order').innerText = 'Create New Work Order';
         document.getElementById("create-new-work-order-form").reset();
