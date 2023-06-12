@@ -223,10 +223,12 @@ class ViewDevice extends BindingClass {
             errorMessageDisplay.classList.remove('hidden');           
         });
 
-        this.dataStore.set('workOrders', workOrderList);
+        if (!(workOrderList == null)) {
+            this.dataStore.set('workOrders', workOrderList);
+            document.getElementById("create-new-work-order-form").reset();
+        }
 
         document.getElementById('add-new-work-order').innerText = 'Create New Work Order';
-        document.getElementById("create-new-work-order-form").reset();
     }
 }
 
