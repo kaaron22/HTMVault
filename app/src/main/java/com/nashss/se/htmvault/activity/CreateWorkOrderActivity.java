@@ -45,13 +45,7 @@ public class CreateWorkOrderActivity {
         // verify the control number is for a device that exists and is found in the database
         String controlNumber = createWorkOrderRequest.getControlNumber();
         Device device;
-        try {
-            device = deviceDao.getDevice(controlNumber);
-        } catch (DeviceNotFoundException e){
-            metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            throw new InvalidAttributeValueException(String.format("A device for control number %s could not be " +
-                    "found. Aborting work order creation.", controlNumber));
-        }
+        device = deviceDao.getDevice(controlNumber);
 
         // verify the work order type is one of the types allowed
         boolean validWorkOrderType = false;
