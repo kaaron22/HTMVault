@@ -2,6 +2,7 @@ package com.nashss.se.htmvault.activity;
 
 import com.nashss.se.htmvault.activity.requests.CreateWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.CreateWorkOrderResult;
+import com.nashss.se.htmvault.converters.LocalDateTimeConverter;
 import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
@@ -90,7 +91,11 @@ public class CreateWorkOrderActivity {
         workOrder.setProblemFound(createWorkOrderRequest.getProblemFound());
         workOrder.setCreatedById(createWorkOrderRequest.getCreatedById());
         workOrder.setCreatedByName(createWorkOrderRequest.getCreatedByName());
-        workOrder.setCreationDateTime(LocalDateTime.now());
+        // creation date time of 'now' without nanos
+        LocalDateTime creationDateTime = LocalDateTime.now();
+        String creationDateTimeConverted = new LocalDateTimeConverter().convert(creationDateTime);
+        LocalDateTime creationDateTimeNoNanos = new LocalDateTimeConverter().unconvert(creationDateTimeConverted);
+        workOrder.setCreationDateTime(creationDateTimeNoNanos);
         workOrder.setClosedById(null);
         workOrder.setClosedByName(null);
         workOrder.setClosedDateTime(null);
@@ -113,7 +118,7 @@ public class CreateWorkOrderActivity {
         }
 
         // save the new work order
-        workOrder = workOrderDao.saveWorkOrder(workOrder);
+        workOrderDao.saveWorkOrder(workOrder);
 
         // convert the work order, build and return the result with the work order model
         return CreateWorkOrderResult.builder()
