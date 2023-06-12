@@ -12,15 +12,18 @@ public class CreateWorkOrderRequest {
     private final String problemFound;
     private final String createdById;
     private final String createdByName;
+    private final String sortOrder;
 
     private CreateWorkOrderRequest(String controlNumber, String workOrderType, String problemReported,
-                                   String problemFound, String createdById, String createdByName) {
+                                   String problemFound, String createdById, String createdByName,
+                                   String sortOrder) {
         this.controlNumber = controlNumber;
         this.workOrderType = workOrderType;
         this.problemReported = problemReported;
         this.problemFound = problemFound;
         this.createdById = createdById;
         this.createdByName = createdByName;
+        this.sortOrder = sortOrder
     }
 
     public String getControlNumber() {
@@ -47,6 +50,10 @@ public class CreateWorkOrderRequest {
         return createdByName;
     }
 
+    public String getSortOrder() {
+        return sortOrder;
+    }
+
     @Override
     public String toString() {
         return "CreateWorkOrderRequest{" +
@@ -56,6 +63,7 @@ public class CreateWorkOrderRequest {
                 ", problemFound='" + problemFound + '\'' +
                 ", createdById='" + createdById + '\'' +
                 ", createdByName='" + createdByName + '\'' +
+                ", sortOrder='" + sortOrder + '\'' +
                 '}';
     }
 
@@ -71,6 +79,7 @@ public class CreateWorkOrderRequest {
         private String problemFound;
         private String createdById;
         private String createdByName;
+        private String sortOrder;
 
         public Builder withControlNumber(String controlNumber) {
             this.controlNumber = controlNumber;
@@ -102,9 +111,14 @@ public class CreateWorkOrderRequest {
             return this;
         }
 
+        public Builder withSortOrder(String sortOrder) {
+            this.sortOrder = sortOrder;
+            return this;
+        }
+
         public CreateWorkOrderRequest build() {
             return new CreateWorkOrderRequest(controlNumber, workOrderType, problemReported, problemFound,
-                    createdById, createdByName);
+                    createdById, createdByName, sortOrder);
         }
     }
 }
