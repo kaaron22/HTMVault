@@ -1,6 +1,5 @@
 package com.nashss.se.htmvault.activity;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.nashss.se.htmvault.activity.requests.CreateWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.CreateWorkOrderResult;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
@@ -8,7 +7,6 @@ import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
-import com.nashss.se.htmvault.dynamodb.models.WorkOrderCompletionDateTimeComparator;
 import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
@@ -17,11 +15,9 @@ import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderModel;
 import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
 import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
-import com.nashss.se.htmvault.utils.CollectionUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
