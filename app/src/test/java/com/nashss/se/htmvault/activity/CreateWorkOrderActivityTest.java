@@ -72,5 +72,22 @@ class CreateWorkOrderActivityTest {
     }
 
     @Test
+    public void handleRequest_nullProblemReported_throwsInvalidAttributeValueException() {
+        // GIVEN
+        CreateWorkOrderRequest createWorkOrderRequest = CreateWorkOrderRequest.builder()
+                .withControlNumber("123")
+                .withWorkOrderType("REPAIR")
+                .build();
+        when(deviceDao.getDevice(anyString())).thenReturn(new Device());
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        createWorkOrderActivity.handleRequest(createWorkOrderRequest),
+                "Expected a create work order request with problem reported null to result in an " +
+                        "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
+        verifyNoInteractions(workOrderDao);
+    }
+
 
 }
