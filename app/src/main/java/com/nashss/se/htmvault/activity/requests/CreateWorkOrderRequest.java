@@ -23,7 +23,7 @@ public class CreateWorkOrderRequest {
         this.problemFound = problemFound;
         this.createdById = createdById;
         this.createdByName = createdByName;
-        this.sortOrder = sortOrder
+        this.sortOrder = sortOrder;
     }
 
     public String getControlNumber() {
