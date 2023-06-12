@@ -164,7 +164,7 @@ export default class HTMVaultClient extends BindingClass {
                 workOrderType: workOrderType,
                 problemReported: problemReported,
                 problemFound: problemFound,
-                order: order
+                sortOrder: order
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`
