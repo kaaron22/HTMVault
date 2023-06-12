@@ -6,14 +6,29 @@ import com.nashss.se.htmvault.activity.results.CreateWorkOrderResult;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
+import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
+import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
+import com.nashss.se.htmvault.dynamodb.models.WorkOrderCompletionDateTimeComparator;
 import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
+import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
+import com.nashss.se.htmvault.models.WorkOrderModel;
+import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
+import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
+import com.nashss.se.htmvault.utils.CollectionUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -126,5 +141,88 @@ class CreateWorkOrderActivityTest {
                         "InvalidAttributeValueException thrown");
         verifyNoInteractions(workOrderDao);
         verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
+    public void handleRequest_validRequestDescending_returnsListWorkOrdersInResultProperlySorted() {
+        // GIVEN
+        // a mock device to return
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(24);
+        Device device = DeviceTestHelper.generateActiveDevice(1, manufacturerModel,
+                "TestFacility", "TestDepartment");
+        device.setControlNumber("123");
+        device.setSerialNumber("SN321");
+
+        // a mock list of four existing work orders for the device to return
+        List<WorkOrder> workOrders = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            workOrders.add(WorkOrderTestHelper.generateWorkOrder(i, "123", "SN321",
+                    manufacturerModel, "TestFacility", "TestDepartment"));
+        }
+
+        // set all except the most recent existing one as closed, and with completion dates/times
+        for (WorkOrder workOrder : workOrders) {
+            workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
+        }
+
+        // this one will be a recently opened mock work order that has yet to be completed/closed (not yet sorted)
+        workOrders.get(1).setCreationDateTime(LocalDateTime.of(LocalDate.of(2023, 6, 10),
+                LocalTime.of(17, 10, 0)));
+        workOrders.get(1).setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+        workOrders.get(1).setCompletionDateTime(null);
+
+        // the creation and completion dates/times for the older mocked work orders (not yet sorted)
+        workOrders.get(0).setCreationDateTime(LocalDateTime.of(LocalDate.of(2020, 5, 10),
+                LocalTime.of(17, 10, 0)));
+        workOrders.get(0).setCompletionDateTime(LocalDateTime.of(LocalDate.of(2020, 5, 10),
+                LocalTime.of(17, 10, 0)));
+        workOrders.get(2).setCreationDateTime(LocalDateTime.of(LocalDate.of(2021, 5, 10),
+                LocalTime.of(17, 10, 0)));
+        workOrders.get(2).setCompletionDateTime(LocalDateTime.of(LocalDate.of(2021, 5, 10),
+                LocalTime.of(17, 10, 0)));
+        workOrders.get(3).setCreationDateTime(LocalDateTime.of(LocalDate.of(2022, 5, 10),
+                LocalTime.of(17, 10, 0)));
+        workOrders.get(3).setCompletionDateTime(LocalDateTime.of(LocalDate.of(2022, 5, 10),
+                LocalTime.of(17, 10, 0)));
+
+        CreateWorkOrderRequest createWorkOrderRequest = CreateWorkOrderRequest.builder()
+                .withControlNumber("123")
+                .withWorkOrderType("ACCEPTANCE_TESTING")
+                .withProblemReported("a valid reported problem")
+                .withSortOrder("DESCENDING")
+                .build();
+
+        when(deviceDao.getDevice(anyString())).thenReturn(device);
+        when(workOrderDao.getWorkOrders(anyString())).thenReturn(workOrders);
+
+        // WHEN
+        // the list of work order IDs in the order we expect to see them after being sorted
+        List<String> expectedOrderWorkOrders = new ArrayList<>(Arrays.asList(workOrders.get(1).getWorkOrderId(),
+                workOrders.get(3).getWorkOrderId(), workOrders.get(2).getWorkOrderId(),
+                workOrders.get(0).getWorkOrderId()));
+
+        CreateWorkOrderResult createWorkOrderResult = createWorkOrderActivity.handleRequest(createWorkOrderRequest);
+        List<WorkOrderModel> workOrderModels = createWorkOrderResult.getWorkOrders();
+
+        // add the new work order id created by the request to the beginning of the list, as we expect to see
+        expectedOrderWorkOrders.add(0, workOrderModels.get(0).getWorkOrderId());
+
+        // THEN
+        // verify the work orders are properly converted to work order models
+        WorkOrderTestHelper.assertWorkOrdersEqualWorkOrderModels(workOrders, workOrderModels);
+        // verify the work order models are in the proper sort order
+        assertWorkOrderModelsSortedCorrectly(expectedOrderWorkOrders, workOrderModels);
+        verify(workOrderDao).saveWorkOrder(any(WorkOrder.class));
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 0);
+    }
+
+    private void assertWorkOrderModelsSortedCorrectly(List<String> expectedSortedWorkOrderIds,
+                                                      List<WorkOrderModel> sortedWorkOrderModels) {
+        for(int i = 0; i < sortedWorkOrderModels.size(); i++) {
+            assertEquals(expectedSortedWorkOrderIds.get(i), sortedWorkOrderModels.get(i).getWorkOrderId());
+        }
     }
 }
