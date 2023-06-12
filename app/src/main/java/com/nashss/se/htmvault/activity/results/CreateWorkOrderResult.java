@@ -2,22 +2,24 @@ package com.nashss.se.htmvault.activity.results;
 
 import com.nashss.se.htmvault.models.WorkOrderModel;
 
+import java.util.List;
+
 public class CreateWorkOrderResult {
 
-    private final WorkOrderModel workOrder;
+    private final List<WorkOrderModel> workOrders;
 
-    private CreateWorkOrderResult(WorkOrderModel workOrder) {
-        this.workOrder = workOrder;
+    private CreateWorkOrderResult(List<WorkOrderModel> workOrders) {
+        this.workOrders = workOrders;
     }
 
-    public WorkOrderModel getWorkOrder() {
-        return workOrder;
+    public List<WorkOrderModel> getWorkOrder() {
+        return workOrders;
     }
 
     @Override
     public String toString() {
         return "CreateWorkOrderResult{" +
-                "workOrder=" + workOrder +
+                "workOrders=" + workOrders +
                 '}';
     }
 
@@ -26,15 +28,15 @@ public class CreateWorkOrderResult {
     }
 
     public static class Builder {
-        private WorkOrderModel workOrder;
+        private List<WorkOrderModel> workOrders;
 
-        public Builder withWorkOrderModel(WorkOrderModel workOrder) {
-            this.workOrder = workOrder;
+        public Builder withWorkOrderModels(List<WorkOrderModel> workOrders) {
+            this.workOrders = workOrders;
             return this;
         }
 
         public CreateWorkOrderResult build() {
-            return new CreateWorkOrderResult(workOrder);
+            return new CreateWorkOrderResult(workOrders);
         }
     }
 }
