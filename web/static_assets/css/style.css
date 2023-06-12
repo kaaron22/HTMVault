@@ -4,6 +4,7 @@
     --secondary-color: #ffffff;
     --tertiary-color: #F5881F;
     --error-color: #EE3A23;
+    --success-color: #318313;
 }
 
 .background {
@@ -57,6 +58,12 @@
 .error {
     color: var(--error-color);
     border: 1px solid var(--error-color);
+    padding: 8px;
+}
+
+.success {
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
     padding: 8px;
 }
 

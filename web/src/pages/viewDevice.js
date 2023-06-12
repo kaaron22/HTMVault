@@ -205,6 +205,10 @@ class ViewDevice extends BindingClass {
         errorMessageDisplay.innerText = ``;
         errorMessageDisplay.classList.add('hidden');
 
+        const successMessageDisplay = document.getElementById('success-message');
+        successMessageDisplay.innerText = 'Work order successfully created';
+        successMessageDisplay.classList.add('hidden');
+
         const device = this.dataStore.get('device');
         if (device == null) {
             return;
@@ -226,6 +230,11 @@ class ViewDevice extends BindingClass {
         if (!(workOrderList == null)) {
             this.dataStore.set('workOrders', workOrderList);
             document.getElementById("create-new-work-order-form").reset();
+            successMessageDisplay.classList.remove('hidden');
+
+            setTimeout(() => {
+                successMessageDisplay.classList.add('hidden');
+            }, 3500);
         }
 
         document.getElementById('add-new-work-order').innerText = 'Create New Work Order';
