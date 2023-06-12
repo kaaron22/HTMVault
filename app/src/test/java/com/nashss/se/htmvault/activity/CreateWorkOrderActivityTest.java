@@ -89,5 +89,42 @@ class CreateWorkOrderActivityTest {
         verifyNoInteractions(workOrderDao);
     }
 
+    @Test
+    public void handleRequest_blankProblemReported_throwsInvalidAttributeValueException() {
+        // GIVEN
+        CreateWorkOrderRequest createWorkOrderRequest = CreateWorkOrderRequest.builder()
+                .withControlNumber("123")
+                .withWorkOrderType("REPAIR")
+                .withProblemReported("   ")
+                .build();
+        when(deviceDao.getDevice(anyString())).thenReturn(new Device());
 
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        createWorkOrderActivity.handleRequest(createWorkOrderRequest),
+                "Expected a create work order request with a blank problem reported to result in an " +
+                        "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
+        verifyNoInteractions(workOrderDao);
+    }
+
+    @Test
+    public void handleRequest_invalidSortOrder_throwsInvalidAttributeValueException() {
+        // GIVEN
+        CreateWorkOrderRequest createWorkOrderRequest = CreateWorkOrderRequest.builder()
+                .withControlNumber("123")
+                .withWorkOrderType("REPAIR")
+                .withProblemReported("a valid reported problem")
+                .withSortOrder("invalid sort order")
+                .build();
+        when(deviceDao.getDevice(anyString())).thenReturn(new Device());
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        createWorkOrderActivity.handleRequest(createWorkOrderRequest),
+                "Expected a create work order request with an invalid sort order to result in an " +
+                        "InvalidAttributeValueException thrown");
+        verifyNoInteractions(workOrderDao);
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
 }

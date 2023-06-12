@@ -48,7 +48,6 @@ public class CreateWorkOrderActivity {
         try {
             device = deviceDao.getDevice(controlNumber);
         } catch (DeviceNotFoundException e) {
-            metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
             throw new DeviceNotFoundException(e.getMessage());
         }
 
@@ -131,11 +130,10 @@ public class CreateWorkOrderActivity {
         if (null == sortOrder) {
             computedSortOrder = SortOrder.DEFAULT;
         } else if (!Arrays.asList(SortOrder.values()).contains(sortOrder)) {
-            metricsPublisher.addCount(MetricsConstants.GETDEVICEWORKORDERS_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
             throw new InvalidAttributeValueException(String.format("Unrecognized sort order: '%s'", sortOrder));
         }
 
-        metricsPublisher.addCount(MetricsConstants.GETDEVICEWORKORDERS_INVALIDATTRIBUTEVALUE_COUNT, 0);
         return computedSortOrder;
     }
 }
