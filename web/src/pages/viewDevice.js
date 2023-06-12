@@ -215,8 +215,10 @@ class ViewDevice extends BindingClass {
         const workOrderType = document.getElementById('workOrderType').value;
         const problemReported = document.getElementById('problem-reported').value;
         const problemFound = document.getElementById('problem-found').value;
+        const urlParams = new URLSearchParams(window.location.search);
+        const order = urlParams.get('order');
 
-        const workOrderList = await this.client.createWorkOrder(controlNumber, workOrderType, problemReported, problemFound, (error) => {
+        const workOrderList = await this.client.createWorkOrder(controlNumber, workOrderType, problemReported, problemFound, order, (error) => {
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');           
         });

@@ -32,6 +32,7 @@ public class CreateWorkOrderLambda
                                     .withWorkOrderType(unauthenticatedRequest.getWorkOrderType())
                                     .withProblemReported(unauthenticatedRequest.getProblemReported())
                                     .withProblemFound(unauthenticatedRequest.getProblemFound())
+                                    .withSortOrder(unauthenticatedRequest.getSortOrder())
                                     .withCreatedById(claims.get("email"))
                                     .withCreatedByName(claims.get("name"))
                                     .build());

@@ -156,14 +156,15 @@ export default class HTMVaultClient extends BindingClass {
         }
     }
 
-    async createWorkOrder(controlNumber, workOrderType, problemReported, problemFound, errorCallback) {
+    async createWorkOrder(controlNumber, workOrderType, problemReported, problemFound, order, errorCallback) {
         try {
             const token = await this.getTokenOrThrow("Only authenticated users can add devices.");
             const response = await this.axiosClient.post(`workOrders`, {
                 controlNumber: controlNumber,
                 workOrderType: workOrderType,
                 problemReported: problemReported,
-                problemFound: problemFound
+                problemFound: problemFound,
+                order: order
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`
