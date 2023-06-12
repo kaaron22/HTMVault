@@ -1,6 +1,7 @@
 package com.nashss.se.htmvault.activity.results;
 
 import com.nashss.se.htmvault.models.WorkOrderModel;
+import com.nashss.se.htmvault.utils.CollectionUtils;
 
 import java.util.List;
 
@@ -12,8 +13,8 @@ public class CreateWorkOrderResult {
         this.workOrders = workOrders;
     }
 
-    public List<WorkOrderModel> getWorkOrder() {
-        return workOrders;
+    public List<WorkOrderModel> getWorkOrders() {
+        return CollectionUtils.copyToList(workOrders);
     }
 
     @Override
@@ -31,7 +32,7 @@ public class CreateWorkOrderResult {
         private List<WorkOrderModel> workOrders;
 
         public Builder withWorkOrderModels(List<WorkOrderModel> workOrders) {
-            this.workOrders = workOrders;
+            this.workOrders = CollectionUtils.copyToList(workOrders);
             return this;
         }
 
