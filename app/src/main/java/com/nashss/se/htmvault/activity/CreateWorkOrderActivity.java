@@ -7,10 +7,12 @@ import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
+import com.nashss.se.htmvault.dynamodb.models.WorkOrderCompletionDateTimeComparator;
 import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
+import com.nashss.se.htmvault.models.SortOrder;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderType;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
@@ -20,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 
 public class CreateWorkOrderActivity {
 
@@ -94,11 +97,41 @@ public class CreateWorkOrderActivity {
         workOrder.setSummary(null);
         workOrder.setCompletionDateTime(null);
 
+        // obtain existing list of work orders, add new work order, and sort according to specified sort order; then
+        // save the new work order. this is done instead of saving new work order, and then obtaining the "updated" list
+        // of work orders, as it may not yet be updated with the new work order (eventually consistent database)
+        String sortOrder = computeOrder(createWorkOrderRequest.getSortOrder());
+
+        List<WorkOrder> workOrders = workOrderDao.getWorkOrders(controlNumber);
+
+        workOrders.add(workOrder);
+
+        if (sortOrder.equals(SortOrder.ASCENDING)) {
+            workOrders.sort(new WorkOrderCompletionDateTimeComparator());
+        } else {
+            workOrders.sort(new WorkOrderCompletionDateTimeComparator().reversed());
+        }
+
+        // save the new work order
         workOrder = workOrderDao.saveWorkOrder(workOrder);
 
         // convert the work order, build and return the result with the work order model
         return CreateWorkOrderResult.builder()
-                .withWorkOrderModel(new ModelConverter().toWorkOrderModel(workOrder))
+                .withWorkOrderModels(new ModelConverter().toWorkOrderModels(workOrders))
                 .build();
+    }
+
+    private String computeOrder(String sortOrder) {
+        String computedSortOrder = sortOrder;
+
+        if (null == sortOrder) {
+            computedSortOrder = SortOrder.DEFAULT;
+        } else if (!Arrays.asList(SortOrder.values()).contains(sortOrder)) {
+            metricsPublisher.addCount(MetricsConstants.GETDEVICEWORKORDERS_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            throw new InvalidAttributeValueException(String.format("Unrecognized sort order: '%s'", sortOrder));
+        }
+
+        metricsPublisher.addCount(MetricsConstants.GETDEVICEWORKORDERS_INVALIDATTRIBUTEVALUE_COUNT, 0);
+        return computedSortOrder;
     }
 }
