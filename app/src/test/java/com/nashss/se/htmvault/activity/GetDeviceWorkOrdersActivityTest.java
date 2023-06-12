@@ -16,7 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -214,15 +216,19 @@ class GetDeviceWorkOrdersActivityTest {
         workOrders.get(1).setCompletionDateTime(null);
         workOrders.get(2).setCompletionDateTime(null);
         workOrders.get(3).setCompletionDateTime(null);
-        workOrders.get(0).setWorkOrderId("WR022");
-        workOrders.get(1).setWorkOrderId("WR731");
-        workOrders.get(2).setWorkOrderId("WR244");
-        workOrders.get(3).setWorkOrderId("WR304");
+        workOrders.get(0).setCreationDateTime(LocalDateTime.of(LocalDate.of(2023, 6, 12),
+                LocalTime.of(17, 10, 1)));
+        workOrders.get(1).setCreationDateTime(LocalDateTime.of(LocalDate.of(2023, 6, 12),
+                LocalTime.of(17, 10, 4)));
+        workOrders.get(2).setCreationDateTime(LocalDateTime.of(LocalDate.of(2023, 6, 12),
+                LocalTime.of(17, 10, 2)));
+        workOrders.get(3).setCreationDateTime(LocalDateTime.of(LocalDate.of(2023, 6, 12),
+                LocalTime.of(17, 10, 3)));
 
-        // obtain the work order ids from the list of work orders and sort them in the order we expect to see
-        // when we inspect the work order models returned
-        List<String> expectedOrderWorkOrders = sortWorkOrderIds(workOrders);
-        Collections.reverse(expectedOrderWorkOrders);
+        // the work orders ids sorted in the order we expect to see after the activity runs (descending by DateTime)
+        List<String> expectedOrderWorkOrders = new ArrayList<>(Arrays.asList(workOrders.get(1).getWorkOrderId(),
+                workOrders.get(3).getWorkOrderId(), workOrders.get(2).getWorkOrderId(),
+                workOrders.get(0).getWorkOrderId()));
 
         when(workOrderDao.getWorkOrders(anyString())).thenReturn(workOrders);
 
@@ -252,16 +258,19 @@ class GetDeviceWorkOrdersActivityTest {
         workOrders.get(1).setCompletionDateTime(basis);
         workOrders.get(2).setCompletionDateTime(basis);
         workOrders.get(3).setCompletionDateTime(basis);
-        workOrders.get(0).setWorkOrderId("WR022");
-        workOrders.get(1).setWorkOrderId("WR731");
-        workOrders.get(2).setWorkOrderId("WR244");
-        workOrders.get(3).setWorkOrderId("WR304");
+        workOrders.get(0).setCreationDateTime(LocalDateTime.of(LocalDate.of(2023, 6, 12),
+                LocalTime.of(17, 10, 1)));
+        workOrders.get(1).setCreationDateTime(LocalDateTime.of(LocalDate.of(2023, 6, 12),
+                LocalTime.of(17, 10, 4)));
+        workOrders.get(2).setCreationDateTime(LocalDateTime.of(LocalDate.of(2023, 6, 12),
+                LocalTime.of(17, 10, 2)));
+        workOrders.get(3).setCreationDateTime(LocalDateTime.of(LocalDate.of(2023, 6, 12),
+                LocalTime.of(17, 10, 3)));
 
-        // obtain the work order ids from the list of work orders and sort them in the order we expect to see
-        // when we inspect the work order models returned
-        List<String> expectedOrderWorkOrders = sortWorkOrderIds(workOrders);
-        Collections.reverse(expectedOrderWorkOrders);
-        System.out.println(expectedOrderWorkOrders);
+        // the work orders ids sorted in the order we expect to see after the activity runs (descending by DateTime)
+        List<String> expectedOrderWorkOrders = new ArrayList<>(Arrays.asList(workOrders.get(1).getWorkOrderId(),
+                workOrders.get(3).getWorkOrderId(), workOrders.get(2).getWorkOrderId(),
+                workOrders.get(0).getWorkOrderId()));
 
         when(workOrderDao.getWorkOrders(anyString())).thenReturn(workOrders);
 
