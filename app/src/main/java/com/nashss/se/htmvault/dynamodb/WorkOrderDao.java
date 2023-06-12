@@ -26,6 +26,11 @@ public class WorkOrderDao {
         this.metricsPublisher = metricsPublisher;
     }
 
+    public WorkOrder saveWorkOrder(WorkOrder workOrder) {
+        dynamoDBMapper.save(workOrder);
+        return workOrder;
+    }
+
     public List<WorkOrder> getWorkOrders(String controlNumber) {
         Map<String, AttributeValue> valueMap = new HashMap<>();
         valueMap.put(":controlNumber", new AttributeValue().withS(controlNumber));

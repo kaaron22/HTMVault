@@ -13,6 +13,8 @@ public class MetricsConstants {
     public static final String GETDEVICE_DEVICENOTFOUND_COUNT = "GetDevice.DeviceNotFoundException.Count";
     public static final String GETDEVICEWORKORDERS_INVALIDATTRIBUTEVALUE_COUNT =
             "GetDeviceWorkOrders.InvalidAttributeValueException.Count";
+    public static final String CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT =
+            "CreateWorkOrder.InvalidAttributeValueException.Count";
     public static final String UPDATEPLAYLIST_INVALIDATTRIBUTEVALUE_COUNT =
         "UpdatePlaylist.InvalidAttributeValueException.Count";
     public static final String UPDATEPLAYLIST_INVALIDATTRIBUTECHANGE_COUNT =

@@ -256,13 +256,13 @@ Resources:
                 Action: dynamodb:*
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/facility_departments"
 
-        - PolicyName: 'AccessWorkOrderSummariesTable'
+        - PolicyName: 'AccessWorkOrdersTable'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action: dynamodb:*
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/work_order_summaries"
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/work_orders"
 
   #-----------------------------------------------------
   # Lambda Functions Configuration
@@ -413,6 +413,26 @@ Resources:
           Properties:
             Path: /devices/reactivate/{controlNumber}
             Method: put
+
+  CreateWorkOrderLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: com.nashss.se.htmvault.lambda.CreateWorkOrderLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        HTMVault:
+          Type: Api
+          Properties:
+            Path: /workOrders
+            Method: post
 
   #-----------------------------------------------------
   # DynamoDB Configuration

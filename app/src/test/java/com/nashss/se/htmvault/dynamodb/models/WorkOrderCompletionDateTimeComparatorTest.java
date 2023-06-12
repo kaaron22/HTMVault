@@ -2,7 +2,9 @@ package com.nashss.se.htmvault.dynamodb.models;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,10 +17,12 @@ class WorkOrderCompletionDateTimeComparatorTest {
     void compare_twoWorkOrdersWithNullCompletionDateTimes_returnsCorrectComparisonValue() {
         // GIVEN
         WorkOrder workOrder1 = new WorkOrder();
-        workOrder1.setWorkOrderId("WR012");
+        workOrder1.setCreationDateTime(LocalDateTime.of(LocalDate.of(2023, 6, 12),
+                LocalTime.of(17, 10, 5)));
         workOrder1.setCompletionDateTime(null);
         WorkOrder workOrder2 = new WorkOrder();
-        workOrder2.setWorkOrderId("WR013");
+        workOrder2.setCreationDateTime(LocalDateTime.of(LocalDate.of(2023, 6, 12),
+                LocalTime.of(17, 10, 6)));
         workOrder2.setCompletionDateTime(null);
 
         // WHEN
@@ -67,10 +71,12 @@ class WorkOrderCompletionDateTimeComparatorTest {
         // GIVEN
         LocalDateTime completionDateTime = LocalDateTime.now();
         WorkOrder workOrder1 = new WorkOrder();
-        workOrder1.setWorkOrderId("WR012");
+        workOrder1.setCreationDateTime(LocalDateTime.of(LocalDate.of(2023, 6, 12),
+                LocalTime.of(17, 10, 5)));
         workOrder1.setCompletionDateTime(completionDateTime);
         WorkOrder workOrder2 = new WorkOrder();
-        workOrder2.setWorkOrderId("WR013");
+        workOrder2.setCreationDateTime(LocalDateTime.of(LocalDate.of(2023, 6, 12),
+                LocalTime.of(17, 10, 6)));
         workOrder2.setCompletionDateTime(completionDateTime);
 
         // WHEN
