@@ -166,7 +166,7 @@ class ViewDevice extends BindingClass {
         // table header row
         workOrderSummaryHtml += `<table id="work-orders">
                                    <tr>
-                                       <td><a href="viewWorkOrder.html?workOrderId=${workOrderSummary.workOrderId}">${workOrderSummary.workOrderId}</a></td>
+                                       <th>Work Order ID</th>
                                        <th>Type</th>
                                        <th>Completion Status</th>
                                        <th>Created</th>
@@ -177,7 +177,7 @@ class ViewDevice extends BindingClass {
         for (workOrderSummary of workOrders) {
             workOrderSummaryHtml += `
                 <tr>
-                    <td>${workOrderSummary.workOrderId}</td>
+                <td><a href="viewWorkOrder.html?workOrderId=${workOrderSummary.workOrderId}">${workOrderSummary.workOrderId}</a></td>
                     <td>${workOrderSummary.workOrderType}</td>
                     <td>${workOrderSummary.workOrderCompletionStatus}</td>
                     <td>${workOrderSummary.creationDateTime}</td>
