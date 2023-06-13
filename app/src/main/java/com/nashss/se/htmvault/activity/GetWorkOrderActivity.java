@@ -1,9 +1,10 @@
 package com.nashss.se.htmvault.activity;
 
-import com.amazonaws.services.dynamodbv2.xspec.M;
 import com.nashss.se.htmvault.activity.requests.GetWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.GetWorkOrderResult;
+import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
+import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +23,10 @@ public class GetWorkOrderActivity {
     public GetWorkOrderResult handleRequest(final GetWorkOrderRequest getWorkOrderRequest) {
         log.info("Received GetWorkOrderRequest {}", getWorkOrderRequest);
 
+        WorkOrder workOrder = workOrderDao.getWorkOrder(getWorkOrderRequest.getWorkOrderId());
 
+        return GetWorkOrderResult.builder()
+                .withWorkOrderModel(new ModelConverter().toWorkOrderModel(workOrder))
+                .build();
     }
 }
