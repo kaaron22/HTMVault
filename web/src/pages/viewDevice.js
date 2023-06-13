@@ -166,7 +166,7 @@ class ViewDevice extends BindingClass {
         // table header row
         workOrderSummaryHtml += `<table id="work-orders">
                                    <tr>
-                                       <th>Work Order ID</th>
+                                       <td><a href="viewWorkOrder.html?workOrderId=${workOrderSummary.workOrderId}">${workOrderSummary.workOrderId}</a></td>
                                        <th>Type</th>
                                        <th>Completion Status</th>
                                        <th>Created</th>
