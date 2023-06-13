@@ -6,7 +6,7 @@ import DataStore from "../util/DataStore";
 class ViewWorkOrder extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'mount', 'addWorkOrderToPage']);
+        this.bindClassMethods(['clientLoaded', 'mount', 'addWorkOrderToPage'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.addWorkOrderToPage);
         this.header = new Header(this.dataStore);
