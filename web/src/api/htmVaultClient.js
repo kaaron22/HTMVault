@@ -141,7 +141,7 @@ export default class HTMVaultClient extends BindingClass {
         }
     }
 
-    async getWorkOrder(controlNumber, errorCallback) {
+    async getWorkOrder(workOrderId, errorCallback) {
         try {
             const response = await this.axiosClient.get(`workOrders/${workOrderId}`);
             return response.data.workOrder;
