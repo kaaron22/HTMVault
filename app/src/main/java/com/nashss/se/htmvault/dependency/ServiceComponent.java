@@ -24,4 +24,6 @@ public interface ServiceComponent {
     ReactivateDeviceActivity provideReactivateDeviceActivity();
 
     CreateWorkOrderActivity provideCreateWorkOrderActivity();
+
+    GetWorkOrderActivity provideGetWorkOrderActivity();
 }
