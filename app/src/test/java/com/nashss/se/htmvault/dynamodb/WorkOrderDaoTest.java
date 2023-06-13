@@ -4,8 +4,11 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.nashss.se.htmvault.activity.results.GetWorkOrderResult;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
+import com.nashss.se.htmvault.exceptions.WorkOrderNotFoundException;
+import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
@@ -19,7 +22,7 @@ import org.mockito.Mockito;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -42,7 +45,7 @@ class WorkOrderDaoTest {
     }
 
     @Test
-    void saveWorkOrder_withWorkOrder_callsMapperWithWorkOrder() {
+    public void saveWorkOrder_withWorkOrder_callsMapperWithWorkOrder() {
         // GIVEN
         WorkOrder workOrder = new WorkOrder();
 
@@ -55,7 +58,40 @@ class WorkOrderDaoTest {
     }
 
     @Test
-    void getWorkOrders_workOrdersExistForControlNumber_returnsListWorkOrders() {
+    public void getWorkOrder_noWorkOrderFoundForWorkOrderId_throwsWorkOrderNotFoundException() {
+        // GIVEN
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(null);
+
+        // WHEN & THEN
+        assertThrows(WorkOrderNotFoundException.class, () ->
+                workOrderDao.getWorkOrder("123"),
+                "Expected a request to get a work order for a work order id not found to result in a " +
+                        "WorkOrderNotFoundException");
+        verify(metricsPublisher).addCount(MetricsConstants.GETWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
+    }
+
+    @Test
+    public void getWorkOrder_workOrderForWorkOrderIdExists_callsMapperWithPartitionKey() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(6);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
+
+        // WHEN
+        workOrderDao.getWorkOrder(workOrder.getWorkOrderId());
+
+
+        // THEN
+        verify(dynamoDBMapper).load(WorkOrder.class, workOrder.getWorkOrderId());
+        verify(metricsPublisher).addCount(MetricsConstants.GETWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+    }
+
+    @Test
+    public void getWorkOrders_workOrdersExistForControlNumber_returnsListWorkOrders() {
         // GIVEN
         String controlNumber = "123";
 

@@ -27,6 +27,7 @@ module.exports = {
     viewDevice: path.resolve(__dirname, 'src', 'pages', 'viewDevice.js'),
     searchDevices: path.resolve(__dirname, 'src', 'pages', 'searchDevices.js'),
     updateDevice: path.resolve(__dirname, 'src', 'pages', 'updateDevice.js'),
+    viewWorkOrder: path.resolve(__dirname, 'src', 'pages', 'viewWorkOrder.js')
   },
   output: {
     path: path.resolve(__dirname, 'build', 'assets'),

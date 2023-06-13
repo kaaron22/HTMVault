@@ -16,7 +16,7 @@ export default class HTMVaultClient extends BindingClass {
         super();
 
         //const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPlaylist', 'getPlaylistSongs', 'createPlaylist', 'addDevice'];
-        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice', 'getDevice', 'getDeviceWorkOrders', 'retireDevice', 'reactivateDevice', 'updateDevice', 'createWorkOrder'];
+        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice', 'getDevice', 'getDeviceWorkOrders', 'retireDevice', 'reactivateDevice', 'updateDevice', 'createWorkOrder', 'getWorkOrder'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -136,6 +136,15 @@ export default class HTMVaultClient extends BindingClass {
         try {
             const response = await this.axiosClient.get(`devices/${controlNumber}`);
             return response.data.device;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
+    async getWorkOrder(workOrderId, errorCallback) {
+        try {
+            const response = await this.axiosClient.get(`workOrders/${workOrderId}`);
+            return response.data.workOrder;
         } catch (error) {
             this.handleError(error, errorCallback)
         }

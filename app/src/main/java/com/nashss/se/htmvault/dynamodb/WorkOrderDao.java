@@ -4,6 +4,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
+import com.nashss.se.htmvault.exceptions.WorkOrderNotFoundException;
+import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 
 import javax.inject.Inject;
@@ -28,6 +30,19 @@ public class WorkOrderDao {
 
     public WorkOrder saveWorkOrder(WorkOrder workOrder) {
         dynamoDBMapper.save(workOrder);
+        return workOrder;
+    }
+
+    public WorkOrder getWorkOrder(String workOrderId) {
+        WorkOrder workOrder = dynamoDBMapper.load(WorkOrder.class, workOrderId);
+
+        if (null == workOrder) {
+            metricsPublisher.addCount(MetricsConstants.GETWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
+            throw new WorkOrderNotFoundException("Could not find work order for work order id provided: "
+                    + workOrderId);
+        }
+
+        metricsPublisher.addCount(MetricsConstants.GETWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
         return workOrder;
     }
 
