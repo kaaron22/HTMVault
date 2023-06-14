@@ -2,6 +2,7 @@ package com.nashss.se.htmvault.activity;
 
 import com.nashss.se.htmvault.activity.requests.UpdateWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.UpdateWorkOrderResult;
+import com.nashss.se.htmvault.converters.LocalDateConverter;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
@@ -15,6 +16,8 @@ import com.nashss.se.htmvault.models.WorkOrderType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 
 public class UpdateWorkOrderActivity {
@@ -75,6 +78,28 @@ public class UpdateWorkOrderActivity {
                     "one of: " + Arrays.toString(WorkOrderAwaitStatus.values()));
         }
 
+        // verify the problem reported is not null or blank
+        String problemReported = updateWorkOrderRequest.getProblemReported();
+        if (null == problemReported || problemReported.isBlank()) {
+            metricsPublisher.addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            throw new InvalidAttributeValueException("The problem reported cannot be null or blank");
+        }
 
+        // verify the completion date time, if provided, has the correct format and is not a future date/time
+        String completionDateTime = updateWorkOrderRequest.getCompletionDateTime();
+        if (null != completionDateTime) {
+            try {
+                LocalDate completionDateTimeParsed = new LocalDateConverter().unconvert(completionDateTime);
+                if (completionDateTimeParsed.isAfter(LocalDate.now())) {
+                    metricsPublisher.addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
+                    throw new InvalidAttributeValueException(String.format("Cannot provide a future completion date " +
+                            "time (%s)", completionDateTimeParsed));
+                }
+            } catch (DateTimeParseException e) {
+                metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+                throw new InvalidAttributeValueException("The date time provided must be formatted as " +
+                        "YYYY-MM-DDTHH:MM:SS");
+            }
+        }
     }
 }
