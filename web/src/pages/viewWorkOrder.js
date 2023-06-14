@@ -13,6 +13,33 @@ class ViewWorkOrder extends BindingClass {
         console.log("view work order constructor");
     }
 
+    async submitUpdatesWorkOrder(evt) {
+        evt.preventDefault();
+
+        const errorMessageDisplay = document.getElementById('error-message');
+        errorMessageDisplay.innerText = ``;
+        errorMessageDisplay.classList.add('hidden');
+
+        const successMessageDisplay = document.getElementById('success-message');
+        successMessageDisplay.innerText = 'Work order successfully updated.';
+        successMessageDisplay.classList.add('hidden');
+
+        const updateButton = document.getElementById('update-work-order');
+        const origButtonText = updateButton.innerText;
+        updateButton.innerText = "Updating...";
+
+        document.getElementById('updating-work-order-id').innerText;
+        document.getElementById('workOrderType').value;
+        document.getElementById('workOrderAwaitStatus').value;
+        document.getElementById('update-problem-reported').value;
+        document.getElementById('update-problem-found').value;
+        document.getElementById('update-summary').value;
+        document.getElementById('update-completion-date-time').value;
+
+
+
+    }
+
     async displayUpdateWorkOrderForm(evt) {
         evt.preventDefault();
 
