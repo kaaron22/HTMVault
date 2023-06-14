@@ -16,7 +16,7 @@ class ViewWorkOrder extends BindingClass {
     async submitUpdatesWorkOrder(evt) {
         evt.preventDefault();
 
-        const errorMessageDisplay = document.getElementById('error-message');
+        const errorMessageDisplay = document.getElementById('update-work-order-error-message');
         errorMessageDisplay.innerText = ``;
         errorMessageDisplay.classList.add('hidden');
 
@@ -64,7 +64,7 @@ class ViewWorkOrder extends BindingClass {
             completionDateTime = recordCompletionDateTime;
         }
 
-        const workOrder = this.client.updateWorkOrder(workOrderId, workOrderType, workOrderAwaitStatus, problemReported, problemFound, summary, completionDateTime, (error) => {
+        const workOrder = await this.client.updateWorkOrder(workOrderId, workOrderType, workOrderAwaitStatus, problemReported, problemFound, summary, completionDateTime, (error) => {
             updateButton.innerText = origButtonText;
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');
@@ -95,6 +95,10 @@ class ViewWorkOrder extends BindingClass {
         const errorMessageDisplay = document.getElementById('error-message');
         errorMessageDisplay.innerText = ``;
         errorMessageDisplay.classList.add('hidden');
+
+        const updateWorkOrderErrorMessageDisplay = document.getElementById('update-work-order-error-message');
+        updateWorkOrderErrorMessageDisplay.innerText = ``;
+        updateWorkOrderErrorMessageDisplay.classList.add('hidden');
 
         const workOrder = this.dataStore.get('workOrder');
         const recordWorkOrderAwaitStatus = workOrder.workOrderAwaitStatus;
