@@ -39,7 +39,11 @@ public class UpdateWorkOrderActivity {
     public UpdateWorkOrderResult handleRequest(final UpdateWorkOrderRequest updateWorkOrderRequest) {
         log.info("Received UpdateWorkOrderRequest {}", updateWorkOrderRequest);
 
-        // obtain the work order from the database
+        if (null == updateWorkOrderRequest.getWorkOrderId() || updateWorkOrderRequest.getWorkOrderId().isBlank()) {
+            throw new InvalidAttributeValueException("A work order id must be provided");
+        }
+
+        // obtain the work order from the database (throws WorkOrderNotFoundException if not found)
         WorkOrder workOrder = workorderDao.getWorkOrder(updateWorkOrderRequest.getWorkOrderId());
 
         // verify the work order is not closed; if it is, throw an exception (closed work order are no longer
@@ -51,10 +55,12 @@ public class UpdateWorkOrderActivity {
 
         // verify the work order type is one of the types allowed
         boolean validWorkOrderType = false;
-        for (WorkOrderType workOrderType : WorkOrderType.values()) {
-            if (updateWorkOrderRequest.getWorkOrderType().equals(workOrderType.toString())) {
-                validWorkOrderType = true;
-                break;
+        if (!(null == updateWorkOrderRequest.getWorkOrderType())) {
+            for (WorkOrderType workOrderType : WorkOrderType.values()) {
+                if (updateWorkOrderRequest.getWorkOrderType().equals(workOrderType.toString())) {
+                    validWorkOrderType = true;
+                    break;
+                }
             }
         }
         if (!validWorkOrderType) {
