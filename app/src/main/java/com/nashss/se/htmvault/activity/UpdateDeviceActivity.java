@@ -47,6 +47,10 @@ public class UpdateDeviceActivity {
     public UpdateDeviceResult handleRequest(final UpdateDeviceRequest updateDeviceRequest) {
         log.info("Received UpdateDeviceRequest {}", updateDeviceRequest);
 
+        if (null == updateDeviceRequest.getControlNumber() || updateDeviceRequest.getControlNumber().isBlank()) {
+            throw new InvalidAttributeValueException("A device id (control number) must be provided");
+        }
+
         // verify the device being updated exists and is found in the database
         Device device = deviceDao.getDevice(updateDeviceRequest.getControlNumber());
 
