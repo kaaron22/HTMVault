@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 @JsonDeserialize(builder = UpdateWorkOrderRequest.Builder.class)
 public class UpdateWorkOrderRequest {
 
+    private final String workOrderId;
     private final String workOrderType;
     private final String workOrderAwaitStatus;
     private final String problemReported;
@@ -15,9 +16,10 @@ public class UpdateWorkOrderRequest {
     private final String customerId;
     private final String customerName;
 
-    private UpdateWorkOrderRequest(String workOrderType, String workOrderAwaitStatus, String problemReported,
-                                   String problemFound, String summary, String completionDateTime, String customerId,
-                                   String customerName) {
+    private UpdateWorkOrderRequest(String workOrderId, String workOrderType, String workOrderAwaitStatus,
+                                   String problemReported, String problemFound, String summary,
+                                   String completionDateTime, String customerId, String customerName) {
+        this.workOrderId = workOrderId;
         this.workOrderType = workOrderType;
         this.workOrderAwaitStatus = workOrderAwaitStatus;
         this.problemReported = problemReported;
@@ -26,6 +28,10 @@ public class UpdateWorkOrderRequest {
         this.completionDateTime = completionDateTime;
         this.customerId = customerId;
         this.customerName = customerName;
+    }
+
+    public String getWorkOrderId() {
+        return workOrderId;
     }
 
     public String getWorkOrderType() {
@@ -63,7 +69,8 @@ public class UpdateWorkOrderRequest {
     @Override
     public String toString() {
         return "UpdateWorkOrderRequest{" +
-                "workOrderType='" + workOrderType + '\'' +
+                "workOrderId='" + workOrderId + '\'' +
+                ", workOrderType='" + workOrderType + '\'' +
                 ", workOrderAwaitStatus='" + workOrderAwaitStatus + '\'' +
                 ", problemReported='" + problemReported + '\'' +
                 ", problemFound='" + problemFound + '\'' +
@@ -80,6 +87,7 @@ public class UpdateWorkOrderRequest {
 
     @JsonPOJOBuilder
     public static class Builder {
+        private String workOrderId;
         private String workOrderType;
         private String workOrderAwaitStatus;
         private String problemReported;
@@ -88,6 +96,11 @@ public class UpdateWorkOrderRequest {
         private String completionDateTime;
         private String customerId;
         private String customerName;
+
+        public Builder withWorkOrderId(String workOrderId) {
+            this.workOrderId = workOrderId;
+            return this;
+        }
 
         public Builder withWorkOrderType(String workOrderType) {
             this.workOrderType = workOrderType;
@@ -130,8 +143,8 @@ public class UpdateWorkOrderRequest {
         }
 
         public UpdateWorkOrderRequest build() {
-            return new UpdateWorkOrderRequest(workOrderType, workOrderAwaitStatus, problemReported, problemFound,
-                    summary, completionDateTime, customerId, customerName);
+            return new UpdateWorkOrderRequest(workOrderId, workOrderType, workOrderAwaitStatus, problemReported,
+                    problemFound, summary, completionDateTime, customerId, customerName);
         }
     }
 }
