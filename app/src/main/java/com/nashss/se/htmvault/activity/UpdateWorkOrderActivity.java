@@ -19,6 +19,7 @@ import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -29,6 +30,7 @@ public class UpdateWorkOrderActivity {
     private final MetricsPublisher metricsPublisher;
     private final Logger log = LogManager.getLogger();
 
+    @Inject
     public UpdateWorkOrderActivity(WorkOrderDao workOrderDao, MetricsPublisher metricsPublisher) {
         this.workorderDao = workOrderDao;
         this.metricsPublisher = metricsPublisher;
