@@ -94,6 +94,7 @@ class UpdateWorkOrderActivityTest {
         WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
                 "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
+
         UpdateWorkOrderRequest updateWorkOrderRequest = UpdateWorkOrderRequest.builder()
                 .withWorkOrderId("NotFound")
                 .build();
@@ -104,6 +105,31 @@ class UpdateWorkOrderActivityTest {
                 updateWorkOrderActivity.handleRequest(updateWorkOrderRequest),
                 "Expected request to update a closed work order to result in an " +
                         "UpdateClosedWorkOrderException thrown");
+    }
+
+    @Test
+    public void handleRequest_invalidWorkOrderType_throwsInvalidAttributeValueException() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+
+        UpdateWorkOrderRequest updateWorkOrderRequest = UpdateWorkOrderRequest.builder()
+                .withWorkOrderId("Valid")
+                .withWorkOrderType("InvalidType")
+                .build();
+        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        updateWorkOrderActivity.handleRequest(updateWorkOrderRequest),
+                "Expected request to update a work order with an invalid work order type to result in an " +
+                        "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
 
