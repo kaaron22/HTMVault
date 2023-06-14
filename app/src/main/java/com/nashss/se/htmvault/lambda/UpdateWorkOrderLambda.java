@@ -38,10 +38,9 @@ public class UpdateWorkOrderLambda
                                     .withCompletionDateTime(unauthenticatedRequest.getCompletionDateTime())
                                     .withCustomerId(claims.get("email"))
                                     .withCustomerName(claims.get("name"))
-                                    .build(),
-                    (request, serviceComponent) -> serviceComponent
-                }
-        )
-
+                                    .build());
+                },
+                (request, serviceComponent) -> serviceComponent.provideUpdateWorkOrderActivity().handleRequest(request)
+        );
     }
 }
