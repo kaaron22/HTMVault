@@ -3,6 +3,7 @@ package com.nashss.se.htmvault.activity;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.nashss.se.htmvault.activity.requests.AddDeviceRequest;
 import com.nashss.se.htmvault.activity.requests.UpdateDeviceRequest;
+import com.nashss.se.htmvault.activity.requests.UpdateWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.AddDeviceResult;
 import com.nashss.se.htmvault.activity.results.UpdateDeviceResult;
 import com.nashss.se.htmvault.converters.LocalDateConverter;
@@ -357,6 +358,34 @@ class UpdateDeviceActivityTest {
         verify(dynamoDBMapper).save(any(Device.class));
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         DeviceTestHelper.assertDeviceEqualsDeviceModel(updatedDevice, deviceModel);
+    }
+
+    @Test
+    public void handleRequest_noControlNumberProvided_throwsInvalidAttributeValueException() {
+        // GIVEN
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber(null)
+                .build();
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                updateDeviceActivity.handleRequest(updateDeviceRequest),
+                "Expected an update device request without a control number to result in an " +
+                        "InvalidAttributeValueException thrown");
+    }
+
+    @Test
+    public void handleRequest_blankControlNumberProvided_throwsInvalidAttributeValueException() {
+        // GIVEN
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber("   ")
+                .build();
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        updateDeviceActivity.handleRequest(updateDeviceRequest),
+                "Expected an update device request without a control number to result in an " +
+                        "InvalidAttributeValueException thrown");
     }
 
     @Test
