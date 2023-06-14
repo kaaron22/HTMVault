@@ -21,13 +21,11 @@ import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 
 public class UpdateWorkOrderActivity {
-    private final DeviceDao deviceDao;
     private final WorkOrderDao workorderDao;
     private final MetricsPublisher metricsPublisher;
     private final Logger log = LogManager.getLogger();
 
-    public UpdateWorkOrderActivity(DeviceDao deviceDao, WorkOrderDao workOrderDao, MetricsPublisher metricsPublisher) {
-        this.deviceDao = deviceDao;
+    public UpdateWorkOrderActivity(WorkOrderDao workOrderDao, MetricsPublisher metricsPublisher) {
         this.workorderDao = workOrderDao;
         this.metricsPublisher = metricsPublisher;
     }
