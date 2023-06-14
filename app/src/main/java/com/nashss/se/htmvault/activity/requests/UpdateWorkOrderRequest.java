@@ -1,6 +1,7 @@
 package com.nashss.se.htmvault.activity.requests;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 @JsonDeserialize(builder = UpdateWorkOrderRequest.Builder.class)
 public class UpdateWorkOrderRequest {
@@ -59,10 +60,6 @@ public class UpdateWorkOrderRequest {
         return customerName;
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     @Override
     public String toString() {
         return "UpdateWorkOrderRequest{" +
@@ -77,6 +74,11 @@ public class UpdateWorkOrderRequest {
                 '}';
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    @JsonPOJOBuilder
     public static class Builder {
         private String workOrderType;
         private String workOrderAwaitStatus;
@@ -95,6 +97,41 @@ public class UpdateWorkOrderRequest {
         public Builder withWorkOrderAwaitStatus(String workOrderAwaitStatus) {
             this.workOrderAwaitStatus = workOrderAwaitStatus;
             return this;
+        }
+
+        public Builder withProblemReported(String problemReported) {
+            this.problemReported = problemReported;
+            return this;
+        }
+
+        public Builder withProblemFound(String problemFound) {
+            this.problemFound = problemFound;
+            return this;
+        }
+
+        public Builder withSummary(String summary) {
+            this.summary = summary;
+            return this;
+        }
+
+        public Builder withCompletionDateTime(String completionDateTime) {
+            this.completionDateTime = completionDateTime;
+            return this;
+        }
+
+        public Builder withCustomerId(String customerId) {
+            this.customerId = customerId;
+            return this;
+        }
+
+        public Builder withCustomerName(String customerName) {
+            this.customerName = customerName;
+            return this;
+        }
+
+        public UpdateWorkOrderRequest build() {
+            return new UpdateWorkOrderRequest(workOrderType, workOrderAwaitStatus, problemReported, problemFound,
+                    summary, completionDateTime, customerId, customerName);
         }
     }
 }
