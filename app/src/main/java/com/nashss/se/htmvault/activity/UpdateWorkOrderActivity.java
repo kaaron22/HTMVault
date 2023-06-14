@@ -8,6 +8,7 @@ import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.exceptions.UpdateClosedWorkOrderException;
+import com.nashss.se.htmvault.exceptions.WorkOrderNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.WorkOrderAwaitStatus;
@@ -36,11 +37,18 @@ public class UpdateWorkOrderActivity {
         log.info("Received UpdateWorkOrderRequest {}", updateWorkOrderRequest);
 
         if (null == updateWorkOrderRequest.getWorkOrderId() || updateWorkOrderRequest.getWorkOrderId().isBlank()) {
+            metricsPublisher.addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
             throw new InvalidAttributeValueException("A work order id must be provided");
         }
 
         // obtain the work order from the database (throws WorkOrderNotFoundException if not found)
-        WorkOrder workOrder = workorderDao.getWorkOrder(updateWorkOrderRequest.getWorkOrderId());
+        WorkOrder workOrder;
+        try {
+            workOrder = workorderDao.getWorkOrder(updateWorkOrderRequest.getWorkOrderId());
+        } catch (WorkOrderNotFoundException e) {
+            metricsPublisher.addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
+            throw new WorkOrderNotFoundException(e.getMessage());
+        }
 
         // verify the work order is not closed; if it is, throw an exception (closed work order are no longer
         // modifiable)
