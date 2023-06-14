@@ -6,7 +6,7 @@ import DataStore from "../util/DataStore";
 class ViewWorkOrder extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'mount', 'addWorkOrderToPage'], this);
+        this.bindClassMethods(['clientLoaded', 'mount', 'addWorkOrderToPage', 'displayUpdateWorkOrderForm'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.addWorkOrderToPage);
         this.header = new Header(this.dataStore);
@@ -14,7 +14,7 @@ class ViewWorkOrder extends BindingClass {
     }
 
     async displayUpdateWorkOrderForm(evt) {
-        evt.preventOrDefault();
+        evt.preventDefault();
 
         const errorMessageDisplay = document.getElementById('error-message');
         errorMessageDisplay.innerText = ``;
@@ -105,6 +105,7 @@ class ViewWorkOrder extends BindingClass {
     }
 
     mount() {
+        document.getElementById('update-work-order').addEventListener('click', this.displayUpdateWorkOrderForm);
         this.header.addHeaderToPage();
 
         this.client = new HTMVaultClient();
