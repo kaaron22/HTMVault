@@ -3,6 +3,8 @@ package com.nashss.se.htmvault.activity;
 import com.nashss.se.htmvault.activity.requests.UpdateWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.UpdateWorkOrderResult;
 import com.nashss.se.htmvault.converters.LocalDateConverter;
+import com.nashss.se.htmvault.converters.LocalDateTimeConverter;
+import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
@@ -13,10 +15,12 @@ import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.WorkOrderAwaitStatus;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderType;
+import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 
@@ -87,8 +91,8 @@ public class UpdateWorkOrderActivity {
         String completionDateTime = updateWorkOrderRequest.getCompletionDateTime();
         if (null != completionDateTime) {
             try {
-                LocalDate completionDateTimeParsed = new LocalDateConverter().unconvert(completionDateTime);
-                if (completionDateTimeParsed.isAfter(LocalDate.now())) {
+                LocalDateTime completionDateTimeParsed = new LocalDateTimeConverter().unconvert(completionDateTime);
+                if (completionDateTimeParsed.isAfter(LocalDateTime.now())) {
                     metricsPublisher.addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
                     throw new InvalidAttributeValueException(String.format("Cannot provide a future completion date " +
                             "time (%s)", completionDateTimeParsed));
@@ -99,5 +103,23 @@ public class UpdateWorkOrderActivity {
                         "YYYY-MM-DDTHH:MM:SS");
             }
         }
+
+        // if the request passes validation, update the work order, then save it to the database
+        metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 0);
+        workOrder.setWorkOrderType(WorkOrderType.valueOf(updateWorkOrderRequest.getWorkOrderType()));
+        workOrder.setWorkOrderAwaitStatus(null == updateWorkOrderRequest.getWorkOrderAwaitStatus() ? null :
+                WorkOrderAwaitStatus.valueOf(updateWorkOrderRequest.getWorkOrderAwaitStatus()));
+        workOrder.setProblemReported(updateWorkOrderRequest.getProblemReported());
+        workOrder.setProblemFound(null == updateWorkOrderRequest.getProblemFound() ? null :
+                updateWorkOrderRequest.getProblemFound());
+        workOrder.setSummary(null == updateWorkOrderRequest.getSummary() ? null : updateWorkOrderRequest.getSummary());
+        workOrder.setCompletionDateTime(null == updateWorkOrderRequest.getCompletionDateTime() ? null :
+                new LocalDateTimeConverter().unconvert(updateWorkOrderRequest.getCompletionDateTime()));
+
+        workorderDao.saveWorkOrder(workOrder);
+
+        return UpdateWorkOrderResult.builder()
+                .withWorkOrder(new ModelConverter().toWorkOrderModel(workOrder))
+                .build();
     }
 }

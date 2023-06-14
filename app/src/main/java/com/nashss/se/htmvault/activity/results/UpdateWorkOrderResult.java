@@ -32,7 +32,7 @@ public class UpdateWorkOrderResult {
     public static class Builder {
         private WorkOrderModel workOrder;
 
-        public Builder workOrder(WorkOrderModel workOrder) {
+        public Builder withWorkOrder(WorkOrderModel workOrder) {
             this.workOrder = workOrder;
             return this;
         }
