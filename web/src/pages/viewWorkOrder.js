@@ -13,6 +13,49 @@ class ViewWorkOrder extends BindingClass {
         console.log("view work order constructor");
     }
 
+    async displayUpdateWorkOrderForm(evt) {
+        evt.preventOrDefault();
+
+        const errorMessageDisplay = document.getElementById('error-message');
+        errorMessageDisplay.innerText = ``;
+        errorMessageDisplay.classList.add('hidden');
+
+        const workOrder = this.dataStore.get('workOrder');
+        const recordWorkOrderAwaitStatus = workOrder.workOrderAwaitStatus;
+        const recordProblemFound = workOrder.problemFound;
+        const recordSummary = workOrder.summary;
+        const recordCompletionDateTime = workOrder.completionDateTime;
+
+        let workOrderAwaitStatus;
+        if (null == recordWorkOrderAwaitStatus || recordWorkOrderAwaitStatus.length < 1) {
+            workOrderAwaitStatus = "";
+        } else {
+            workOrderAwaitStatus = recordWorkOrderAwaitStatus;
+        }
+
+        let problemFound;
+        if (null == recordProblemFound || recordProblemFound.length < 1) {
+            problemFound = "";
+        } else {
+            problemFound = recordProblemFound;
+        }
+
+        let summary;
+        if (null == recordSummary || recordSummary.length < 1) {
+            summary = "";
+        } else {
+            summary = recordSummary;
+        }
+
+        let completionDateTime;
+        if (null == recordCompletionDateTime || recordCompletionDateTime.length < 1) {
+            completionDateTime = "";
+        } else {
+            completionDateTime = recordCompletionDateTime;
+        }
+
+    }
+
     async clientLoaded() {
         const urlParams = new URLSearchParams(window.location.search);
         const workOrderId = urlParams.get('workOrderId');
