@@ -54,6 +54,18 @@ class ViewWorkOrder extends BindingClass {
             completionDateTime = recordCompletionDateTime;
         }
 
+        document.getElementById('updating-work-order-id').innerText = workOrder.workOrderId;
+        document.getElementById('workOrderType').value = workOrder.workOrderType;
+        document.getElementById('workOrderAwaitStatus').value = workOrderAwaitStatus;
+        document.getElementById('update-problem-reported').value = workOrder.problemReported;
+        document.getElementById('update-problem-found').value = workOrder.problemFound;
+        document.getElementById('update-summary').value = summary;
+        document.getElementById('update-completion-date-time').value = completionDateTime;
+
+        const workOrderDiv = document.getElementById('work-order-display-div');
+        const updateWorkOrderDiv = document.getElementById('update-work-order-form-div');
+        workOrderDiv.classList.add('hidden');
+        updateWorkOrderDiv.classList.remove('hidden');
     }
 
     async clientLoaded() {
