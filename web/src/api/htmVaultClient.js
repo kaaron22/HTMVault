@@ -16,7 +16,7 @@ export default class HTMVaultClient extends BindingClass {
         super();
 
         //const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPlaylist', 'getPlaylistSongs', 'createPlaylist', 'addDevice'];
-        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice', 'getDevice', 'getDeviceWorkOrders', 'retireDevice', 'reactivateDevice', 'updateDevice', 'createWorkOrder', 'getWorkOrder'];
+        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice', 'getDevice', 'getDeviceWorkOrders', 'retireDevice', 'reactivateDevice', 'updateDevice', 'createWorkOrder', 'getWorkOrder', 'updateWorkOrder'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -70,6 +70,28 @@ export default class HTMVaultClient extends BindingClass {
         }
 
         return await this.authenticator.getUserToken();
+    }
+
+    async updateWorkOrder(workOrderId, workOrderType, workOrderAwaitStatus, problemReported, problemFound, summary, completionDateTime, errorCallback) {
+        try {
+            const token = await this.getTokenOrThrow("Only authenticated users can update work orders.");
+            const response = await this.axiosClient.put(`workOrders/${workOrderId}`, {
+                workOrderId: workOrderId,
+                workOrderType: workOrderType,
+                workOrderAwaitStatus: workOrderAwaitStatus,
+                problemReported: problemReported,
+                problemFound: problemFound,
+                summary: summary,
+                completionDateTime: completionDateTime
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data.workOrder;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
     }
 
     async updateDevice(controlNumber, serialNumber, manufacturer, model, facilityName, assignedDepartment,
