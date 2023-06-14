@@ -28,16 +28,70 @@ class ViewWorkOrder extends BindingClass {
         const origButtonText = updateButton.innerText;
         updateButton.innerText = "Updating...";
 
-        document.getElementById('updating-work-order-id').innerText;
-        document.getElementById('workOrderType').value;
-        document.getElementById('workOrderAwaitStatus').value;
-        document.getElementById('update-problem-reported').value;
-        document.getElementById('update-problem-found').value;
-        document.getElementById('update-summary').value;
-        document.getElementById('update-completion-date-time').value;
+        const workOrderId = document.getElementById('updating-work-order-id').innerText;
+        const workOrderType = document.getElementById('workOrderType').value;
+        const recordWorkOrderAwaitStatus = document.getElementById('workOrderAwaitStatus').value;
+        const problemReported = document.getElementById('update-problem-reported').value;
+        const recordProblemFound = document.getElementById('update-problem-found').value;
+        const recordSummary = document.getElementById('update-summary').value;
+        const recordCompletionDateTime = document.getElementById('update-completion-date-time').value;
 
+        let workOrderAwaitStatus;
+        if (null == recordWorkOrderAwaitStatus || recordWorkOrderAwaitStatus.length < 1) {
+            workOrderAwaitStatus = "";
+        } else {
+            workOrderAwaitStatus = recordWorkOrderAwaitStatus;
+        }
 
+        let problemFound;
+        if (null == recordProblemFound || recordProblemFound.length < 1) {
+            problemFound = "";
+        } else {
+            problemFound = recordProblemFound;
+        }
 
+        let summary;
+        if (null == recordSummary || recordSummary.length < 1) {
+            summary = "";
+        } else {
+            summary = recordSummary;
+        }
+
+        let completionDateTime;
+        if (null == recordCompletionDateTime || recordCompletionDateTime.length < 1) {
+            completionDateTime = "";
+        } else {
+            completionDateTime = recordCompletionDateTime;
+        }
+
+        const workOrder = this.client.updateWorkOrder(workOrderId, workOrderType, workOrderAwaitStatus, problemReported, problemFound, summary, completionDateTime, (error) => {
+            updateButton.innerText = origButtonText;
+            errorMessageDisplay.innerText = `Error: ${error.message}`;
+            errorMessageDisplay.classList.remove('hidden');
+        });
+
+        updateButton.innerText = origButtonText;
+
+        if (null == workOrder) {
+            return;
+        }
+
+        this.dataStore.set('workOrder', workOrder);
+
+        successMessageDisplay.classList.remove('hidden');
+        setTimeout(() => {
+            successMessageDisplay.classList.add('hidden');
+        }, 3500);
+
+        const deviceRecordDiv = document.getElementById('device-record-div');
+        const updateDeviceDiv = document.getElementById('update-device-div');
+        updateDeviceDiv.classList.add('hidden');
+        deviceRecordDiv.classList.remove('hidden');
+
+        const workOrderDiv = document.getElementById('work-order-display-div');
+        const updateWorkOrderDiv = document.getElementById('update-work-order-form-div');
+        workOrderDiv.classList.remove('hidden');
+        updateWorkOrderDiv.classList.add('hidden');
     }
 
     async displayUpdateWorkOrderForm(evt) {
@@ -133,6 +187,7 @@ class ViewWorkOrder extends BindingClass {
 
     mount() {
         document.getElementById('update-work-order').addEventListener('click', this.displayUpdateWorkOrderForm);
+        document.getElementById('submit-updates-work-order').addEventListener('click', this.submitUpdatesWorkOrder);
         this.header.addHeaderToPage();
 
         this.client = new HTMVaultClient();
