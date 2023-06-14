@@ -2,10 +2,8 @@ package com.nashss.se.htmvault.activity;
 
 import com.nashss.se.htmvault.activity.requests.UpdateWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.UpdateWorkOrderResult;
-import com.nashss.se.htmvault.converters.LocalDateConverter;
 import com.nashss.se.htmvault.converters.LocalDateTimeConverter;
 import com.nashss.se.htmvault.converters.ModelConverter;
-import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
@@ -15,12 +13,10 @@ import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.WorkOrderAwaitStatus;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderType;
-import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
@@ -97,6 +93,9 @@ public class UpdateWorkOrderActivity {
 
         // verify the completion date time, if provided, has the correct format and is not a future date/time
         String completionDateTime = updateWorkOrderRequest.getCompletionDateTime();
+        if (completionDateTime.isBlank()) {
+            completionDateTime = null;
+        }
         if (null != completionDateTime) {
             try {
                 LocalDateTime completionDateTimeParsed = new LocalDateTimeConverter().unconvert(completionDateTime);
@@ -121,7 +120,7 @@ public class UpdateWorkOrderActivity {
         workOrder.setProblemFound(null == updateWorkOrderRequest.getProblemFound() ? null :
                 updateWorkOrderRequest.getProblemFound());
         workOrder.setSummary(null == updateWorkOrderRequest.getSummary() ? null : updateWorkOrderRequest.getSummary());
-        workOrder.setCompletionDateTime(null == updateWorkOrderRequest.getCompletionDateTime() ? null :
+        workOrder.setCompletionDateTime(null == completionDateTime ? null :
                 new LocalDateTimeConverter().unconvert(updateWorkOrderRequest.getCompletionDateTime()));
 
         workorderDao.saveWorkOrder(workOrder);
