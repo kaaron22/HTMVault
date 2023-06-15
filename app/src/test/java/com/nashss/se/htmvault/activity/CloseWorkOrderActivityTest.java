@@ -2,9 +2,11 @@ package com.nashss.se.htmvault.activity;
 
 import com.nashss.se.htmvault.activity.requests.CloseWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.CloseWorkOrderResult;
+import com.nashss.se.htmvault.converters.LocalDateTimeConverter;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
+import com.nashss.se.htmvault.exceptions.CloseWorkOrderNotCompleteException;
 import com.nashss.se.htmvault.exceptions.WorkOrderNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
@@ -12,6 +14,8 @@ import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -70,6 +74,33 @@ class CloseWorkOrderActivityTest {
 
         // THEN
         WorkOrderTestHelper.assertWorkOrderEqualsWorkOrderModel(expectedWorkOrder, closeWorkOrderResult.getWorkOrder());
+    }
+
+    @Test
+    public void handleRequest_blankProblemFound_throwsCloseWorkOrderNotCompleteException() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(0);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+        workOrder.setProblemFound("  ");
+        workOrder.setSummary("not empty");
+        workOrder.setCompletionDateTime(new LocalDateTimeConverter()
+                .unconvert("2023-06-15T10:00:01"));
+
+        CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
+                .withWorkOrderId("a work order id")
+                .build();
+        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+
+        // WHEN & THEN
+        assertThrows(CloseWorkOrderNotCompleteException.class, () ->
+                        closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
+                "Expected a request to close a work order that has a blank 'problem found' to result in a " +
+                        "CloseWorkOrderNotCompleteException thrown");
     }
 
     private WorkOrder copyWorkOrder(WorkOrder workOrder) {
