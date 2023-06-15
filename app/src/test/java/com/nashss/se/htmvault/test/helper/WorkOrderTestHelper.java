@@ -78,7 +78,7 @@ public final class WorkOrderTestHelper {
         assertEquals(workOrder.getSerialNumber(), workOrderModel.getSerialNumber(), message);
         assertEquals(workOrder.getWorkOrderCompletionStatus().toString(), workOrderModel.getWorkOrderCompletionStatus(),
                 message);
-        assertEquals(null == workOrder.getWorkOrderAwaitStatus() ? "" : workOrder.getWorkOrderAwaitStatus(),
+        assertEquals(null == workOrder.getWorkOrderAwaitStatus() ? "" : workOrder.getWorkOrderAwaitStatus().toString(),
                 workOrderModel.getWorkOrderAwaitStatus(), message);
         assertEquals(workOrder.getManufacturerModel().getManufacturer(), workOrderModel.getManufacturer(), message);
         assertEquals(workOrder.getManufacturerModel().getModel(), workOrderModel.getModel(), message);
