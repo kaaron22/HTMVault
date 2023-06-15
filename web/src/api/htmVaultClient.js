@@ -16,7 +16,7 @@ export default class HTMVaultClient extends BindingClass {
         super();
 
         //const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPlaylist', 'getPlaylistSongs', 'createPlaylist', 'addDevice'];
-        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice', 'getDevice', 'getDeviceWorkOrders', 'retireDevice', 'reactivateDevice', 'updateDevice', 'createWorkOrder', 'getWorkOrder', 'updateWorkOrder'];
+        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice', 'getDevice', 'getDeviceWorkOrders', 'retireDevice', 'reactivateDevice', 'updateDevice', 'createWorkOrder', 'getWorkOrder', 'updateWorkOrder', 'closeWorkOrder'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -70,6 +70,20 @@ export default class HTMVaultClient extends BindingClass {
         }
 
         return await this.authenticator.getUserToken();
+    }
+
+    async closeWorkOrder(workOrderId, errorCallback) {
+        try {
+            const token = await this.getTokenOrThrow("Only authenticated users can close work orders.");
+            const response = await this.axiosClient.delete(`workOrders/${workOrderId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data.workOrder;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
     }
 
     async updateWorkOrder(workOrderId, workOrderType, workOrderAwaitStatus, problemReported, problemFound, summary, completionDateTime, errorCallback) {

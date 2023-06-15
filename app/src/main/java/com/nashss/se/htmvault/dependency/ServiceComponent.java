@@ -1,6 +1,7 @@
 package com.nashss.se.htmvault.dependency;
 
 import com.nashss.se.htmvault.activity.*;
+import com.nashss.se.htmvault.activity.results.CloseWorkOrderResult;
 import dagger.Component;
 
 import javax.inject.Singleton;
@@ -28,4 +29,6 @@ public interface ServiceComponent {
     GetWorkOrderActivity provideGetWorkOrderActivity();
 
     UpdateWorkOrderActivity provideUpdateWorkOrderActivity();
+
+    CloseWorkOrderActivity provideCloseWorkOrderActivity();
 }

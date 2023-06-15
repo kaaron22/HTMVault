@@ -6,11 +6,46 @@ import DataStore from "../util/DataStore";
 class ViewWorkOrder extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'mount', 'addWorkOrderToPage', 'displayUpdateWorkOrderForm', 'submitUpdatesWorkOrder'], this);
+        this.bindClassMethods(['clientLoaded', 'mount', 'addWorkOrderToPage', 'displayUpdateWorkOrderForm', 'submitUpdatesWorkOrder', 'closeWorkOrder'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.addWorkOrderToPage);
         this.header = new Header(this.dataStore);
         console.log("view work order constructor");
+    }
+
+    async closeWorkOrder(evt) {
+        evt.preventDefault();
+
+        const errorMessageDisplay = document.getElementById('error-message');
+        errorMessageDisplay.innerText = ``;
+        errorMessageDisplay.classList.add('hidden');
+
+        const successMessageDisplay = document.getElementById('success-message');
+        successMessageDisplay.innerText = 'Work order successfully closed.';
+        successMessageDisplay.classList.add('hidden');
+
+        const closeButton = document.getElementById('close-work-order');
+        const origButtonText = closeButton.innerText;
+        closeButton.innerText = "Closing...";
+
+        const workOrder = this.dataStore.get('workOrder');
+        const workOrderId = workOrder.workOrderId;
+        const closedWorkOrder = await this.client.closeWorkOrder(workOrderId, (error) => {
+            closeButton.innerText = origButtonText;
+            errorMessageDisplay.innerText = `Error: ${error.message}`;
+            errorMessageDisplay.classList.remove('hidden');
+        });
+
+        if (null == closedWorkOrder) {
+            return;
+        }
+
+        this.dataStore.set('workOrder', closedWorkOrder);
+
+        successMessageDisplay.classList.remove('hidden');
+        setTimeout(() => {
+            successMessageDisplay.classList.add('hidden');
+        }, 3500);
     }
 
     async submitUpdatesWorkOrder(evt) {
@@ -155,6 +190,7 @@ class ViewWorkOrder extends BindingClass {
         const workOrder = await this.client.getWorkOrder(workOrderId);
         if (workOrder.workOrderCompletionStatus == "CLOSED") {
             document.getElementById('update-work-order').classList.add('hidden');
+            document.getElementById('close-work-order').classList.add('hidden');
         }
         this.dataStore.set('workOrder', workOrder);
     }
@@ -165,12 +201,21 @@ class ViewWorkOrder extends BindingClass {
             return;
         }
 
+        if (workOrder.workOrderCompletionStatus == "CLOSED") {
+            document.getElementById('update-work-order').classList.add('hidden');
+            document.getElementById('close-work-order').classList.add('hidden');
+        }
+
         document.getElementById('work-order-id').innerText = workOrder.workOrderId;
         document.getElementById('work-order-type').innerText = workOrder.workOrderType;
         document.getElementById('control-number').innerText = workOrder.controlNumber;
         document.getElementById('serial-number').innerText = workOrder.serialNumber;
         document.getElementById('completion-status').innerText = workOrder.workOrderCompletionStatus;
-        document.getElementById('await-status').innerText = workOrder.workOrderAwaitStatus;
+        if (workOrder.workOrderCompletionStatus == "CLOSED") {
+            document.getElementById('await-status-field').classList.add('hidden');
+        } else {
+            document.getElementById('await-status').innerText = workOrder.workOrderAwaitStatus;
+        }
         document.getElementById('manufacturer').innerText = workOrder.manufacturer;
         document.getElementById('model').innerText = workOrder.model;
         document.getElementById('facility-name').innerText = workOrder.facilityName;
@@ -190,6 +235,7 @@ class ViewWorkOrder extends BindingClass {
     mount() {
         document.getElementById('update-work-order').addEventListener('click', this.displayUpdateWorkOrderForm);
         document.getElementById('submit-updates-work-order').addEventListener('click', this.submitUpdatesWorkOrder);
+        document.getElementById('close-work-order').addEventListener('click', this.closeWorkOrder);
 
         this.header.addHeaderToPage();
 

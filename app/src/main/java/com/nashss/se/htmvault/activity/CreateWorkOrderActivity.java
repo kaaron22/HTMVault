@@ -90,7 +90,7 @@ public class CreateWorkOrderActivity {
         workOrder.setCreatedById(createWorkOrderRequest.getCreatedById());
         workOrder.setCreatedByName(createWorkOrderRequest.getCreatedByName());
         // creation date time of 'now' without nanos
-        LocalDateTime creationDateTime = LocalDateTime.now();
+        LocalDateTime creationDateTime = LocalDateTime.now().minusHours(4);
         String creationDateTimeConverted = new LocalDateTimeConverter().convert(creationDateTime);
         LocalDateTime creationDateTimeNoNanos = new LocalDateTimeConverter().unconvert(creationDateTimeConverted);
         workOrder.setCreationDateTime(creationDateTimeNoNanos);
