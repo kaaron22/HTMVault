@@ -15,7 +15,6 @@ export default class HTMVaultClient extends BindingClass {
     constructor(props = {}) {
         super();
 
-        //const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getPlaylist', 'getPlaylistSongs', 'createPlaylist', 'addDevice'];
         const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice', 'getDevice', 'getDeviceWorkOrders', 'retireDevice', 'reactivateDevice', 'updateDevice', 'createWorkOrder', 'getWorkOrder', 'updateWorkOrder', 'closeWorkOrder'];
         this.bindClassMethods(methodsToBind, this);
 
@@ -186,21 +185,6 @@ export default class HTMVaultClient extends BindingClass {
         }
     }
 
-    /**
-     * Gets the playlist for the given ID.
-     * @param id Unique identifier for a playlist
-     * @param errorCallback (Optional) A function to execute if the call fails.
-     * @returns The playlist's metadata.
-     */
-    async getPlaylist(id, errorCallback) {
-        try {
-            const response = await this.axiosClient.get(`playlists/${id}`);
-            return response.data.playlist;
-        } catch (error) {
-            this.handleError(error, errorCallback)
-        }
-    }
-
     async createWorkOrder(controlNumber, workOrderType, problemReported, problemFound, order, errorCallback) {
         try {
             const token = await this.getTokenOrThrow("Only authenticated users can add devices.");
@@ -225,21 +209,6 @@ export default class HTMVaultClient extends BindingClass {
         try {
             const response = await this.axiosClient.get(`devices/${controlNumber}/workOrders?order=${order}`);
             return response.data.workOrders;
-        } catch (error) {
-            this.handleError(error, errorCallback)
-        }
-    }
-
-    /**
-     * Get the songs on a given playlist by the playlist's identifier.
-     * @param id Unique identifier for a playlist
-     * @param errorCallback (Optional) A function to execute if the call fails.
-     * @returns The list of songs on a playlist.
-     */
-    async getPlaylistSongs(id, errorCallback) {
-        try {
-            const response = await this.axiosClient.get(`playlists/${id}/songs`);
-            return response.data.songList;
         } catch (error) {
             this.handleError(error, errorCallback)
         }
@@ -275,31 +244,6 @@ export default class HTMVaultClient extends BindingClass {
                 }
             });
             return response.data.device;
-        } catch (error) {
-            this.handleError(error, errorCallback)
-        }
-    }
-
-    /**
-     * Add a song to a playlist.
-     * @param id The id of the playlist to add a song to.
-     * @param asin The asin that uniquely identifies the album.
-     * @param trackNumber The track number of the song on the album.
-     * @returns The list of songs on a playlist.
-     */
-    async addSongToPlaylist(id, asin, trackNumber, errorCallback) {
-        try {
-            const token = await this.getTokenOrThrow("Only authenticated users can add a song to a playlist.");
-            const response = await this.axiosClient.post(`playlists/${id}/songs`, {
-                id: id,
-                asin: asin,
-                trackNumber: trackNumber
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data.songList;
         } catch (error) {
             this.handleError(error, errorCallback)
         }

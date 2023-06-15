@@ -9,7 +9,7 @@ import DataStore from "../util/DataStore";
 class ViewDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'submitRetire', 'submitReactivate', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'redirectToUpdateDevice', 'createWorkOrder'], this);
+        this.bindClassMethods(['clientLoaded', 'submitRetire', 'submitReactivate', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'cancelUpdatesDevice', 'createWorkOrder', 'displayUpdateDeviceForm', 'submitDeviceUpdates'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.addDeviceToPage);
         this.dataStore.addChangeListener(this.addWorkOrdersToPage);
@@ -36,6 +36,126 @@ class ViewDevice extends BindingClass {
         document.getElementById('work-orders').innerText = "(loading work orders...)";
         const workOrders = await this.client.getDeviceWorkOrders(deviceId, order);
         this.dataStore.set('workOrders', workOrders);
+    }
+
+    async submitDeviceUpdates(evt) {
+        evt.preventDefault();
+
+        const errorMessageDisplay = document.getElementById('update-error-message');
+        errorMessageDisplay.innerText = ``;
+        errorMessageDisplay.classList.add('hidden');
+
+        const successMessageDisplay = document.getElementById('success-message');
+        successMessageDisplay.innerText = 'Device successfully updated.';
+        successMessageDisplay.classList.add('hidden');
+
+        const updateButton = document.getElementById('update-device');
+        const origButtonText = updateButton.innerText;
+        updateButton.innerText = 'Updating...';
+
+        const deviceControlNumber = document.getElementById('control-number').innerText;
+        const deviceSerialNumber = document.getElementById('update-serial-number').value;
+        const deviceManufacturer = document.getElementById('update-manufacturer').value;
+        const deviceModel = document.getElementById('update-model').value;
+        const deviceFacilityName = document.getElementById('update-facility-name').value;
+        const deviceAssignedDepartment = document.getElementById('update-assigned-department').value;
+        const deviceManufactureDate = document.getElementById('update-manufacture-date').value;
+        const deviceNotes = document.getElementById('update-notes').value;
+
+        let manufactureDate;
+        if (deviceManufactureDate.length < 1) {
+            manufactureDate = null;
+        } else {
+            manufactureDate = deviceManufactureDate;
+        }
+
+        let notes;
+        if (deviceNotes.length < 1) {
+            notes = null;
+        } else {
+            notes = deviceNotes;
+        }
+
+        const device = await this.client.updateDevice(deviceControlNumber, deviceSerialNumber, deviceManufacturer,
+            deviceModel, deviceFacilityName, deviceAssignedDepartment, manufactureDate, notes, (error) => {
+            updateButton.innerText = origButtonText;
+            errorMessageDisplay.innerText = `Error: ${error.message}`;
+            errorMessageDisplay.classList.remove('hidden');
+        });
+
+        updateButton.innerText = origButtonText;
+
+        if (null == device) {
+            return;
+        }
+
+        this.dataStore.set('device', device);
+
+        successMessageDisplay.classList.remove('hidden');
+        setTimeout(() => {
+            successMessageDisplay.classList.add('hidden');
+        }, 3500);
+
+        const deviceRecordDiv = document.getElementById('device-record-div');
+        const updateDeviceDiv = document.getElementById('update-device-div');
+        const workOrdersDiv = document.getElementById('work-orders-div');
+        const createWorkOrderDiv = document.getElementById('create-work-order');
+        updateDeviceDiv.classList.add('hidden');
+        deviceRecordDiv.classList.remove('hidden');
+        workOrdersDiv.classList.remove('hidden');
+        createWorkOrderDiv.classList.remove('hidden');
+
+    }
+
+    async displayUpdateDeviceForm(evt) {
+        evt.preventDefault();
+
+        const errorMessageDisplay = document.getElementById('error-message-device-record-change');
+        errorMessageDisplay.innerText = ``;
+        errorMessageDisplay.classList.add('hidden');
+
+        document.getElementById("create-new-work-order-form").reset();
+
+        const updateDeviceErrorMessageDisplay = document.getElementById('update-error-message');
+        updateDeviceErrorMessageDisplay.innerText = ``;
+        updateDeviceErrorMessageDisplay.classList.add('hidden');
+
+        const device = this.dataStore.get('device');
+        const deviceManufactureDate = device.manufactureDate;
+        const deviceNotes = device.notes;
+
+        let manufactureDate;
+        if (null == deviceManufactureDate || deviceManufactureDate.length < 1) {
+            manufactureDate = "";
+        } else {
+            manufactureDate = deviceManufactureDate;
+        }
+
+        let notes;
+        if (null == deviceNotes || deviceNotes.length < 1) {
+            notes = "";
+        } else {
+            notes = deviceNotes;
+        }
+
+        document.getElementById('update-control-number').innerText = device.controlNumber;
+        document.getElementById('update-serial-number').value = device.serialNumber;
+        document.getElementById('update-manufacturer').value = device.manufacturer;
+        document.getElementById('update-model').value = device.model;
+        document.getElementById('update-manufacture-date').value = manufactureDate
+        document.getElementById('update-facility-name').value = device.facilityName;
+        document.getElementById('update-assigned-department').value = device.assignedDepartment;
+        document.getElementById('update-notes').value = notes;
+
+        const deviceRecordDiv = document.getElementById('device-record-div');
+        const updateDeviceDiv = document.getElementById('update-device-div');
+        const workOrdersDiv = document.getElementById('work-orders-div');
+        const createWorkOrderDiv = document.getElementById('create-work-order');
+        deviceRecordDiv.classList.add('hidden');
+        updateDeviceDiv.classList.remove('hidden');
+        workOrdersDiv.classList.add('hidden');
+        createWorkOrderDiv.classList.add('hidden');
+
     }
 
     async submitRetire(evt) {
@@ -117,7 +237,9 @@ class ViewDevice extends BindingClass {
         document.getElementById('retire-device').addEventListener('click', this.submitRetire);
         document.getElementById('reactivate-device').addEventListener('click', this.submitReactivate);
         document.getElementById('add-new-work-order').addEventListener('click', this.createWorkOrder);
-        document.getElementById('update-device').addEventListener('click', this.redirectToUpdateDevice);
+        document.getElementById('update-device').addEventListener('click', this.displayUpdateDeviceForm);
+        document.getElementById('submit-updates-device').addEventListener('click', this.submitDeviceUpdates);
+        document.getElementById('cancel-updates-device').addEventListener('click', this.cancelUpdatesDevice);
 
         this.header.addHeaderToPage();
 
@@ -188,11 +310,15 @@ class ViewDevice extends BindingClass {
         document.getElementById('work-orders').innerHTML = workOrderSummaryHtml;
     }
 
-    async redirectToUpdateDevice() {
-        const device = this.dataStore.get('device');
-        if (device != null) {
-            window.location.href = `updateDevice.html?controlNumber=${device.controlNumber}`;
-        }
+    async cancelUpdatesDevice() {
+        const deviceRecordDiv = document.getElementById('device-record-div');
+        const updateDeviceDiv = document.getElementById('update-device-div');
+        const workOrdersDiv = document.getElementById('work-orders-div');
+        const createWorkOrderDiv = document.getElementById('create-work-order');
+        deviceRecordDiv.classList.remove('hidden');
+        updateDeviceDiv.classList.add('hidden');
+        workOrdersDiv.classList.remove('hidden');
+        createWorkOrderDiv.classList.remove('hidden');
     }
 
     /**

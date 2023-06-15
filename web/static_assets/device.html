@@ -7,60 +7,102 @@
 </head>
 
 <body class="background">
-    <header class="header" id="header"></header>
-    <div class="card">
-        <h2>Device Record</h2>
-        <p class="hidden error" id="error-message-device-record-change"></p>
-        <p class="hidden success" id="success-message"></p>
-        <a href="#" class="button" id="retire-device">Retire Device</a>
-        <a href="#" class="button" id="reactivate-device">Reactivate Device</a>
-        <a href="#" class="button" id="update-device">Update Device</a>
-        <h3 id="device-record"></h3>
-        <h4>Control Number: <span id="control-number"></span></h4>
-        <h4>Serial Number: <span id="serial-number"></span></h4>
-        <h4>Manufacturer: <span id="manufacturer"></span></h4>
-        <h4>Model: <span id="model"></span></h4>
-        <h4>Manufacture Date: <span id="manufacture-date"></span></h4>
-        <h4>Service Status: <span id="service-status"></span></h4>
-        <h4>Facility Name: <span id="facility-name"></span></h4>
-        <h4>Assigned Department: <span id="assigned-department"></span></h4>
-        <h4>Compliance Through: <span id="compliance-through-date"></span></h4>
-        <h4>Last PM Completed: <span id="last-pm-completion-date"></span></h4>
-        <h4>Next PM Due: <span id="next-pm-due-date"></span></h4>
-        <h4>PM Frequency (months): <span id="pm-frequency-months"></span></h4>
-        <h4>Inventory Add Date: <span id="inventory-add-date"></span></h4>
-        <h4>Added By (ID): <span id="added-by-id"></span></h4>
-        <h4>Added By (Name): <span id="added-by-name"></span></h4>
-        <h4>Notes: <span id="device-notes"></span></h4>
-    </div>
-    <div class="card">
-        <h3>Work Orders</h3>
-        <h4 id="work-orders"></h4>
-    </div>
-    <div class="card" id="create-work-order">
-        <h2>Create New Work Order</h2>
-        <form class="card-content" id="create-new-work-order-form">
-            <p class="hidden error" id="error-message"> </p>
-            <p class="form-field">
-                <label for="workOrderType">Work Order Type</label>
-                <select class=validated-field id="workOrderType" required>
-                    <option value="">Select a Work Order Type</option>
-                    <option value="ACCEPTANCE_TESTING">Acceptance Testing</option>
-                    <option value="PREVENTATIVE_MAINTENANCE">Preventative Maintenance</option>
-                    <option value="REPAIR">Repair</option>
-                </select>
-            </p>
-            <p class="form-field">
-                <label>Problem Reported</label>
-                <input type="text" class=validated-field id="problem-reported" required>
-            </p>
-            <p class="form-field">
-                <label>Problem Found</label>
-                <input type="text" id="problem-found">
-            </p>
-        </form>
-        <a href="#" class="button" id="add-new-work-order">Create New Work Order</a>
-    </div>
+<header class="header" id="header"></header>
+<div class="card" id="device-record-div">
+    <h2>Device Record</h2>
+    <p class="hidden error" id="error-message-device-record-change"></p>
+    <p class="hidden success" id="success-message"></p>
+    <a href="#" class="button" id="retire-device">Retire Device</a>
+    <a href="#" class="button" id="reactivate-device">Reactivate Device</a>
+    <a href="#" class="button" id="update-device">Update Device</a>
+    <h3 id="device-record"></h3>
+    <h4>Control Number: <span id="control-number"></span></h4>
+    <h4>Serial Number: <span id="serial-number"></span></h4>
+    <h4>Manufacturer: <span id="manufacturer"></span></h4>
+    <h4>Model: <span id="model"></span></h4>
+    <h4>Manufacture Date: <span id="manufacture-date"></span></h4>
+    <h4>Service Status: <span id="service-status"></span></h4>
+    <h4>Facility Name: <span id="facility-name"></span></h4>
+    <h4>Assigned Department: <span id="assigned-department"></span></h4>
+    <h4>Compliance Through: <span id="compliance-through-date"></span></h4>
+    <h4>Last PM Completed: <span id="last-pm-completion-date"></span></h4>
+    <h4>Next PM Due: <span id="next-pm-due-date"></span></h4>
+    <h4>PM Frequency (months): <span id="pm-frequency-months"></span></h4>
+    <h4>Inventory Add Date: <span id="inventory-add-date"></span></h4>
+    <h4>Added By (ID): <span id="added-by-id"></span></h4>
+    <h4>Added By (Name): <span id="added-by-name"></span></h4>
+    <h4>Notes: <span id="device-notes"></span></h4>
+</div>
+<div class="card hidden" id="update-device-div">
+    <h2>Update Device Record</h2>
+    <form class="card-content" id="update-device-form">
+        <p class="hidden error" id="update-error-message"></p>
+        <a href="#" class="button" id="cancel-updates-device">Cancel</a>
+        <h4>Control Number: <span id="update-control-number"></span></h4>
+        <p class="form-field">
+            <label>Serial Number (numbers, letters, and dashes only)</label>
+            <input type="text" required class="validated-field" id="update-serial-number" placeholder="i.e. S-1234, B567, etc." autofocus>
+        </p>
+        <p class="form-field">
+            <label>Manufacturer</label>
+            <input type="text" required class="validated-field" id="update-manufacturer" placeholder="i.e. Defib Corp, IV Pump Corp, etc."
+                   autofocus>
+        </p>
+        <p class="form-field">
+            <label>Model</label>
+            <input type="text" required class="validated-field" id="update-model" placeholder="i.e. X-1000, LP-200, etc"
+                   autofocus>
+        </p>
+        <p class="form-field">
+            <label>Facility Name</label>
+            <input type="text" required class="validated-field" id="update-facility-name" placeholder="i.e. General Hospital, Eastside Family Practice, etc."
+                   autofocus>
+        </p>
+        <p class="form-field">
+            <label>Assigned Department</label>
+            <input type="text" required class="validated-field" id="update-assigned-department" placeholder="i.e. ICU, Surgery, ER, etc."
+                   autofocus>
+        </p>
+        <p class="form-field">
+            <label>Manufacture Date (optional)</label>
+            <input type="date" id="update-manufacture-date">
+        </p>
+        <p class="form-field">
+            <label>Notes (optional)</label>
+            <input type="text" id="update-notes" placeholder="i.e. kept in storage A when not in use"
+                   autofocus>
+        </p>
+        <a href="#" class="button" id="submit-updates-device">Update</a>
+    </form>
+</div>
+<div class="card" id="work-orders-div">
+    <h3>Work Orders</h3>
+    <h4 id="work-orders"></h4>
+</div>
+<div class="card" id="create-work-order">
+    <h2>Create New Work Order</h2>
+    <form class="card-content" id="create-new-work-order-form">
+        <p class="hidden error" id="error-message"> </p>
+        <p class="form-field">
+            <label for="workOrderType">Work Order Type</label>
+            <select class=validated-field id="workOrderType" required>
+                <option value="">Select a Work Order Type</option>
+                <option value="ACCEPTANCE_TESTING">Acceptance Testing</option>
+                <option value="PREVENTATIVE_MAINTENANCE">Preventative Maintenance</option>
+                <option value="REPAIR">Repair</option>
+            </select>
+        </p>
+        <p class="form-field">
+            <label>Problem Reported</label>
+            <input type="text" class=validated-field id="problem-reported" required>
+        </p>
+        <p class="form-field">
+            <label>Problem Found</label>
+            <input type="text" id="problem-found">
+        </p>
+    </form>
+    <a href="#" class="button" id="add-new-work-order">Create New Work Order</a>
+</div>
 </body>
 
 </html>
