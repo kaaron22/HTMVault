@@ -80,6 +80,7 @@ export default class HTMVaultClient extends BindingClass {
                     Authorization: `Bearer ${token}`
                 }
             });
+            return response.data.workOrder;
         } catch (error) {
             this.handleError(error, errorCallback)
         }
