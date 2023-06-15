@@ -75,7 +75,11 @@ public class UpdateWorkOrderActivity {
 
         // verify the optional work order await status is one of the types allowed (or empty/null)
         boolean validWorkOrderAwaitStatus = false;
-        if (!(null == updateWorkOrderRequest.getWorkOrderAwaitStatus())) {
+        String workOrderAwaitStatusValue = updateWorkOrderRequest.getWorkOrderAwaitStatus();
+        if (null == workOrderAwaitStatusValue || workOrderAwaitStatusValue.isBlank()) {
+            workOrderAwaitStatusValue = null;
+        }
+        if (!(null == workOrderAwaitStatusValue)) {
             for (WorkOrderAwaitStatus workOrderAwaitStatus : WorkOrderAwaitStatus.values()) {
                 if (updateWorkOrderRequest.getWorkOrderAwaitStatus().equals(workOrderAwaitStatus.toString())) {
                     validWorkOrderAwaitStatus = true;
@@ -122,8 +126,8 @@ public class UpdateWorkOrderActivity {
         // if the request passes validation, update the work order, then save it to the database
         metricsPublisher.addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 0);
         workOrder.setWorkOrderType(WorkOrderType.valueOf(updateWorkOrderRequest.getWorkOrderType()));
-        workOrder.setWorkOrderAwaitStatus(null == updateWorkOrderRequest.getWorkOrderAwaitStatus() ? null :
-                WorkOrderAwaitStatus.valueOf(updateWorkOrderRequest.getWorkOrderAwaitStatus()));
+        workOrder.setWorkOrderAwaitStatus(null == workOrderAwaitStatusValue ? null :
+                WorkOrderAwaitStatus.valueOf(workOrderAwaitStatusValue));
         workOrder.setProblemReported(updateWorkOrderRequest.getProblemReported());
         workOrder.setProblemFound(null == updateWorkOrderRequest.getProblemFound() ? null :
                 updateWorkOrderRequest.getProblemFound());
