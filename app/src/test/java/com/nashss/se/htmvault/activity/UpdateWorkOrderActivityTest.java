@@ -11,8 +11,10 @@ import com.nashss.se.htmvault.exceptions.UpdateClosedWorkOrderException;
 import com.nashss.se.htmvault.exceptions.WorkOrderNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
+import com.nashss.se.htmvault.models.WorkOrderAwaitStatus;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderModel;
+import com.nashss.se.htmvault.models.WorkOrderType;
 import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,24 +52,31 @@ class UpdateWorkOrderActivityTest {
         WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
                 "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+        workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
+        workOrder.setProblemReported("A reported problim with a misspelling");
 
         // a request with the minimum attributes required (problem found, summary, completion date/time are null)
         UpdateWorkOrderRequest updateWorkOrderRequest = UpdateWorkOrderRequest.builder()
-                .withWorkOrderId("Valid")
+                .withWorkOrderId(workOrder.getWorkOrderId())
                 .withWorkOrderType("REPAIR")
                 .withWorkOrderAwaitStatus("AWAITING_REPAIR")
-                .withProblemReported("A reported problem")
+                .withProblemReported("A corrected reported problem without the misspelling")
                 .build();
         when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+
+        WorkOrder expectedWorkOrder = copyWorkOrder(workOrder);
+        expectedWorkOrder.setWorkOrderType(WorkOrderType.REPAIR);
+        expectedWorkOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_REPAIR);
+        expectedWorkOrder.setProblemReported("A corrected reported problem without the misspelling");
+
 
         // WHEN
         UpdateWorkOrderResult result = updateWorkOrderActivity.handleRequest(updateWorkOrderRequest);
         WorkOrderModel workOrderModel = result.getWorkOrder();
 
         // THEN
-        WorkOrderTestHelper.assertWorkOrderEqualsWorkOrderModel(workOrder, workOrderModel);
+        WorkOrderTestHelper.assertWorkOrderEqualsWorkOrderModel(expectedWorkOrder, workOrderModel);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 0);
-
     }
 
     @Test
@@ -243,5 +252,30 @@ class UpdateWorkOrderActivityTest {
                 "Expected request to update a work order with an invalid 'completion date time' to result in" +
                         " an InvalidAttributeValueException thrown");
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    private WorkOrder copyWorkOrder(WorkOrder workOrder) {
+        WorkOrder copyWorkOrder = new WorkOrder();
+        copyWorkOrder.setWorkOrderId(workOrder.getWorkOrderId());
+        copyWorkOrder.setWorkOrderType(workOrder.getWorkOrderType());
+        copyWorkOrder.setControlNumber(workOrder.getControlNumber());
+        copyWorkOrder.setSerialNumber(workOrder.getSerialNumber());
+        copyWorkOrder.setWorkOrderCompletionStatus(workOrder.getWorkOrderCompletionStatus());
+        copyWorkOrder.setWorkOrderAwaitStatus(workOrder.getWorkOrderAwaitStatus());
+        copyWorkOrder.setManufacturerModel(workOrder.getManufacturerModel());
+        copyWorkOrder.setFacilityName(workOrder.getFacilityName());
+        copyWorkOrder.setAssignedDepartment(workOrder.getAssignedDepartment());
+        copyWorkOrder.setProblemReported(workOrder.getProblemReported());
+        copyWorkOrder.setProblemFound(workOrder.getProblemFound());
+        copyWorkOrder.setCreatedById(workOrder.getCreatedById());
+        copyWorkOrder.setCreatedByName(workOrder.getCreatedByName());
+        copyWorkOrder.setCreationDateTime(workOrder.getCreationDateTime());
+        copyWorkOrder.setClosedById(workOrder.getClosedById());
+        copyWorkOrder.setClosedByName(workOrder.getClosedByName());
+        copyWorkOrder.setClosedDateTime(workOrder.getClosedDateTime());
+        copyWorkOrder.setSummary(workOrder.getSummary());
+        copyWorkOrder.setCompletionDateTime(workOrder.getCompletionDateTime());
+
+        return copyWorkOrder;
     }
 }
