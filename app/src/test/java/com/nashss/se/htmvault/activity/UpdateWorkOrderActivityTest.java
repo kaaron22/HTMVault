@@ -153,8 +153,8 @@ class UpdateWorkOrderActivityTest {
         // WHEN & THEN
         assertThrows(InvalidAttributeValueException.class, () ->
                         updateWorkOrderActivity.handleRequest(updateWorkOrderRequest),
-                "Expected request to update a work order with an invalid work order type to result in an " +
-                        "InvalidAttributeValueException thrown");
+                "Expected request to update a work order with an invalid work order await status to result " +
+                        "in an InvalidAttributeValueException thrown");
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
@@ -173,15 +173,43 @@ class UpdateWorkOrderActivityTest {
                 .withWorkOrderId("Valid")
                 .withWorkOrderType("REPAIR")
                 .withWorkOrderAwaitStatus("AWAITING_APPROVAL")
-                .withProblemFound("   ")
+                .withProblemReported("   ")
                 .build();
         when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
 
         // WHEN & THEN
         assertThrows(InvalidAttributeValueException.class, () ->
                         updateWorkOrderActivity.handleRequest(updateWorkOrderRequest),
-                "Expected request to update a work order with an invalid work order type to result in an " +
+                "Expected request to update a work order with a blank 'problem reported' to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
+    public void handleRequest_invalidCompletionDateTime_throwsInvalidAttributeValueException() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+
+        UpdateWorkOrderRequest updateWorkOrderRequest = UpdateWorkOrderRequest.builder()
+                .withWorkOrderId("Valid")
+                .withWorkOrderType("REPAIR")
+                .withWorkOrderAwaitStatus("AWAITING_APPROVAL")
+                .withProblemReported("A reported problem")
+                .withCompletionDateTime("not a date")
+                .build();
+        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        updateWorkOrderActivity.handleRequest(updateWorkOrderRequest),
+                "Expected request to update a work order with an invalid 'completion date time' to result in" +
+                        " an InvalidAttributeValueException thrown");
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 

@@ -113,14 +113,14 @@ public class UpdateWorkOrderActivity {
                             "time (%s)", completionDateTimeParsed));
                 }
             } catch (DateTimeParseException e) {
-                metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+                metricsPublisher.addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
                 throw new InvalidAttributeValueException("The date time provided must be formatted as " +
                         "YYYY-MM-DDTHH:MM:SS");
             }
         }
 
         // if the request passes validation, update the work order, then save it to the database
-        metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 0);
+        metricsPublisher.addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 0);
         workOrder.setWorkOrderType(WorkOrderType.valueOf(updateWorkOrderRequest.getWorkOrderType()));
         workOrder.setWorkOrderAwaitStatus(null == updateWorkOrderRequest.getWorkOrderAwaitStatus() ? null :
                 WorkOrderAwaitStatus.valueOf(updateWorkOrderRequest.getWorkOrderAwaitStatus()));
