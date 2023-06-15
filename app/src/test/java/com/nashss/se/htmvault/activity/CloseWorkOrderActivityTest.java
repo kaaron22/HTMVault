@@ -103,6 +103,115 @@ class CloseWorkOrderActivityTest {
                         "CloseWorkOrderNotCompleteException thrown");
     }
 
+    @Test
+    public void handleRequest_nullProblemFound_throwsCloseWorkOrderNotCompleteException() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(0);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+        workOrder.setProblemFound(null);
+        workOrder.setSummary("not empty");
+        workOrder.setCompletionDateTime(new LocalDateTimeConverter()
+                .unconvert("2023-06-15T10:00:01"));
+
+        CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
+                .withWorkOrderId("a work order id")
+                .build();
+        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+
+        // WHEN & THEN
+        assertThrows(CloseWorkOrderNotCompleteException.class, () ->
+                        closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
+                "Expected a request to close a work order that has a null 'problem found' to result in a " +
+                        "CloseWorkOrderNotCompleteException thrown");
+    }
+
+    @Test
+    public void handleRequest_emptySummary_throwsCloseWorkOrderNotCompleteException() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(0);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+        workOrder.setProblemFound("not empty");
+        workOrder.setSummary("");
+        workOrder.setCompletionDateTime(new LocalDateTimeConverter()
+                .unconvert("2023-06-15T10:00:01"));
+
+        CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
+                .withWorkOrderId("a work order id")
+                .build();
+        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+
+        // WHEN & THEN
+        assertThrows(CloseWorkOrderNotCompleteException.class, () ->
+                        closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
+                "Expected a request to close a work order that has an empty 'summary' to result in a " +
+                        "CloseWorkOrderNotCompleteException thrown");
+    }
+
+    @Test
+    public void handleRequest_nullSummary_throwsCloseWorkOrderNotCompleteException() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(0);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+        workOrder.setProblemFound("not empty");
+        workOrder.setSummary(null);
+        workOrder.setCompletionDateTime(new LocalDateTimeConverter()
+                .unconvert("2023-06-15T10:00:01"));
+
+        CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
+                .withWorkOrderId("a work order id")
+                .build();
+        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+
+        // WHEN & THEN
+        assertThrows(CloseWorkOrderNotCompleteException.class, () ->
+                        closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
+                "Expected a request to close a work order that has a null 'summary' to result in a " +
+                        "CloseWorkOrderNotCompleteException thrown");
+    }
+
+    @Test
+    public void handleRequest_nullCompletionDateTime_throwsCloseWorkOrderNotCompleteException() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(0);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+        workOrder.setProblemFound("not empty");
+        workOrder.setSummary("not empty");
+        workOrder.setCompletionDateTime(null);
+
+        CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
+                .withWorkOrderId("a work order id")
+                .build();
+        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+
+        // WHEN & THEN
+        assertThrows(CloseWorkOrderNotCompleteException.class, () ->
+                        closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
+                "Expected a request to close a work order that has a null 'completion date time' to result " +
+                        "in a CloseWorkOrderNotCompleteException thrown");
+    }
+
+
+
     private WorkOrder copyWorkOrder(WorkOrder workOrder) {
         WorkOrder copyWorkOrder = new WorkOrder();
         copyWorkOrder.setWorkOrderId(workOrder.getWorkOrderId());
