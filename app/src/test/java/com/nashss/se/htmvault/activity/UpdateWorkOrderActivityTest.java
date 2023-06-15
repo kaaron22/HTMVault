@@ -1,6 +1,7 @@
 package com.nashss.se.htmvault.activity;
 
 import com.nashss.se.htmvault.activity.requests.UpdateWorkOrderRequest;
+import com.nashss.se.htmvault.activity.results.UpdateWorkOrderResult;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
@@ -11,6 +12,7 @@ import com.nashss.se.htmvault.exceptions.WorkOrderNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
+import com.nashss.se.htmvault.models.WorkOrderModel;
 import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +38,36 @@ class UpdateWorkOrderActivityTest {
     @BeforeEach
     void setUp() {
         openMocks(this);
+    }
+
+    @Test
+    public void handleRequest_minimumRequiredRequestValues_returnsWorkOrderModelInResult() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+
+        // a request with the minimum attributes required (problem found, summary, completion date/time are null)
+        UpdateWorkOrderRequest updateWorkOrderRequest = UpdateWorkOrderRequest.builder()
+                .withWorkOrderId("Valid")
+                .withWorkOrderType("REPAIR")
+                .withWorkOrderAwaitStatus("AWAITING_REPAIR")
+                .withProblemReported("A reported problem")
+                .build();
+        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+
+        // WHEN
+        UpdateWorkOrderResult result = updateWorkOrderActivity.handleRequest(updateWorkOrderRequest);
+        WorkOrderModel workOrderModel = result.getWorkOrder();
+
+        // THEN
+        WorkOrderTestHelper.assertWorkOrderEqualsWorkOrderModel(workOrder, workOrderModel);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 0);
+
     }
 
     @Test
@@ -172,7 +204,7 @@ class UpdateWorkOrderActivityTest {
         UpdateWorkOrderRequest updateWorkOrderRequest = UpdateWorkOrderRequest.builder()
                 .withWorkOrderId("Valid")
                 .withWorkOrderType("REPAIR")
-                .withWorkOrderAwaitStatus("AWAITING_APPROVAL")
+                .withWorkOrderAwaitStatus("AWAITING_REPAIR")
                 .withProblemReported("   ")
                 .build();
         when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
@@ -199,7 +231,7 @@ class UpdateWorkOrderActivityTest {
         UpdateWorkOrderRequest updateWorkOrderRequest = UpdateWorkOrderRequest.builder()
                 .withWorkOrderId("Valid")
                 .withWorkOrderType("REPAIR")
-                .withWorkOrderAwaitStatus("AWAITING_APPROVAL")
+                .withWorkOrderAwaitStatus("AWAITING_REPAIR")
                 .withProblemReported("A reported problem")
                 .withCompletionDateTime("not a date")
                 .build();
@@ -212,6 +244,4 @@ class UpdateWorkOrderActivityTest {
                         " an InvalidAttributeValueException thrown");
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
-
-
 }
