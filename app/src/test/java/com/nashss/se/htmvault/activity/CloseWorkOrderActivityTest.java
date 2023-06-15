@@ -1,5 +1,6 @@
 package com.nashss.se.htmvault.activity;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.nashss.se.htmvault.activity.requests.CloseWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.CloseWorkOrderResult;
 import com.nashss.se.htmvault.converters.LocalDateTimeConverter;
@@ -9,7 +10,9 @@ import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.exceptions.CloseWorkOrderNotCompleteException;
 import com.nashss.se.htmvault.exceptions.WorkOrderNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
+import com.nashss.se.htmvault.models.WorkOrderAwaitStatus;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
+import com.nashss.se.htmvault.models.WorkOrderModel;
 import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,14 +21,16 @@ import org.mockito.Mock;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 class CloseWorkOrderActivityTest {
 
-    @Mock
     private WorkOrderDao workOrderDao;
+    @Mock
+    private DynamoDBMapper dynamoDBMapper;
     @Mock
     private MetricsPublisher metricsPublisher;
 
@@ -34,7 +39,47 @@ class CloseWorkOrderActivityTest {
     @BeforeEach
     void setUp() {
         openMocks(this);
+        workOrderDao = new WorkOrderDao(dynamoDBMapper, metricsPublisher);
         closeWorkOrderActivity = new CloseWorkOrderActivity(workOrderDao, metricsPublisher);
+    }
+
+    @Test
+    public void handleRequest_workOrderFullyDocumented_returnsUpdatedWorkOrderInResult() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(0);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+        workOrder.setProblemFound("a problem found");
+        workOrder.setSummary("a summary");
+        workOrder.setCompletionDateTime(new LocalDateTimeConverter()
+                .unconvert("2023-06-15T10:00:01"));
+
+        CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
+                .withWorkOrderId("a work order id")
+                .withCustomerId("123")
+                .withCustomerName("betty biomed")
+                .build();
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
+        doNothing().when(dynamoDBMapper).save(any(WorkOrder.class));
+
+        WorkOrder expectedWorkOrder = copyWorkOrder(workOrder);
+        expectedWorkOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
+        expectedWorkOrder.setClosedById("123");
+        expectedWorkOrder.setClosedByName("betty biomed");
+        expectedWorkOrder.setWorkOrderAwaitStatus(null);
+
+        // WHEN
+        CloseWorkOrderResult closeWorkOrderResult = closeWorkOrderActivity.handleRequest(closeWorkOrderRequest);
+        WorkOrderModel workOrderModel = closeWorkOrderResult.getWorkOrder();
+        expectedWorkOrder.setClosedDateTime(workOrder.getClosedDateTime());
+
+        // THEN
+        WorkOrderTestHelper.assertWorkOrderEqualsWorkOrderModel(expectedWorkOrder, closeWorkOrderResult.getWorkOrder());
     }
 
     @Test
@@ -43,7 +88,7 @@ class CloseWorkOrderActivityTest {
         CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
                 .withWorkOrderId("a work order id")
                 .build();
-        when(workOrderDao.getWorkOrder(anyString())).thenThrow(WorkOrderNotFoundException.class);
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(null);
 
         // WHEN & THEN
         assertThrows(WorkOrderNotFoundException.class, () ->
@@ -65,7 +110,7 @@ class CloseWorkOrderActivityTest {
         CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
                 .withWorkOrderId("a work order id")
                 .build();
-        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
 
         WorkOrder expectedWorkOrder = copyWorkOrder(workOrder);
 
@@ -94,7 +139,7 @@ class CloseWorkOrderActivityTest {
         CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
                 .withWorkOrderId("a work order id")
                 .build();
-        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
 
         // WHEN & THEN
         assertThrows(CloseWorkOrderNotCompleteException.class, () ->
@@ -121,7 +166,7 @@ class CloseWorkOrderActivityTest {
         CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
                 .withWorkOrderId("a work order id")
                 .build();
-        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
 
         // WHEN & THEN
         assertThrows(CloseWorkOrderNotCompleteException.class, () ->
@@ -148,7 +193,7 @@ class CloseWorkOrderActivityTest {
         CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
                 .withWorkOrderId("a work order id")
                 .build();
-        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
 
         // WHEN & THEN
         assertThrows(CloseWorkOrderNotCompleteException.class, () ->
@@ -175,7 +220,7 @@ class CloseWorkOrderActivityTest {
         CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
                 .withWorkOrderId("a work order id")
                 .build();
-        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
 
         // WHEN & THEN
         assertThrows(CloseWorkOrderNotCompleteException.class, () ->
@@ -201,7 +246,7 @@ class CloseWorkOrderActivityTest {
         CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
                 .withWorkOrderId("a work order id")
                 .build();
-        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
 
         // WHEN & THEN
         assertThrows(CloseWorkOrderNotCompleteException.class, () ->
@@ -209,8 +254,6 @@ class CloseWorkOrderActivityTest {
                 "Expected a request to close a work order that has a null 'completion date time' to result " +
                         "in a CloseWorkOrderNotCompleteException thrown");
     }
-
-
 
     private WorkOrder copyWorkOrder(WorkOrder workOrder) {
         WorkOrder copyWorkOrder = new WorkOrder();
