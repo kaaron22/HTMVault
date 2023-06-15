@@ -21,8 +21,31 @@ class ViewWorkOrder extends BindingClass {
         errorMessageDisplay.classList.add('hidden');
 
         const successMessageDisplay = document.getElementById('success-message');
-        successMessageDisplay.innerText = 'Work order successfully updated.';
+        successMessageDisplay.innerText = 'Work order successfully closed.';
         successMessageDisplay.classList.add('hidden');
+
+        const closeButton = document.getElementById('close-work-order');
+        const origButtonText = closeButton.innerText;
+        closeButton.innerText = "Closing...";
+
+        const workOrder = this.dataStore.get('workOrder');
+        const workOrderId = workOrder.workOrderId;
+        const closedWorkOrder = await this.client.closeWorkOrder(workOrderId, (error) => {
+            closeButton.innerText = origButtonText;
+            errorMessageDisplay.innerText = `Error: ${error.message}`;
+            errorMessageDisplay.classList.remove('hidden');
+        });
+
+        if (null == closedWorkOrder) {
+            return;
+        }
+
+        this.dataStore.set('workOrder', closedWorkOrder);
+
+        successMessageDisplay.classList.remove('hidden');
+        setTimeout(() => {
+            successMessageDisplay.classList.add('hidden');
+        }, 3500);
     }
 
     async submitUpdatesWorkOrder(evt) {
