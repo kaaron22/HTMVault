@@ -16,11 +16,13 @@ public class MetricsConstants {
     public static final String CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT =
             "CreateWorkOrder.InvalidAttributeValueException.Count";
     public static final String GETWORKORDER_WORKORDERNOTFOUND_COUNT = "GetWorkOrder.WorkOrderNotFoundException.Count";
+    public static final String UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT =
+            "UpdateWorkOrder.InvalidAttributeValueException.Count";
+    public static final String UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT =
+            "UpdateDevice.InvalidAttributeValueException.Count";
+    public static final String UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT =
+            "UpdateWorkOrder.WorkOrderNotFoundException.Count";
 
-    public static final String UPDATEPLAYLIST_INVALIDATTRIBUTEVALUE_COUNT =
-        "UpdatePlaylist.InvalidAttributeValueException.Count";
-    public static final String UPDATEPLAYLIST_INVALIDATTRIBUTECHANGE_COUNT =
-        "UpdatePlaylist.InvalidAttributeChangeException.Count";
     public static final String SERVICE = "Service";
     public static final String SERVICE_NAME = "HTMVault";
     public static final String NAMESPACE_NAME = "U7-Capstone/HTMVault";

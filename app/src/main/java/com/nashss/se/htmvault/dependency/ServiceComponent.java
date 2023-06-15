@@ -26,4 +26,6 @@ public interface ServiceComponent {
     CreateWorkOrderActivity provideCreateWorkOrderActivity();
 
     GetWorkOrderActivity provideGetWorkOrderActivity();
+
+    UpdateWorkOrderActivity provideUpdateWorkOrderActivity();
 }

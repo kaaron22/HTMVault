@@ -8,10 +8,11 @@
 
 <body class="background">
     <header class="header" id="header"></header>
-    <div class="card">
+    <div class="card" id="work-order-display-div">
         <h2>Work Order</h2>
-        <p class="hidden error" id="error-message-"></p>
-        <h3 id="work-order"></h3>
+        <p class="hidden error" id="error-message"></p>
+        <p class="hidden success" id="success-message"></p>
+        <a href="#" class="button" id="update-work-order">Update Work Order</a>
         <h4>Work Order ID: <span id="work-order-id"></span></h4>
         <h4>Work Order Type: <span id="work-order-type"></span></h4>
         <h4>Control Number: <span id="control-number"></span></h4>
@@ -32,6 +33,50 @@
         <h4>Closed: <span id="closed"></span></h4>
         <h4>Completed: <span id="completed"></span></h4>
         <h4>Summary: <span id="summary"></span></h4>
+    </div>
+    <div class="card hidden" id="update-work-order-form-div">
+        <h2>Update Work Order</h2>
+        <form class="card-content" id="update-work-order-form">
+            <p class="hidden error" id="update-work-order-error-message"></p>
+            <h4>Work Order ID: <span id="updating-work-order-id"></span></h4>
+            <p class="form-field">
+                <label for="workOrderType">Work Order Type</label>
+                <select class=validated-field id="workOrderType" required>
+                    <option value="">Select a Work Order Type</option>
+                    <option value="ACCEPTANCE_TESTING">Acceptance Testing</option>
+                    <option value="PREVENTATIVE_MAINTENANCE">Preventative Maintenance</option>
+                    <option value="REPAIR">Repair</option>
+                </select>
+            </p>
+            <p class="form-field">
+                <label for="workOrderAwaitStatus">Work Order Await Status</label>
+                <select class=validated-field id="workOrderAwaitStatus">
+                    <option value="">Select a Work Order Await Status (optional)</option>
+                    <option value="AWAITING_PARTS">Awaiting Parts</option>
+                    <option value="AWAITING_DIAGNOSIS">Awaiting Diagnosis</option>
+                    <option value="AWAITING_REPAIR">Awaiting Repair</option>
+                    <option value="AWAITING_CUSTOMER_APPROVAL">Awaiting Customer Approval</option>
+                    <option value="AWAITING_PERFORMANCE_TESTING">Awaiting Performance Testing</option>
+                </select>
+            </p>
+            <p class="form-field">
+                <label>Problem Reported</label>
+                <input type="text" required class="validated-field" id="update-problem-reported" autofocus>
+            </p>
+            <p class="form-field">
+                <label>Problem Found (optional)</label>
+                <input type="text" id="update-problem-found" autofocus>
+            </p>
+            <p class="form-field">
+                <label>Summary (optional)</label>
+                <input type="text" id="update-summary" autofocus>
+            </p>
+            <p class="form-field">
+                <label>Completion Date Time (optional)</label>
+                <input type="datetime-local" id="update-completion-date-time">
+            </p>
+            <a href="#" class="button" id="submit-updates-work-order">Update</a>
+        </form>
     </div>
 </body>
 

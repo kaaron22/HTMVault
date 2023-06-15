@@ -47,6 +47,10 @@ public class UpdateDeviceActivity {
     public UpdateDeviceResult handleRequest(final UpdateDeviceRequest updateDeviceRequest) {
         log.info("Received UpdateDeviceRequest {}", updateDeviceRequest);
 
+        if (null == updateDeviceRequest.getControlNumber() || updateDeviceRequest.getControlNumber().isBlank()) {
+            throw new InvalidAttributeValueException("A device id (control number) must be provided");
+        }
+
         // verify the device being updated exists and is found in the database
         Device device = deviceDao.getDevice(updateDeviceRequest.getControlNumber());
 
@@ -72,7 +76,7 @@ public class UpdateDeviceActivity {
         try {
             manufacturerModel = manufacturerModelDao.getManufacturerModel(manufacturer, model);
         } catch (ManufacturerModelNotFoundException e) {
-            metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             throw new InvalidAttributeValueException(e.getMessage());
         }
         int requiredMaintenanceFrequencyInMonths =
@@ -90,7 +94,7 @@ public class UpdateDeviceActivity {
         try {
             facilityDepartmentDao.getFacilityDepartment(facilityName, assignedDepartment);
         } catch (FacilityDepartmentNotFoundException e) {
-            metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             throw new InvalidAttributeValueException(e.getMessage());
         }
 
@@ -100,17 +104,17 @@ public class UpdateDeviceActivity {
             try {
                 LocalDate manufactureDateParsed = new LocalDateConverter().unconvert(manufactureDate);
                 if (manufactureDateParsed.isAfter(LocalDate.now())) {
-                    metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+                    metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
                     throw new InvalidAttributeValueException(String.format("Cannot provide a future manufacture date " +
                             "(%s)", manufactureDateParsed));
                 }
             } catch (DateTimeParseException e) {
-                metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+                metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
                 throw new InvalidAttributeValueException("The date provided must be formatted as YYYY-MM-DD");
             }
         }
 
-        metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
+        metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
 
         // valid request received - update device and save changes
         device.setSerialNumber(serialNumber);
@@ -154,7 +158,7 @@ public class UpdateDeviceActivity {
 
     private void validateRequestAttribute(String attributeName, String attribute, String validCharacterPattern) {
         if (!HTMVaultServiceUtils.isValidString(attribute, validCharacterPattern)) {
-            metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             throw new InvalidAttributeValueException(String.format("The %s provided (%s) contained invalid " +
                     "characters.", attributeName, attribute));
         }
