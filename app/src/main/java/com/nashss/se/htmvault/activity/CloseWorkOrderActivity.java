@@ -54,7 +54,7 @@ public class CloseWorkOrderActivity {
             workOrder.setClosedByName(closeWorkOrderRequest.getCustomerName());
 
             // the time closed (now)
-            LocalDateTime currentDateTime = LocalDateTime.now();
+            LocalDateTime currentDateTime = LocalDateTime.now().minusHours(4);
             String currentDateTimeSerialized = new LocalDateTimeConverter().convert(currentDateTime);
             LocalDateTime currentDateTimeNoNanos = new LocalDateTimeConverter().unconvert(currentDateTimeSerialized);
             workOrder.setClosedDateTime(currentDateTimeNoNanos);
