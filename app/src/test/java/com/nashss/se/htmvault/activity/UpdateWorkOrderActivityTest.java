@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -276,6 +278,33 @@ class UpdateWorkOrderActivityTest {
     }
 
     @Test
+    public void handleRequest_emptyProblemReported_throwsInvalidAttributeValueException() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+
+        UpdateWorkOrderRequest updateWorkOrderRequest = UpdateWorkOrderRequest.builder()
+                .withWorkOrderId("Valid")
+                .withWorkOrderType("REPAIR")
+                .withWorkOrderAwaitStatus("AWAITING_REPAIR")
+                .withProblemReported("")
+                .build();
+        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        updateWorkOrderActivity.handleRequest(updateWorkOrderRequest),
+                "Expected request to update a work order with an empty 'problem reported' to result in an " +
+                        "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
     public void handleRequest_invalidCompletionDateTime_throwsInvalidAttributeValueException() {
         // GIVEN
         ManufacturerModel manufacturerModel = new ManufacturerModel();
@@ -299,6 +328,36 @@ class UpdateWorkOrderActivityTest {
         assertThrows(InvalidAttributeValueException.class, () ->
                         updateWorkOrderActivity.handleRequest(updateWorkOrderRequest),
                 "Expected request to update a work order with an invalid 'completion date time' to result in" +
+                        " an InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
+    }
+
+    @Test
+    public void handleRequest_futureCompletionDateTime_throwsInvalidAttributeValueException() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+
+        LocalDateTime futureDateTime = LocalDateTime.now().plusDays(1);
+
+        UpdateWorkOrderRequest updateWorkOrderRequest = UpdateWorkOrderRequest.builder()
+                .withWorkOrderId("Valid")
+                .withWorkOrderType("REPAIR")
+                .withWorkOrderAwaitStatus("AWAITING_REPAIR")
+                .withProblemReported("A reported problem")
+                .withCompletionDateTime(new LocalDateTimeConverter().convert(futureDateTime))
+                .build();
+        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+
+        // WHEN & THEN
+        assertThrows(InvalidAttributeValueException.class, () ->
+                        updateWorkOrderActivity.handleRequest(updateWorkOrderRequest),
+                "Expected request to update a work order with an future 'completion date time' to result in" +
                         " an InvalidAttributeValueException thrown");
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
