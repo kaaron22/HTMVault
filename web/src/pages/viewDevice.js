@@ -98,8 +98,12 @@ class ViewDevice extends BindingClass {
 
         const deviceRecordDiv = document.getElementById('device-record-div');
         const updateDeviceDiv = document.getElementById('update-device-div');
+        const workOrdersDiv = document.getElementById('work-orders-div');
+        const createWorkOrderDiv = document.getElementById('create-work-order');
         updateDeviceDiv.classList.add('hidden');
         deviceRecordDiv.classList.remove('hidden');
+        workOrdersDiv.classList.remove('hidden');
+        createWorkOrderDiv.classList.remove('hidden');
 
     }
 
@@ -145,8 +149,12 @@ class ViewDevice extends BindingClass {
 
         const deviceRecordDiv = document.getElementById('device-record-div');
         const updateDeviceDiv = document.getElementById('update-device-div');
+        const workOrdersDiv = document.getElementById('work-orders-div');
+        const createWorkOrderDiv = document.getElementById('create-work-order');
         deviceRecordDiv.classList.add('hidden');
         updateDeviceDiv.classList.remove('hidden');
+        workOrdersDiv.classList.add('hidden');
+        createWorkOrderDiv.classList.add('hidden');
 
     }
 
@@ -305,8 +313,12 @@ class ViewDevice extends BindingClass {
     async cancelUpdatesDevice() {
         const deviceRecordDiv = document.getElementById('device-record-div');
         const updateDeviceDiv = document.getElementById('update-device-div');
+        const workOrdersDiv = document.getElementById('work-orders-div');
+        const createWorkOrderDiv = document.getElementById('create-work-order');
         deviceRecordDiv.classList.remove('hidden');
         updateDeviceDiv.classList.add('hidden');
+        workOrdersDiv.classList.remove('hidden');
+        createWorkOrderDiv.classList.remove('hidden');
     }
 
     /**
