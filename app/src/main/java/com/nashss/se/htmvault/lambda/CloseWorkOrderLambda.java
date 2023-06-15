@@ -25,7 +25,19 @@ public class CloseWorkOrderLambda
         log.info("handleRequest");
 
         return super.runActivity(
-
+                () -> {
+                    CloseWorkOrderRequest unauthenticatedRequest = input.fromPath(path ->
+                            CloseWorkOrderRequest.builder()
+                                    .withWorkOrderId(path.get("workOrderId"))
+                                    .build());
+                    return input.fromUserClaims(claims ->
+                            CloseWorkOrderRequest.builder()
+                                    .withWorkOrderId(unauthenticatedRequest.getWorkOrderId())
+                                    .withCustomerId(claims.get("email"))
+                                    .withCustomerName(claims.get("name"))
+                                    .build());
+                },
+                (request, serviceComponent) -> serviceComponent.provideCloseWorkOrderActivity().handleRequest(request)
         );
     }
 }
