@@ -2,6 +2,7 @@ package com.nashss.se.htmvault.activity;
 
 import com.nashss.se.htmvault.activity.requests.UpdateWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.UpdateWorkOrderResult;
+import com.nashss.se.htmvault.converters.LocalDateTimeConverter;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
@@ -69,6 +70,54 @@ class UpdateWorkOrderActivityTest {
         expectedWorkOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_REPAIR);
         expectedWorkOrder.setProblemReported("A corrected reported problem without the misspelling");
 
+
+        // WHEN
+        UpdateWorkOrderResult result = updateWorkOrderActivity.handleRequest(updateWorkOrderRequest);
+        WorkOrderModel workOrderModel = result.getWorkOrder();
+
+        // THEN
+        WorkOrderTestHelper.assertWorkOrderEqualsWorkOrderModel(expectedWorkOrder, workOrderModel);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 0);
+    }
+
+    @Test
+    public void handleRequest_changingAllValuesAllowedWithAcceptableUpdates_returnsWorkOrderModelInResult() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+        workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
+        workOrder.setProblemReported("A reported problim with a misspelling");
+        workOrder.setProblemFound("A problem found after diagnoss with a misspelling");
+        workOrder.setSummary("A summary of work performed to resolve the issue, but we forgot to document an " +
+                "important detail");
+        workOrder.setCompletionDateTime(new LocalDateTimeConverter()
+                .unconvert("2023-06-14T10:00:01"));
+
+        // a request with the minimum attributes required (problem found, summary, completion date/time are null)
+        UpdateWorkOrderRequest updateWorkOrderRequest = UpdateWorkOrderRequest.builder()
+                .withWorkOrderId(workOrder.getWorkOrderId())
+                .withWorkOrderType("REPAIR")
+                .withWorkOrderAwaitStatus("AWAITING_REPAIR")
+                .withProblemReported("A corrected reported problem without the misspelling")
+                .withProblemFound("A problem found after diagnosis")
+                .withSummary("An accurate summary of the work performed")
+                .withCompletionDateTime("2023-06-14T11:00:01")
+                .build();
+        when(workOrderDao.getWorkOrder(anyString())).thenReturn(workOrder);
+
+        WorkOrder expectedWorkOrder = copyWorkOrder(workOrder);
+        expectedWorkOrder.setWorkOrderType(WorkOrderType.REPAIR);
+        expectedWorkOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_REPAIR);
+        expectedWorkOrder.setProblemReported("A corrected reported problem without the misspelling");
+        expectedWorkOrder.setProblemFound("A problem found after diagnosis");
+        expectedWorkOrder.setSummary("An accurate summary of the work performed");
+        expectedWorkOrder.setCompletionDateTime(new LocalDateTimeConverter()
+                .unconvert("2023-06-14T11:00:01"));
 
         // WHEN
         UpdateWorkOrderResult result = updateWorkOrderActivity.handleRequest(updateWorkOrderRequest);
