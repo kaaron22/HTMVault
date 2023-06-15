@@ -2,9 +2,13 @@ package com.nashss.se.htmvault.activity;
 
 import com.nashss.se.htmvault.activity.requests.CloseWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.CloseWorkOrderResult;
+import com.nashss.se.htmvault.converters.LocalDateTimeConverter;
+import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
+import com.nashss.se.htmvault.exceptions.CloseWorkOrderNotCompleteException;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
+import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,6 +45,27 @@ public class CloseWorkOrderActivity {
                     "permanently closing " + workOrder.getWorkOrderId());
         }
 
+        // proceed to update the work order as closed
+        // who closed it
+        workOrder.setClosedById(closeWorkOrderRequest.getCustomerId());
+        workOrder.setClosedByName(closeWorkOrderRequest.getCustomerName());
 
+        // the time closed (now)
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        String currentDateTimeSerialized = new LocalDateTimeConverter().convert(currentDateTime);
+        LocalDateTime currentDateTimeNoNanos = new LocalDateTimeConverter().unconvert(currentDateTimeSerialized);
+        workOrder.setClosedDateTime(currentDateTimeNoNanos);
+
+        // await status no longer applicable
+        workOrder.setWorkOrderAwaitStatus(null);
+
+        // close the work order
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
+
+        WorkOrder savedWorkOrder = workOrderDao.saveWorkOrder(workOrder);
+
+        return CloseWorkOrderResult.builder()
+                .withWorkOrderModel(new ModelConverter().toWorkOrderModel(savedWorkOrder))
+                .build();
     }
 }
