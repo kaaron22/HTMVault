@@ -101,7 +101,7 @@ public class UpdateWorkOrderActivity {
 
         // verify the completion date time, if provided, has the correct format and is not a future date/time
         String completionDateTime = updateWorkOrderRequest.getCompletionDateTime();
-        if (completionDateTime.isBlank()) {
+        if (null == completionDateTime || completionDateTime.isBlank()) {
             completionDateTime = null;
         }
         if (null != completionDateTime) {
