@@ -4,6 +4,7 @@ import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.models.DeviceModel;
+import com.nashss.se.htmvault.models.ManufacturerModels;
 import com.nashss.se.htmvault.models.ServiceStatus;
 
 import com.nashss.se.htmvault.models.WorkOrderModel;
@@ -14,10 +15,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ModelConverterTest {
 
@@ -197,5 +198,40 @@ class ModelConverterTest {
 
         // THEN
         WorkOrderTestHelper.assertWorkOrdersEqualWorkOrderModels(workOrders, workOrderModels);
+    }
+
+    @Test
+    public void toListManufacturerModels_mapOfManufacturersToTheirModels_returnsConvertedAndSortedList() {
+        // GIVEN
+        Map<String, Set<String>> manufacturersAndModels = new HashMap<>();
+        manufacturersAndModels.put("Monitor Co.", new HashSet<>(Arrays.asList("Their First Monitor Model",
+                "Their Second Monitor Model")));
+        manufacturersAndModels.put("Defibrillator Co.", new HashSet<>(List.of("Their Only Defibrillator Model")));
+        manufacturersAndModels.put("A Different Monitor Co.",
+                new HashSet<>(List.of("Their First Monitor Model So Far")));
+
+        // WHEN
+        List<ManufacturerModels> manufacturerAndModelsList =
+                modelConverter.toListManufacturerModels(manufacturersAndModels);
+
+        ManufacturerModels manufacturerModels1 = ManufacturerModels.builder()
+                .withManufacturer("Monitor Co.")
+                .withModels(new ArrayList<>(Arrays.asList("Their First Monitor Model", "Their Second Monitor Model")))
+                .build();
+        ManufacturerModels manufacturerModels2 = ManufacturerModels.builder()
+                .withManufacturer("Defibrillator Co.")
+                .withModels(new ArrayList<>(List.of("Their Only Defibrillator Model")))
+                .build();
+        ManufacturerModels manufacturerModels3 = ManufacturerModels.builder()
+                .withManufacturer("A Different Monitor Co.")
+                .withModels(new ArrayList<>(List.of("Their First Monitor Model So Far")))
+                .build();
+
+        List<ManufacturerModels> expected = new ArrayList<>(Arrays.asList(manufacturerModels3, manufacturerModels2,
+                manufacturerModels1));
+
+        // THEN
+        assertEquals(expected, manufacturerAndModelsList, String.format("Expected result of converting to " +
+                "be %s, but it was %s", expected, manufacturerAndModelsList));
     }
 }

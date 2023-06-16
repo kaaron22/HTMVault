@@ -22,6 +22,14 @@ public class ManufacturerModels {
     }
 
     @Override
+    public String toString() {
+        return "ManufacturerModels{" +
+                "manufacturer='" + manufacturer + '\'' +
+                ", models=" + models +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
