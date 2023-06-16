@@ -60,8 +60,8 @@ class ViewDevice extends BindingClass {
 
         const deviceControlNumber = document.getElementById('control-number').innerText;
         const deviceSerialNumber = document.getElementById('update-serial-number').value;
-        const deviceManufacturer = document.getElementById('update-manufacturer').value;
-        const deviceModel = document.getElementById('update-model').value;
+        const deviceManufacturer = document.getElementById('manufacturer-drop-down').value;
+        const deviceModel = document.getElementById('model-drop-down').value;
         const deviceFacilityName = document.getElementById('update-facility-name').value;
         const deviceAssignedDepartment = document.getElementById('update-assigned-department').value;
         const deviceManufactureDate = document.getElementById('update-manufacture-date').value;
