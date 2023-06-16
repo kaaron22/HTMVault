@@ -2,6 +2,7 @@ package com.nashss.se.htmvault.converters;
 
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
+import com.nashss.se.htmvault.dynamodb.models.ManufacturerModelsComparator;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.models.DeviceModel;
 import com.nashss.se.htmvault.models.ManufacturerModels;
@@ -9,10 +10,7 @@ import com.nashss.se.htmvault.models.WorkOrderModel;
 import com.nashss.se.htmvault.utils.CollectionUtils;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ModelConverter {
 
@@ -90,12 +88,15 @@ public class ModelConverter {
     public List<ManufacturerModels> toListManufacturerModels(Map<String, Set<String>> manufacturersAndModels) {
         List<ManufacturerModels> manufacturerModelsList = new ArrayList<>();
         for (Map.Entry<String, Set<String>> entry : manufacturersAndModels.entrySet()) {
+            List<String> models = CollectionUtils.copyToList(entry.getValue());
+            Collections.sort(models);
             ManufacturerModels manufacturerModels = ManufacturerModels.builder()
                     .withManufacturer(entry.getKey())
-                    .withModels(CollectionUtils.copyToList(entry.getValue()))
+                    .withModels(models)
                     .build();
             manufacturerModelsList.add(manufacturerModels);
         }
+        manufacturerModelsList.sort(new ManufacturerModelsComparator());
         return manufacturerModelsList;
     }
 }
