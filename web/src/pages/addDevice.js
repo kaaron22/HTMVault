@@ -53,7 +53,6 @@ class AddDevice extends BindingClass {
     }
 
     populateModels() {
-        console.log('populate models')
         const selectedManufacturer = document.getElementById('manufacturer-drop-down').value;
         const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
 
@@ -65,9 +64,9 @@ class AddDevice extends BindingClass {
 
         let manufacturer;
         for (manufacturer of manufacturersAndModels) {
-            if (manufacturer == selectedManufacturer) {
+            if (manufacturer.manufacturer == selectedManufacturer) {
                 let model;
-                for (model of manufacturersAndModels.models) {
+                for (model of manufacturer.models) {
                     modelsHtml += `<option value="${model}">${model}</option>
                                     `
                 }
@@ -75,7 +74,6 @@ class AddDevice extends BindingClass {
         }
         modelsHtml += `</select>`
         document.getElementById('model-drop-down').innerHTML = modelsHtml;
-
     }
 
     /**
