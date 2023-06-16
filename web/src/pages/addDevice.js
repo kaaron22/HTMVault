@@ -93,7 +93,7 @@ class AddDevice extends BindingClass {
 
         const deviceSerialNumber = document.getElementById('serial-number').value;
         const deviceManufacturer = document.getElementById('manufacturer-drop-down').value;
-        const deviceModel = document.getElementById('model').value;
+        const deviceModel = document.getElementById('model-drop-down').value;
         const deviceFacilityName = document.getElementById('facility-name').value;
         const deviceAssignedDepartment = document.getElementById('assigned-department').value;
         const deviceManufactureDate = document.getElementById('manufacture-date').value;
