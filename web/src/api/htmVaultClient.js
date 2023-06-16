@@ -15,7 +15,7 @@ export default class HTMVaultClient extends BindingClass {
     constructor(props = {}) {
         super();
 
-        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice', 'getDevice', 'getDeviceWorkOrders', 'retireDevice', 'reactivateDevice', 'updateDevice', 'createWorkOrder', 'getWorkOrder', 'updateWorkOrder', 'closeWorkOrder'];
+        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'addDevice', 'getDevice', 'getDeviceWorkOrders', 'retireDevice', 'reactivateDevice', 'updateDevice', 'createWorkOrder', 'getWorkOrder', 'updateWorkOrder', 'closeWorkOrder', 'getManufacturersAndModels'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -80,6 +80,20 @@ export default class HTMVaultClient extends BindingClass {
                 }
             });
             return response.data.workOrder;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
+    async getManufacturersAndModels(errorCallback) {
+        try {
+            const token = await this.getTokenOrThrow("Only authenticated users can get lists of manufacturers and models.");
+            const response = await this.axiosClient.get(`manufacturerModels`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data.manufacturersAndModels;
         } catch (error) {
             this.handleError(error, errorCallback)
         }

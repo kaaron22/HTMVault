@@ -31,4 +31,6 @@ public interface ServiceComponent {
     UpdateWorkOrderActivity provideUpdateWorkOrderActivity();
 
     CloseWorkOrderActivity provideCloseWorkOrderActivity();
+
+    GetManufacturersAndModelsActivity provideGetManufacturersAndModelsActivity();
 }

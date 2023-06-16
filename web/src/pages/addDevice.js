@@ -9,10 +9,16 @@ import DataStore from '../util/DataStore';
 class AddDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['mount', 'submit', 'redirectToViewDevice'], this);
+        this.bindClassMethods(['mount', 'clientLoaded', 'submit', 'redirectToViewDevice', 'populateManufacturers', 'populateModels'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.redirectToViewDevice);
+        this.dataStore.addChangeListener(this.populateManufacturers);
         this.header = new Header(this.dataStore);
+    }
+
+    async clientLoaded() {
+        const manufacturersAndModels = await this.client.getManufacturersAndModels();
+        this.dataStore.set('manufacturersAndModels', manufacturersAndModels);
     }
 
     /**
@@ -20,10 +26,54 @@ class AddDevice extends BindingClass {
      */
     mount() {
         document.getElementById('create').addEventListener('click', this.submit);
+        document.getElementById('manufacturer-drop-down').addEventListener('change', this.populateModels);
 
         this.header.addHeaderToPage();
 
         this.client = new HTMVaultClient();
+        this.clientLoaded();
+    }
+
+    populateManufacturers() {
+        const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
+
+        let manufacturersHtml = '';
+        manufacturersHtml += `<label for="manufacturer-drop-down">Manufacturer</label>
+                                <select class=validated-field id="manufacturer-drop-down" required>
+                                <option value="">Select a Manufacturer</option>
+                                `
+
+        let manufacturer;
+        for (manufacturer of manufacturersAndModels) {
+            manufacturersHtml += `<option value="${manufacturer.manufacturer}">${manufacturer.manufacturer}</option>
+                                    `
+        }
+        manufacturersHtml += `</select>`
+        document.getElementById('manufacturer-drop-down').innerHTML = manufacturersHtml;
+    }
+
+    populateModels() {
+        const selectedManufacturer = document.getElementById('manufacturer-drop-down').value;
+        const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
+
+        let modelsHtml = '';
+        modelsHtml += `<label for="model-drop-down">Model</label>
+                           <select class=validated-field id="model-drop-down" required>
+                           <option value="">Select a Model</option>
+                           `
+
+        let manufacturer;
+        for (manufacturer of manufacturersAndModels) {
+            if (manufacturer.manufacturer == selectedManufacturer) {
+                let model;
+                for (model of manufacturer.models) {
+                    modelsHtml += `<option value="${model}">${model}</option>
+                                    `
+                }
+            }
+        }
+        modelsHtml += `</select>`
+        document.getElementById('model-drop-down').innerHTML = modelsHtml;
     }
 
     /**
@@ -42,8 +92,8 @@ class AddDevice extends BindingClass {
         createButton.innerText = 'Loading...';
 
         const deviceSerialNumber = document.getElementById('serial-number').value;
-        const deviceManufacturer = document.getElementById('manufacturer').value;
-        const deviceModel = document.getElementById('model').value;
+        const deviceManufacturer = document.getElementById('manufacturer-drop-down').value;
+        const deviceModel = document.getElementById('model-drop-down').value;
         const deviceFacilityName = document.getElementById('facility-name').value;
         const deviceAssignedDepartment = document.getElementById('assigned-department').value;
         const deviceManufactureDate = document.getElementById('manufacture-date').value;

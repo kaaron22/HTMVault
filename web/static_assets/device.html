@@ -43,15 +43,17 @@
             <label>Serial Number (numbers, letters, and dashes only)</label>
             <input type="text" required class="validated-field" id="update-serial-number" placeholder="i.e. S-1234, B567, etc." autofocus>
         </p>
-        <p class="form-field">
-            <label>Manufacturer</label>
-            <input type="text" required class="validated-field" id="update-manufacturer" placeholder="i.e. Defib Corp, IV Pump Corp, etc."
-                   autofocus>
+        <p class="form-field" id="update-manufacturer">
+            <label for="manufacturer-drop-down">Manufacturer</label>
+            <select class=validated-field id="manufacturer-drop-down" required>
+                <option value="">Select a Manufacturer</option>
+            </select>
         </p>
-        <p class="form-field">
-            <label>Model</label>
-            <input type="text" required class="validated-field" id="update-model" placeholder="i.e. X-1000, LP-200, etc"
-                   autofocus>
+        <p class="form-field" id="update-model">
+            <label for="model-drop-down">Model</label>
+            <select class=validated-field id="model-drop-down" required>
+                <option value="">Select a Model</option>
+            </select>
         </p>
         <p class="form-field">
             <label>Facility Name</label>

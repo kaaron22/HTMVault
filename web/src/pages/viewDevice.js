@@ -9,10 +9,11 @@ import DataStore from "../util/DataStore";
 class ViewDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'submitRetire', 'submitReactivate', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'cancelUpdatesDevice', 'createWorkOrder', 'displayUpdateDeviceForm', 'submitDeviceUpdates'], this);
+        this.bindClassMethods(['clientLoaded', 'submitRetire', 'submitReactivate', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'cancelUpdatesDevice', 'createWorkOrder', 'displayUpdateDeviceForm', 'submitDeviceUpdates', 'populateManufacturers', 'populateModels'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.addDeviceToPage);
         this.dataStore.addChangeListener(this.addWorkOrdersToPage);
+        //this.dataStore.addChangeListener(this.populateManufacturers);
         this.header = new Header(this.dataStore);
         console.log("view device constructor");
     }
@@ -36,6 +37,10 @@ class ViewDevice extends BindingClass {
         document.getElementById('work-orders').innerText = "(loading work orders...)";
         const workOrders = await this.client.getDeviceWorkOrders(deviceId, order);
         this.dataStore.set('workOrders', workOrders);
+
+        const manufacturersAndModels = await this.client.getManufacturersAndModels();
+        this.dataStore.set('manufacturersAndModels', manufacturersAndModels);
+
     }
 
     async submitDeviceUpdates(evt) {
@@ -55,8 +60,8 @@ class ViewDevice extends BindingClass {
 
         const deviceControlNumber = document.getElementById('control-number').innerText;
         const deviceSerialNumber = document.getElementById('update-serial-number').value;
-        const deviceManufacturer = document.getElementById('update-manufacturer').value;
-        const deviceModel = document.getElementById('update-model').value;
+        const deviceManufacturer = document.getElementById('manufacturer-drop-down').value;
+        const deviceModel = document.getElementById('model-drop-down').value;
         const deviceFacilityName = document.getElementById('update-facility-name').value;
         const deviceAssignedDepartment = document.getElementById('update-assigned-department').value;
         const deviceManufactureDate = document.getElementById('update-manufacture-date').value;
@@ -138,10 +143,15 @@ class ViewDevice extends BindingClass {
             notes = deviceNotes;
         }
 
+        this.populateManufacturers();
+
         document.getElementById('update-control-number').innerText = device.controlNumber;
         document.getElementById('update-serial-number').value = device.serialNumber;
-        document.getElementById('update-manufacturer').value = device.manufacturer;
-        document.getElementById('update-model').value = device.model;
+        document.getElementById('manufacturer-drop-down').value = device.manufacturer;
+
+        this.populateModels();
+
+        document.getElementById('model-drop-down').value = device.model;
         document.getElementById('update-manufacture-date').value = manufactureDate
         document.getElementById('update-facility-name').value = device.facilityName;
         document.getElementById('update-assigned-department').value = device.assignedDepartment;
@@ -156,6 +166,47 @@ class ViewDevice extends BindingClass {
         workOrdersDiv.classList.add('hidden');
         createWorkOrderDiv.classList.add('hidden');
 
+    }
+
+    populateManufacturers() {
+        const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
+        let manufacturersHtml = '';
+        manufacturersHtml += `<label for="manufacturer-drop-down">Manufacturer</label>
+                                <select class=validated-field id="manufacturer-drop-down" required>
+                                <option value="">Select a Manufacturer</option>
+                                `
+
+        let manufacturer;
+        for (manufacturer of manufacturersAndModels) {
+            manufacturersHtml += `<option value="${manufacturer.manufacturer}">${manufacturer.manufacturer}</option>
+                                    `
+        }
+        manufacturersHtml += `</select>`
+        document.getElementById('manufacturer-drop-down').innerHTML = manufacturersHtml;
+    }
+
+    populateModels() {
+        const selectedManufacturer = document.getElementById('manufacturer-drop-down').value;
+        const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
+
+        let modelsHtml = '';
+        modelsHtml += `<label for="model-drop-down">Model</label>
+                           <select class=validated-field id="model-drop-down" required>
+                           <option value="">Select a Model</option>
+                           `
+
+        let manufacturer;
+        for (manufacturer of manufacturersAndModels) {
+            if (manufacturer.manufacturer == selectedManufacturer) {
+                let model;
+                for (model of manufacturer.models) {
+                    modelsHtml += `<option value="${model}">${model}</option>
+                                    `
+                }
+            }
+        }
+        modelsHtml += `</select>`
+        document.getElementById('model-drop-down').innerHTML = modelsHtml;
     }
 
     async submitRetire(evt) {
@@ -240,6 +291,7 @@ class ViewDevice extends BindingClass {
         document.getElementById('update-device').addEventListener('click', this.displayUpdateDeviceForm);
         document.getElementById('submit-updates-device').addEventListener('click', this.submitDeviceUpdates);
         document.getElementById('cancel-updates-device').addEventListener('click', this.cancelUpdatesDevice);
+        document.getElementById('manufacturer-drop-down').addEventListener('change', this.populateModels);
 
         this.header.addHeaderToPage();
 
