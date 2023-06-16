@@ -13,15 +13,15 @@ class AddDevice extends BindingClass {
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.redirectToViewDevice);
         this.dataStore.addChangeListener(this.populateManufacturers);
-        this.dataStore.addChangeListener(this.populateFacilities);
         this.header = new Header(this.dataStore);
     }
 
     async clientLoaded() {
         const manufacturersAndModels = await this.client.getManufacturersAndModels();
         this.dataStore.set('manufacturersAndModels', manufacturersAndModels);
-        const facilitiesAndDepartments = await this.client.getFacilitiesAndModels();
+        const facilitiesAndDepartments = await this.client.getFacilitiesAndDepartments();
         this.dataStore.set('facilitiesAndDepartments', facilitiesAndDepartments);
+        this.populateFacilities();
     }
 
     /**
@@ -30,7 +30,7 @@ class AddDevice extends BindingClass {
     mount() {
         document.getElementById('create').addEventListener('click', this.submit);
         document.getElementById('manufacturer-drop-down').addEventListener('change', this.populateModels);
-        document.getElementById('facility-drop-down').addEventListener('change', this.populateFacilities);
+        document.getElementById('facility-drop-down').addEventListener('change', this.populateDepartments);
 
         this.header.addHeaderToPage();
 
@@ -165,7 +165,9 @@ class AddDevice extends BindingClass {
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');
         });
-        this.dataStore.set('device', device);
+        if (!(null == device)) {
+            this.dataStore.set('device', device);
+        }
     }
 
     /**
