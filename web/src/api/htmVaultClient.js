@@ -89,8 +89,9 @@ export default class HTMVaultClient extends BindingClass {
         try {
             const token = await this.getTokenOrThrow("Only authenticated users can get lists of manufacturers and models.");
             const response = await this.axiosClient.get(`manufacturerModels`, {
-            headers: {
-                Authorization: `Bearer ${token}`
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
             return response.data.manufacturersAndModels;
         } catch (error) {
