@@ -9,10 +9,16 @@ import DataStore from '../util/DataStore';
 class AddDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['mount', 'submit', 'redirectToViewDevice'], this);
+        this.bindClassMethods(['mount', 'clientLoaded', 'submit', 'redirectToViewDevice'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.redirectToViewDevice);
+        this.dataStore.addChangeListener(this.populateManufacturers);
         this.header = new Header(this.dataStore);
+    }
+
+    async clientLoaded() {
+        const manufacturersAndModels = await this.client.getManufacturersAndModels();
+        this.dataStore.set('manufacturersAndModels', manufacturersAndModels);
     }
 
     /**
@@ -20,10 +26,20 @@ class AddDevice extends BindingClass {
      */
     mount() {
         document.getElementById('create').addEventListener('click', this.submit);
+        document.getElementById('manufacturer-drop-down').addEventListener('change', this.populateModels);
 
         this.header.addHeaderToPage();
 
         this.client = new HTMVaultClient();
+        this.clientLoaded();
+    }
+
+    populateManufacturers() {
+        const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
+
+        let manufacturersHtml = '';
+        let manufacturer;
+        for (manufacturer of )
     }
 
     /**
