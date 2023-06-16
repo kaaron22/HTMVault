@@ -40,6 +40,12 @@ public class ManufacturerModelDao {
 
     public List<ManufacturerModel> getManufacturerModels() {
         DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
-        return dynamoDBMapper.scan(ManufacturerModel.class, scanExpression);
+        List<ManufacturerModel> manufacturerModels = dynamoDBMapper.scan(ManufacturerModel.class, scanExpression);
+
+        if (null == manufacturerModels) {
+            throw new ManufacturerModelNotFoundException("There was a problem obtaining manufacturer models");
+        }
+
+        return manufacturerModels;
     }
 }
