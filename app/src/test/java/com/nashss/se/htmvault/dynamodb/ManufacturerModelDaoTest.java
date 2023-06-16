@@ -124,9 +124,6 @@ class ManufacturerModelDaoTest {
         // paginated scan list
         when(manufacturerModels.toArray()).thenReturn(manufacturerModelsArray);
 
-        // captor for the scan expression invoked when we call the method under test
-        ArgumentCaptor<DynamoDBScanExpression> captor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
-
         // WHEN
         List<ManufacturerModel> result = manufacturerModelDao.getManufacturerModels();
 
