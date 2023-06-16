@@ -9,7 +9,7 @@ import DataStore from '../util/DataStore';
 class AddDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['mount', 'clientLoaded', 'submit', 'redirectToViewDevice'], this);
+        this.bindClassMethods(['mount', 'clientLoaded', 'submit', 'redirectToViewDevice', 'populateManufacturers'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.redirectToViewDevice);
         this.dataStore.addChangeListener(this.populateManufacturers);
@@ -38,8 +38,12 @@ class AddDevice extends BindingClass {
         const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
 
         let manufacturersHtml = '';
+        manufacturersHtml += `<option value="">Select a Manufacturer</option>`
+
         let manufacturer;
-        for (manufacturer of )
+        for (manufacturer of manufacturersAndModels) {
+            manufacturersHtml += `<option value="${manufacturer}">${manufacturer}</option>`
+        }
     }
 
     /**
