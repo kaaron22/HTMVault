@@ -45,13 +45,10 @@ class AddDevice extends BindingClass {
 
         let manufacturer;
         for (manufacturer of manufacturersAndModels) {
-            console.log(manufacturer);
-            console.log(manufacturer.manufacturer);
             manufacturersHtml += `<option value="${manufacturer.manufacturer}">${manufacturer.manufacturer}</option>
                                     `
         }
         manufacturersHtml += `</select>`
-        console.log(manufacturersHtml);
         document.getElementById('manufacturer-drop-down').innerHTML = manufacturersHtml;
     }
 
