@@ -9,7 +9,7 @@ import DataStore from '../util/DataStore';
 class AddDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['mount', 'clientLoaded', 'submit', 'redirectToViewDevice', 'populateManufacturers'], this);
+        this.bindClassMethods(['mount', 'clientLoaded', 'submit', 'redirectToViewDevice', 'populateManufacturers', 'populateModels'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.redirectToViewDevice);
         this.dataStore.addChangeListener(this.populateManufacturers);
@@ -53,6 +53,7 @@ class AddDevice extends BindingClass {
     }
 
     populateModels() {
+        console.log('populate models')
         const selectedManufacturer = document.getElementById('manufacturer-drop-down').value;
         const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
 
@@ -64,7 +65,7 @@ class AddDevice extends BindingClass {
 
         let manufacturer;
         for (manufacturer of manufacturersAndModels) {
-            if (manufacture == selectedManufacturer) {
+            if (manufacturer == selectedManufacturer) {
                 let model;
                 for (model of manufacturersAndModels.models) {
                     modelsHtml += `<option value="${model}">${model}</option>
@@ -72,8 +73,8 @@ class AddDevice extends BindingClass {
                 }
             }
         }
-        manufacturersHtml += `</select>`
-        document.getElementById('manufacturer-drop-down').innerHTML = manufacturersHtml;
+        modelsHtml += `</select>`
+        document.getElementById('model-drop-down').innerHTML = modelsHtml;
 
     }
 
