@@ -147,8 +147,11 @@ class ViewDevice extends BindingClass {
 
         document.getElementById('update-control-number').innerText = device.controlNumber;
         document.getElementById('update-serial-number').value = device.serialNumber;
-        document.getElementById('update-manufacturer').value = device.manufacturer;
-        document.getElementById('update-model').value = device.model;
+        document.getElementById('manufacturer-drop-down').value = device.manufacturer;
+
+        this.populateModels();
+
+        document.getElementById('model-drop-down').value = device.model;
         document.getElementById('update-manufacture-date').value = manufactureDate
         document.getElementById('update-facility-name').value = device.facilityName;
         document.getElementById('update-assigned-department').value = device.assignedDepartment;
