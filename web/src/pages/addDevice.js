@@ -42,8 +42,12 @@ class AddDevice extends BindingClass {
 
         let manufacturer;
         for (manufacturer of manufacturersAndModels) {
-            manufacturersHtml += `<option value="${manufacturer}">${manufacturer}</option>`
+            console.log(manufacturer);
+            console.log(manufacturer.manufacturer);
+            manufacturersHtml += `<option value="${manufacturer.manufacturer}">${manufacturer.manufacture}</option>`
         }
+        console.log(manufacturersHtml);
+        document.getElementById('manufacturer-drop-down').innerText = manufacturersHtml;
     }
 
     /**
@@ -62,7 +66,7 @@ class AddDevice extends BindingClass {
         createButton.innerText = 'Loading...';
 
         const deviceSerialNumber = document.getElementById('serial-number').value;
-        const deviceManufacturer = document.getElementById('manufacturer').value;
+        const deviceManufacturer = document.getElementById('manufacturer-drop-down').value;
         const deviceModel = document.getElementById('model').value;
         const deviceFacilityName = document.getElementById('facility-name').value;
         const deviceAssignedDepartment = document.getElementById('assigned-department').value;
