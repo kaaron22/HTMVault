@@ -11,17 +11,21 @@ class AddDevice extends BindingClass {
         super();
         this.bindClassMethods(['mount', 'clientLoaded', 'submit', 'redirectToViewDevice', 'populateManufacturers', 'populateModels', 'populateFacilities', 'populateDepartments'], this);
         this.dataStore = new DataStore();
-        this.dataStore.addChangeListener(this.redirectToViewDevice);
-        this.dataStore.addChangeListener(this.populateManufacturers);
         this.header = new Header(this.dataStore);
     }
 
     async clientLoaded() {
         const manufacturersAndModels = await this.client.getManufacturersAndModels();
-        this.dataStore.set('manufacturersAndModels', manufacturersAndModels);
+        if (!(null == manufacturersAndModels)) {
+            this.dataStore.set('manufacturersAndModels', manufacturersAndModels);
+            this.populateManufacturers();
+        }
+
         const facilitiesAndDepartments = await this.client.getFacilitiesAndDepartments();
-        this.dataStore.set('facilitiesAndDepartments', facilitiesAndDepartments);
-        this.populateFacilities();
+        if (!(null == facilitiesAndDepartments)) {
+            this.dataStore.set('facilitiesAndDepartments', facilitiesAndDepartments);
+            this.populateFacilities();
+        }
     }
 
     /**
@@ -38,7 +42,7 @@ class AddDevice extends BindingClass {
         this.clientLoaded();
     }
 
-    populateManufacturers() {
+    async populateManufacturers() {
         const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
 
         let manufacturersHtml = '';
@@ -56,7 +60,7 @@ class AddDevice extends BindingClass {
         document.getElementById('manufacturer-drop-down').innerHTML = manufacturersHtml;
     }
 
-    populateModels() {
+    async populateModels() {
         const selectedManufacturer = document.getElementById('manufacturer-drop-down').value;
         const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
 
@@ -80,7 +84,7 @@ class AddDevice extends BindingClass {
         document.getElementById('model-drop-down').innerHTML = modelsHtml;
     }
 
-    populateFacilities() {
+    async populateFacilities() {
         const facilitiesAndDepartments = this.dataStore.get('facilitiesAndDepartments');
 
         let facilitiesHtml = '';
@@ -98,7 +102,7 @@ class AddDevice extends BindingClass {
         document.getElementById('facility-drop-down').innerHTML = facilitiesHtml;
     }
 
-    populateDepartments() {
+    async populateDepartments() {
         const selectedFacility = document.getElementById('facility-drop-down').value;
         const facilitiesAndDepartments = this.dataStore.get('facilitiesAndDepartments');
 
@@ -167,6 +171,7 @@ class AddDevice extends BindingClass {
         });
         if (!(null == device)) {
             this.dataStore.set('device', device);
+            this.redirectToViewDevice();
         }
     }
 
