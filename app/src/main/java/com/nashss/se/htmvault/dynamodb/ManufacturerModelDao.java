@@ -7,6 +7,7 @@ import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
+import com.nashss.se.htmvault.utils.CollectionUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -46,6 +47,6 @@ public class ManufacturerModelDao {
             throw new ManufacturerModelNotFoundException("There was a problem obtaining manufacturer models");
         }
 
-        return manufacturerModels;
+        return CollectionUtils.copyToList(manufacturerModels);
     }
 }

@@ -113,7 +113,7 @@ class ManufacturerModelDaoTest {
         manufacturerModelsArray[3] = manufacturerModel4;
 
         // our expected arraylist of ManufacturerModels
-        List<ManufacturerModel> manufacturerModelList = new ArrayList<>(Arrays.asList(manufacturerModel1,
+        List<ManufacturerModel> expected = new ArrayList<>(Arrays.asList(manufacturerModel1,
                 manufacturerModel2, manufacturerModel3, manufacturerModel4));
 
         // mocked paginated scan list to return
@@ -128,6 +128,10 @@ class ManufacturerModelDaoTest {
         ArgumentCaptor<DynamoDBScanExpression> captor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
 
         // WHEN
+        List<ManufacturerModel> result = manufacturerModelDao.getManufacturerModels();
 
+        // THEN
+        assertEquals(expected, result, "Expected scan list of manufacturer models to be what was returned " +
+                "from DynamoDB");
     }
 }
