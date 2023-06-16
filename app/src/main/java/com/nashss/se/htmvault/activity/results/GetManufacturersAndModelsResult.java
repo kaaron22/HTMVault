@@ -1,19 +1,19 @@
 package com.nashss.se.htmvault.activity.results;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import com.nashss.se.htmvault.models.ManufacturerModels;
+
+import java.util.*;
 
 public class GetManufacturersAndModelsResult {
 
-    private final Map<String, Set<String>> manufacturersAndModels;
+    private final List<ManufacturerModels> manufacturersAndModels;
 
-    private GetManufacturersAndModelsResult(Map<String, Set<String>> manufacturersAndModels) {
+    private GetManufacturersAndModelsResult(List<ManufacturerModels> manufacturersAndModels) {
         this.manufacturersAndModels = manufacturersAndModels;
     }
 
-    public Map<String, Set<String>> getManufacturersAndModels() {
-        return new HashMap<>(manufacturersAndModels);
+    public List<ManufacturerModels> getManufacturersAndModels() {
+        return new ArrayList<>(manufacturersAndModels);
     }
 
     @Override
@@ -28,10 +28,10 @@ public class GetManufacturersAndModelsResult {
     }
 
     public static class Builder {
-        private Map<String, Set<String>> manufacturersAndModels;
+        private List<ManufacturerModels> manufacturersAndModels;
 
-        public Builder withManufacturersAndModels(Map<String, Set<String>> manufacturersAndModels) {
-            this.manufacturersAndModels = new HashMap<>(manufacturersAndModels);
+        public Builder withManufacturersAndModels(List<ManufacturerModels> manufacturersAndModels) {
+            this.manufacturersAndModels = new ArrayList<>(manufacturersAndModels);
             return this;
         }
 

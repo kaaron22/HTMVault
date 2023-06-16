@@ -2,6 +2,7 @@ package com.nashss.se.htmvault.activity;
 
 import com.nashss.se.htmvault.activity.requests.GetManufacturersAndModelsRequest;
 import com.nashss.se.htmvault.activity.results.GetManufacturersAndModelsResult;
+import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
@@ -40,7 +41,7 @@ public class GetManufacturersAndModelsActivity {
         }
 
         return GetManufacturersAndModelsResult.builder()
-                .withManufacturersAndModels(manufacturersAndModels)
+                .withManufacturersAndModels(new ModelConverter().toListManufacturerModels(manufacturersAndModels))
                 .build();
     }
 }
