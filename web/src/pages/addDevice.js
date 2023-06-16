@@ -9,16 +9,19 @@ import DataStore from '../util/DataStore';
 class AddDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['mount', 'clientLoaded', 'submit', 'redirectToViewDevice', 'populateManufacturers', 'populateModels'], this);
+        this.bindClassMethods(['mount', 'clientLoaded', 'submit', 'redirectToViewDevice', 'populateManufacturers', 'populateModels', 'populateFacilities', 'populateDepartments'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.redirectToViewDevice);
         this.dataStore.addChangeListener(this.populateManufacturers);
+        this.dataStore.addChangeListener(this.populateFacilities);
         this.header = new Header(this.dataStore);
     }
 
     async clientLoaded() {
         const manufacturersAndModels = await this.client.getManufacturersAndModels();
         this.dataStore.set('manufacturersAndModels', manufacturersAndModels);
+        const facilitiesAndDepartments = await this.client.getFacilitiesAndModels();
+        this.dataStore.set('facilitiesAndDepartments', facilitiesAndDepartments);
     }
 
     /**
@@ -27,6 +30,7 @@ class AddDevice extends BindingClass {
     mount() {
         document.getElementById('create').addEventListener('click', this.submit);
         document.getElementById('manufacturer-drop-down').addEventListener('change', this.populateModels);
+        document.getElementById('facility-drop-down').addEventListener('change', this.populateFacilities);
 
         this.header.addHeaderToPage();
 
@@ -76,6 +80,48 @@ class AddDevice extends BindingClass {
         document.getElementById('model-drop-down').innerHTML = modelsHtml;
     }
 
+    populateFacilities() {
+        const facilitiesAndDepartments = this.dataStore.get('facilitiesAndDepartments');
+
+        let facilitiesHtml = '';
+        facilitiesHtml += `<label for="facility-drop-down">Facility</label>
+                                <select class=validated-field id="facility-drop-down" required>
+                                <option value="">Select a Facility</option>
+                                `
+
+        let facility;
+        for (facility of facilitiesAndDepartments) {
+            facilitiesHtml += `<option value="${facility.facility}">${facility.facility}</option>
+                                    `
+        }
+        facilitiesHtml += `</select>`
+        document.getElementById('facility-drop-down').innerHTML = facilitiesHtml;
+    }
+
+    populateDepartments() {
+        const selectedFacility = document.getElementById('facility-drop-down').value;
+        const facilitiesAndDepartments = this.dataStore.get('facilitiesAndDepartments');
+
+        let departmentsHtml = '';
+        departmentsHtml += `<label for="department-drop-down">Department</label>
+                           <select class=validated-field id="department-drop-down" required>
+                           <option value="">Select a Department</option>
+                           `
+
+        let facility;
+        for (facility of facilitiesAndDepartments) {
+            if (facility.facility == selectedFacility) {
+                let department;
+                for (department of facility.departments) {
+                    departmentsHtml += `<option value="${department}">${department}</option>
+                                    `
+                }
+            }
+        }
+        departmentsHtml += `</select>`
+        document.getElementById('department-drop-down').innerHTML = departmentsHtml;
+    }
+
     /**
      * Method to run when the add device submit button is pressed. Call the HTMVaultService to add the
      * device.
@@ -94,8 +140,8 @@ class AddDevice extends BindingClass {
         const deviceSerialNumber = document.getElementById('serial-number').value;
         const deviceManufacturer = document.getElementById('manufacturer-drop-down').value;
         const deviceModel = document.getElementById('model-drop-down').value;
-        const deviceFacilityName = document.getElementById('facility-name').value;
-        const deviceAssignedDepartment = document.getElementById('assigned-department').value;
+        const deviceFacilityName = document.getElementById('facility-drop-down').value;
+        const deviceAssignedDepartment = document.getElementById('department-drop-down').value;
         const deviceManufactureDate = document.getElementById('manufacture-date').value;
         const deviceNotes = document.getElementById('notes').value;
 
