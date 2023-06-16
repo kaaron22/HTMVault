@@ -52,6 +52,31 @@ class AddDevice extends BindingClass {
         document.getElementById('manufacturer-drop-down').innerHTML = manufacturersHtml;
     }
 
+    populateModels() {
+        const selectedManufacturer = document.getElementById('manufacturer-drop-down').value;
+        const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
+
+        let modelsHtml = '';
+        modelsHtml += `<label for="model-drop-down">Model</label>
+                           <select class=validated-field id="model-drop-down" required>
+                           <option value="">Select a Model</option>
+                           `
+
+        let manufacturer;
+        for (manufacturer of manufacturersAndModels) {
+            if (manufacture == selectedManufacturer) {
+                let model;
+                for (model of manufacturersAndModels.models) {
+                    modelsHtml += `<option value="${model}">${model}</option>
+                                    `
+                }
+            }
+        }
+        manufacturersHtml += `</select>`
+        document.getElementById('manufacturer-drop-down').innerHTML = manufacturersHtml;
+
+    }
+
     /**
      * Method to run when the add device submit button is pressed. Call the HTMVaultService to add the
      * device.
