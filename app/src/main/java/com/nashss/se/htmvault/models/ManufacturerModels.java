@@ -9,7 +9,7 @@ public class ManufacturerModels {
     private final List<String> models;
 
     private ManufacturerModels(String manufacturer, List<String> models) {
-        this.manufacturer = manufacturer
+        this.manufacturer = manufacturer;
         this.models = models;
     }
 
