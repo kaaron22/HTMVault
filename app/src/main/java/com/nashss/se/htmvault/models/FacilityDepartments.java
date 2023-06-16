@@ -8,7 +8,7 @@ public class FacilityDepartments {
     private final String facility;
     private final List<String> departments;
 
-    public FacilityDepartments(String facility, List<String> departments) {
+    private FacilityDepartments(String facility, List<String> departments) {
         this.facility = facility;
         this.departments = departments;
     }

@@ -5,7 +5,7 @@ public class GetFacilitiesAndDepartmentsRequest {
     private final String customerId;
     private final String customerName;
 
-    public GetFacilitiesAndDepartmentsRequest(String customerId, String customerName) {
+    private GetFacilitiesAndDepartmentsRequest(String customerId, String customerName) {
         this.customerId = customerId;
         this.customerName = customerName;
     }
