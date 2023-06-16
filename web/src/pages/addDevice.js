@@ -38,16 +38,21 @@ class AddDevice extends BindingClass {
         const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
 
         let manufacturersHtml = '';
-        manufacturersHtml += `<option value="">Select a Manufacturer</option>`
+        manufacturersHtml += `<label for="manufacturer-drop-down">Manufacturer</label>
+                                <select class=validated-field id="manufacturer-drop-down" required>
+                                <option value="">Select a Manufacturer</option>
+                                `
 
         let manufacturer;
         for (manufacturer of manufacturersAndModels) {
             console.log(manufacturer);
             console.log(manufacturer.manufacturer);
-            manufacturersHtml += `<option value="${manufacturer.manufacturer}">${manufacturer.manufacturer}</option>`
+            manufacturersHtml += `<option value="${manufacturer.manufacturer}">${manufacturer.manufacturer}</option>
+                                    `
         }
+        manufacturersHtml += `</select>`
         console.log(manufacturersHtml);
-        document.getElementById('manufacturer-drop-down').innerText = manufacturersHtml;
+        document.getElementById('manufacturer-drop-down').innerHTML = manufacturersHtml;
     }
 
     /**
