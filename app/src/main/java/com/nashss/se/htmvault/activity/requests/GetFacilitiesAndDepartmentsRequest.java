@@ -1,0 +1,51 @@
+package com.nashss.se.htmvault.activity.requests;
+
+public class GetFacilitiesAndDepartmentsRequest {
+
+    private final String customerId;
+    private final String customerName;
+
+    public GetFacilitiesAndDepartmentsRequest(String customerId, String customerName) {
+        this.customerId = customerId;
+        this.customerName = customerName;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    @Override
+    public String toString() {
+        return "GetFacilitiesAndDepartmentsRequest{" +
+                "customerId='" + customerId + '\'' +
+                ", customerName='" + customerName + '\'' +
+                '}';
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String customerId;
+        private String customerName;
+
+        public Builder customerId(String customerId) {
+            this.customerId = customerId;
+            return this;
+        }
+
+        public Builder customerName(String customerName) {
+            this.customerName = customerName;
+            return this;
+        }
+
+        public GetFacilitiesAndDepartmentsRequest build() {
+            return new GetFacilitiesAndDepartmentsRequest(customerId, customerName);
+        }
+    }
+}
