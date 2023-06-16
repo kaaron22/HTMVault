@@ -34,12 +34,12 @@ public class GetFacilitiesAndDepartmentsRequest {
         private String customerId;
         private String customerName;
 
-        public Builder customerId(String customerId) {
+        public Builder withCustomerId(String customerId) {
             this.customerId = customerId;
             return this;
         }
 
-        public Builder customerName(String customerName) {
+        public Builder withCustomerName(String customerName) {
             this.customerName = customerName;
             return this;
         }
