@@ -4,7 +4,9 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.nashss.se.htmvault.activity.requests.CloseWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.CloseWorkOrderResult;
 import com.nashss.se.htmvault.converters.LocalDateTimeConverter;
+import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
+import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.exceptions.CloseWorkOrderNotCompleteException;
@@ -13,12 +15,11 @@ import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.WorkOrderAwaitStatus;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderModel;
+import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
 import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -28,7 +29,6 @@ import static org.mockito.MockitoAnnotations.openMocks;
 
 class CloseWorkOrderActivityTest {
 
-    private WorkOrderDao workOrderDao;
     @Mock
     private DynamoDBMapper dynamoDBMapper;
     @Mock
@@ -39,8 +39,9 @@ class CloseWorkOrderActivityTest {
     @BeforeEach
     void setUp() {
         openMocks(this);
-        workOrderDao = new WorkOrderDao(dynamoDBMapper, metricsPublisher);
-        closeWorkOrderActivity = new CloseWorkOrderActivity(workOrderDao, metricsPublisher);
+        WorkOrderDao workOrderDao = new WorkOrderDao(dynamoDBMapper, metricsPublisher);
+        DeviceDao deviceDao = new DeviceDao(dynamoDBMapper, metricsPublisher);
+        closeWorkOrderActivity = new CloseWorkOrderActivity(workOrderDao, deviceDao, metricsPublisher);
     }
 
     @Test
@@ -59,12 +60,16 @@ class CloseWorkOrderActivityTest {
         workOrder.setCompletionDateTime(new LocalDateTimeConverter()
                 .unconvert("2023-06-15T10:00:01"));
 
+        Device device = DeviceTestHelper.generateActiveDevice(1, manufacturerModel,
+                "TestFacility", "TestDepartment");
+
         CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
                 .withWorkOrderId("a work order id")
                 .withCustomerId("123")
                 .withCustomerName("betty biomed")
                 .build();
         when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
+        when(dynamoDBMapper.load(eq(Device.class), anyString())).thenReturn(device);
         doNothing().when(dynamoDBMapper).save(any(WorkOrder.class));
 
         WorkOrder expectedWorkOrder = copyWorkOrder(workOrder);
@@ -79,7 +84,7 @@ class CloseWorkOrderActivityTest {
         expectedWorkOrder.setClosedDateTime(workOrder.getClosedDateTime());
 
         // THEN
-        WorkOrderTestHelper.assertWorkOrderEqualsWorkOrderModel(expectedWorkOrder, closeWorkOrderResult.getWorkOrder());
+        WorkOrderTestHelper.assertWorkOrderEqualsWorkOrderModel(expectedWorkOrder, workOrderModel);
     }
 
     @Test
