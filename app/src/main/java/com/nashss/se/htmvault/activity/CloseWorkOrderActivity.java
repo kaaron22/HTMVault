@@ -1,6 +1,5 @@
 package com.nashss.se.htmvault.activity;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.nashss.se.htmvault.activity.requests.CloseWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.CloseWorkOrderResult;
 import com.nashss.se.htmvault.converters.LocalDateTimeConverter;
@@ -8,7 +7,6 @@ import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
-import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.exceptions.CloseWorkOrderNotCompleteException;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
@@ -98,9 +96,14 @@ public class CloseWorkOrderActivity {
         // and additionally update the next pm due date
         Integer maintenanceFrequency = device.getManufacturerModel().getRequiredMaintenanceFrequencyInMonths();
         if (maintenanceFrequency != null && maintenanceFrequency > 0) {
-            LocalDate complianceThroughDate =
-                    completionDate.plusMonths(maintenanceFrequency + 1)
-                            .minusDays(completionDate.getDayOfMonth());
+            // one month past the updated compliance month
+            LocalDate complianceThroughDate = completionDate.plusMonths(maintenanceFrequency + 1);
+            int month = complianceThroughDate.getMonthValue() - 1;
+            int year = complianceThroughDate.getYear() - 1;
+            // subtract days to reach the last day of the previous calendar month
+            while(complianceThroughDate.getMonthValue() > month && complianceThroughDate.getYear() > year) {
+                complianceThroughDate = complianceThroughDate.minusDays(1);
+            }
             // if the proposed update to compliance-through-date is earlier than the existing compliance-through-date,
             // it remains the later date. otherwise, update it.
             if (!(null == device.getComplianceThroughDate())) {
@@ -120,10 +123,14 @@ public class CloseWorkOrderActivity {
             // maintenance was done in february because the device was in disrepair and awaiting parts until
             // then, the new compliance date would be the following february, but the next pm will still advance
             // to next january, so the department-based schedule is maintained.
+
+            // one month past the updated compliance month
             LocalDate nextPmDate = device.getNextPmDueDate() == null ? device.getComplianceThroughDate() :
                     device.getNextPmDueDate().plusMonths(maintenanceFrequency + 1);
-            int month = nextPmDate.getMonthValue() - 1;
-            while(nextPmDate.getMonthValue() > month) {
+            month = nextPmDate.getMonthValue() - 1;
+            year = nextPmDate.getYear() - 1;
+            // subtract days to reach the last day of the previous calendar month
+            while(nextPmDate.getMonthValue() > month && nextPmDate.getYear() > year) {
                 nextPmDate = nextPmDate.minusDays(1);
             }
 
