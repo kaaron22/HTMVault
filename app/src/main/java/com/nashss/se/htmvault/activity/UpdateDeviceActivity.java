@@ -129,23 +129,40 @@ public class UpdateDeviceActivity {
         if (requiredMaintenanceFrequencyInMonths == 0) {
             device.setComplianceThroughDate(null);
             device.setNextPmDueDate(null);
-        // otherwise, update the compliance through date based on the last pm completion date, if there was one (if not,
-        // the complianceThroughDate and nextPmDueDate were already set as needed during device creation)
+        // otherwise, update the compliance through date based on the last pm completion date, if there was one
         } else {
             if (!(null == device.getLastPmCompletionDate())) {
                 // set the next compliance through date to the last day of the month, "maintenance frequency" number of
                 // months after the month in which the last pm was completed
-                int dayOfMonth = device.getLastPmCompletionDate().getDayOfMonth();
                 LocalDate updatedComplianceThroughDate =
                         device.getLastPmCompletionDate()
-                                .plusMonths(requiredMaintenanceFrequencyInMonths + 1)
-                                .minusDays(dayOfMonth);
-                device.setComplianceThroughDate(updatedComplianceThroughDate);
-                // if the next pm due date is already prior to the new compliance through date, we don't need to modify
-                // it; otherwise, we need to adjust it to the compliance through date
-                if (device.getNextPmDueDate().isAfter(updatedComplianceThroughDate)) {
-                    device.setNextPmDueDate(updatedComplianceThroughDate);
+                                .plusMonths(requiredMaintenanceFrequencyInMonths + 1);
+                int month = updatedComplianceThroughDate.getMonthValue() - 1;
+                int year = updatedComplianceThroughDate.getYear() - 1;
+                while(updatedComplianceThroughDate.getMonthValue() > month &&
+                        updatedComplianceThroughDate.getYear() > year) {
+                    updatedComplianceThroughDate = updatedComplianceThroughDate.minusDays(1);
                 }
+                device.setComplianceThroughDate(updatedComplianceThroughDate);
+
+                // if no pm scheduled, schedule it in sync with the compliance
+                if (null == device.getNextPmDueDate()) {
+                    device.setNextPmDueDate(device.getComplianceThroughDate());
+                // otherwise, if the next pm due date is already prior to the new compliance through date (or equal
+                // to it), we don't need to modify it; however, if it will now be late, we need to adjust it to the
+                // compliance through date (scheduled sooner, so it's not late)
+                } else {
+                    int comparison = device.getNextPmDueDate().compareTo(device.getComplianceThroughDate());
+                    if (comparison > 0) {
+                        device.setNextPmDueDate(device.getComplianceThroughDate());
+                    }
+                }
+            // a pm is required, but has never been done, so it's due now
+            } else {
+                device.setComplianceThroughDate(null);
+
+                LocalDate dueDate = LocalDate.now();
+                device.setNextPmDueDate(LocalDate.of(dueDate.getYear(), dueDate.getMonth(), dueDate.getDayOfMonth()));
             }
         }
 
