@@ -1,10 +1,8 @@
 package com.nashss.se.htmvault.converters;
 
-import com.nashss.se.htmvault.dynamodb.models.Device;
-import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
-import com.nashss.se.htmvault.dynamodb.models.ManufacturerModelsComparator;
-import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
+import com.nashss.se.htmvault.dynamodb.models.*;
 import com.nashss.se.htmvault.models.DeviceModel;
+import com.nashss.se.htmvault.models.FacilityDepartments;
 import com.nashss.se.htmvault.models.ManufacturerModels;
 import com.nashss.se.htmvault.models.WorkOrderModel;
 import com.nashss.se.htmvault.utils.CollectionUtils;
@@ -98,5 +96,20 @@ public class ModelConverter {
         }
         manufacturerModelsList.sort(new ManufacturerModelsComparator());
         return manufacturerModelsList;
+    }
+
+    public List<FacilityDepartments> toListFacilityDepartments(Map<String, Set<String>> facilitiesAndDepartments) {
+        List<FacilityDepartments> facilityDepartmentsList = new ArrayList<>();
+        for (Map.Entry<String, Set<String>> entry : facilitiesAndDepartments.entrySet()) {
+            List<String> departments = CollectionUtils.copyToList(entry.getValue());
+            Collections.sort(departments);
+            FacilityDepartments facilityDepartments = FacilityDepartments.builder()
+                    .withFacility(entry.getKey())
+                    .withDepartments(departments)
+                    .build();
+            facilityDepartmentsList.add(facilityDepartments);
+        }
+        facilityDepartmentsList.sort(new FacilityDepartmentsComparator());
+        return facilityDepartmentsList;
     }
 }

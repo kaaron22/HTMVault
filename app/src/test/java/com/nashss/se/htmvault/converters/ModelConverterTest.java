@@ -3,11 +3,8 @@ package com.nashss.se.htmvault.converters;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
-import com.nashss.se.htmvault.models.DeviceModel;
-import com.nashss.se.htmvault.models.ManufacturerModels;
-import com.nashss.se.htmvault.models.ServiceStatus;
+import com.nashss.se.htmvault.models.*;
 
-import com.nashss.se.htmvault.models.WorkOrderModel;
 import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
 import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
@@ -233,5 +230,40 @@ class ModelConverterTest {
         // THEN
         assertEquals(expected, manufacturerAndModelsList, String.format("Expected result of converting to " +
                 "be %s, but it was %s", expected, manufacturerAndModelsList));
+    }
+
+    @Test
+    public void toListFacilityDepartments_mapOfFacilitiesToTheirDepartments_returnsConvertedAndSortedList() {
+        // GIVEN
+        Map<String, Set<String>> facilitiesAndDepartments = new HashMap<>();
+        facilitiesAndDepartments.put("Test Hospital", new HashSet<>(Arrays.asList("ICU", "ER", "OR", "NICU")));
+        facilitiesAndDepartments.put("Test Clinic", new HashSet<>(List.of("Pediatric Services")));
+        facilitiesAndDepartments.put("Test Surgical Center",
+                new HashSet<>(Arrays.asList("Endoscopy", "Sterile Processing", "Recovery", "Surgical Services")));
+
+        // WHEN
+        List<FacilityDepartments> facilityAndDepartmentsList =
+                modelConverter.toListFacilityDepartments(facilitiesAndDepartments);
+
+        FacilityDepartments facilityDepartments1 = FacilityDepartments.builder()
+                .withFacility("Test Hospital")
+                .withDepartments(new ArrayList<>(Arrays.asList("ER", "ICU", "NICU", "OR")))
+                .build();
+        FacilityDepartments facilityDepartments2 = FacilityDepartments.builder()
+                .withFacility("Test Clinic")
+                .withDepartments(new ArrayList<>(List.of("Pediatric Services")))
+                .build();
+        FacilityDepartments facilityDepartments3 = FacilityDepartments.builder()
+                .withFacility("Test Surgical Center")
+                .withDepartments(new ArrayList<>(List.of("Endoscopy", "Recovery", "Sterile Processing",
+                        "Surgical Services")))
+                .build();
+
+        List<FacilityDepartments> expected = new ArrayList<>(Arrays.asList(facilityDepartments2, facilityDepartments1,
+                facilityDepartments3));
+
+        // THEN
+        assertEquals(expected, facilityAndDepartmentsList, String.format("Expected result of converting to " +
+                "be %s, but it was %s", expected, facilityAndDepartmentsList));
     }
 }

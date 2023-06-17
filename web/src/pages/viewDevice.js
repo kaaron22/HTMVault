@@ -9,11 +9,10 @@ import DataStore from "../util/DataStore";
 class ViewDevice extends BindingClass {
     constructor() {
         super();
-        this.bindClassMethods(['clientLoaded', 'submitRetire', 'submitReactivate', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'cancelUpdatesDevice', 'createWorkOrder', 'displayUpdateDeviceForm', 'submitDeviceUpdates', 'populateManufacturers', 'populateModels'], this);
+        this.bindClassMethods(['clientLoaded', 'submitRetire', 'submitReactivate', 'mount', 'addDeviceToPage', 'addWorkOrdersToPage', 'cancelUpdatesDevice', 'createWorkOrder', 'displayUpdateDeviceForm', 'submitDeviceUpdates', 'populateManufacturers', 'populateModels', 'populateFacilities', 'populateDepartments'], this);
         this.dataStore = new DataStore();
         this.dataStore.addChangeListener(this.addDeviceToPage);
         this.dataStore.addChangeListener(this.addWorkOrdersToPage);
-        //this.dataStore.addChangeListener(this.populateManufacturers);
         this.header = new Header(this.dataStore);
         console.log("view device constructor");
     }
@@ -41,6 +40,8 @@ class ViewDevice extends BindingClass {
         const manufacturersAndModels = await this.client.getManufacturersAndModels();
         this.dataStore.set('manufacturersAndModels', manufacturersAndModels);
 
+        const facilitiesAndDepartments = await this.client.getFacilitiesAndDepartments();
+        this.dataStore.set('facilitiesAndDepartments', facilitiesAndDepartments);
     }
 
     async submitDeviceUpdates(evt) {
@@ -62,8 +63,8 @@ class ViewDevice extends BindingClass {
         const deviceSerialNumber = document.getElementById('update-serial-number').value;
         const deviceManufacturer = document.getElementById('manufacturer-drop-down').value;
         const deviceModel = document.getElementById('model-drop-down').value;
-        const deviceFacilityName = document.getElementById('update-facility-name').value;
-        const deviceAssignedDepartment = document.getElementById('update-assigned-department').value;
+        const deviceFacilityName = document.getElementById('facility-drop-down').value;
+        const deviceAssignedDepartment = document.getElementById('department-drop-down').value;
         const deviceManufactureDate = document.getElementById('update-manufacture-date').value;
         const deviceNotes = document.getElementById('update-notes').value;
 
@@ -152,9 +153,15 @@ class ViewDevice extends BindingClass {
         this.populateModels();
 
         document.getElementById('model-drop-down').value = device.model;
-        document.getElementById('update-manufacture-date').value = manufactureDate
-        document.getElementById('update-facility-name').value = device.facilityName;
-        document.getElementById('update-assigned-department').value = device.assignedDepartment;
+        document.getElementById('update-manufacture-date').value = manufactureDate;
+
+        this.populateFacilities();
+
+        document.getElementById('facility-drop-down').value = device.facilityName;
+
+        this.populateDepartments();
+
+        document.getElementById('department-drop-down').value = device.assignedDepartment;
         document.getElementById('update-notes').value = notes;
 
         const deviceRecordDiv = document.getElementById('device-record-div');
@@ -168,7 +175,7 @@ class ViewDevice extends BindingClass {
 
     }
 
-    populateManufacturers() {
+    async populateManufacturers() {
         const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
         let manufacturersHtml = '';
         manufacturersHtml += `<label for="manufacturer-drop-down">Manufacturer</label>
@@ -185,7 +192,7 @@ class ViewDevice extends BindingClass {
         document.getElementById('manufacturer-drop-down').innerHTML = manufacturersHtml;
     }
 
-    populateModels() {
+    async populateModels() {
         const selectedManufacturer = document.getElementById('manufacturer-drop-down').value;
         const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
 
@@ -207,6 +214,48 @@ class ViewDevice extends BindingClass {
         }
         modelsHtml += `</select>`
         document.getElementById('model-drop-down').innerHTML = modelsHtml;
+    }
+
+    async populateFacilities() {
+        const facilitiesAndDepartments = this.dataStore.get('facilitiesAndDepartments');
+
+        let facilitiesHtml = '';
+        facilitiesHtml += `<label for="facility-drop-down">Facility</label>
+                                <select class=validated-field id="facility-drop-down" required>
+                                <option value="">Select a Facility</option>
+                                `
+
+        let facility;
+        for (facility of facilitiesAndDepartments) {
+            facilitiesHtml += `<option value="${facility.facility}">${facility.facility}</option>
+                                    `
+        }
+        facilitiesHtml += `</select>`
+        document.getElementById('facility-drop-down').innerHTML = facilitiesHtml;
+    }
+
+    async populateDepartments() {
+        const selectedFacility = document.getElementById('facility-drop-down').value;
+        const facilitiesAndDepartments = this.dataStore.get('facilitiesAndDepartments');
+
+        let departmentsHtml = '';
+        departmentsHtml += `<label for="department-drop-down">Department</label>
+                           <select class=validated-field id="department-drop-down" required>
+                           <option value="">Select a Department</option>
+                           `
+
+        let facility;
+        for (facility of facilitiesAndDepartments) {
+            if (facility.facility == selectedFacility) {
+                let department;
+                for (department of facility.departments) {
+                    departmentsHtml += `<option value="${department}">${department}</option>
+                                    `
+                }
+            }
+        }
+        departmentsHtml += `</select>`
+        document.getElementById('department-drop-down').innerHTML = departmentsHtml;
     }
 
     async submitRetire(evt) {
@@ -292,6 +341,7 @@ class ViewDevice extends BindingClass {
         document.getElementById('submit-updates-device').addEventListener('click', this.submitDeviceUpdates);
         document.getElementById('cancel-updates-device').addEventListener('click', this.cancelUpdatesDevice);
         document.getElementById('manufacturer-drop-down').addEventListener('change', this.populateModels);
+        document.getElementById('facility-drop-down').addEventListener('change', this.populateDepartments);
 
         this.header.addHeaderToPage();
 

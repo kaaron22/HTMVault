@@ -29,15 +29,17 @@
                     <option value="">Select a Model</option>
                 </select>
             </p>
-            <p class="form-field">
-                <label>Facility Name</label>
-                <input type="text" required class="validated-field" id="facility-name" placeholder="i.e. General Hospital, Eastside Family Practice, etc."
-                       autofocus>
+            <p class="form-field" id="facility-name">
+                <label for="facility-drop-down">Facility</label>
+                <select class=validated-field id="facility-drop-down" required>
+                    <option value="">Select a Facility</option>
+                </select>
             </p>
-            <p class="form-field">
-                <label>Assigned Department</label>
-                <input type="text" required class="validated-field" id="assigned-department" placeholder="i.e. ICU, Surgery, ER, etc."
-                       autofocus>
+            <p class="form-field" id="assigned-department">
+                <label for="department-drop-down">Department</label>
+                <select class=validated-field id="department-drop-down" required>
+                    <option value="">Select a Department</option>
+                </select>
             </p>
             <p class="form-field">
                 <label>Manufacture Date (optional)</label>
