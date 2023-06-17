@@ -1,12 +1,8 @@
 package com.nashss.se.htmvault.activity;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.nashss.se.htmvault.activity.requests.AddDeviceRequest;
 import com.nashss.se.htmvault.activity.requests.UpdateDeviceRequest;
-import com.nashss.se.htmvault.activity.requests.UpdateWorkOrderRequest;
-import com.nashss.se.htmvault.activity.results.AddDeviceResult;
 import com.nashss.se.htmvault.activity.results.UpdateDeviceResult;
-import com.nashss.se.htmvault.converters.LocalDateConverter;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.FacilityDepartmentDao;
 import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
@@ -19,7 +15,6 @@ import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.DeviceModel;
 import com.nashss.se.htmvault.models.ServiceStatus;
 import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
-import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -27,7 +22,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -222,15 +216,10 @@ class UpdateDeviceActivityTest {
     public void handleRequest_withAllValuesValidPmDone_updatesAndSavesDeviceIncludingComplianceAndNextPmNull() {
         // GIVEN
         // a device with a compliance and next pm that will now be null because the manufacturer-model
-        // to which the device record is being 'corrected', is does not require preventative maintenance,
+        // to which the device record is being 'corrected', does not require preventative maintenance,
         // instead of being required every 12
         device.setLastPmCompletionDate(LocalDate.of(2023, 6, 10));
         device.setComplianceThroughDate(LocalDate.of(2024, 6, 30));
-        // the next pm can be set earlier than the compliance through date, but not after; when
-        // the manufacturer-model for this device is 'corrected' to one that requires a pm every
-        // 6 months instead of every 12, the compliance through date will update to 2023-12-31.
-        // since the next pm due date will then be after the updated compliance through date, it will
-        // need to be updated to no later than 2023-12-31
         device.setNextPmDueDate(LocalDate.of(2024, 3, 31));
 
         // an update request and expected updated device
@@ -328,6 +317,205 @@ class UpdateDeviceActivityTest {
         updatedDevice.setComplianceThroughDate(LocalDate.of(2023, 12, 31));
         updatedDevice.setLastPmCompletionDate(LocalDate.of(2023, 6, 10));
         updatedDevice.setNextPmDueDate(LocalDate.of(2023, 10, 31));
+        updatedDevice.setInventoryAddDate(LocalDate.of(2023, 6, 1));
+        updatedDevice.setAddedById(customerId);
+        updatedDevice.setAddedByName(customerName);
+
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber + "updated")
+                .withManufacturer(manufacturer + "updated")
+                .withModel(model + "updated")
+                .withManufactureDate(updatedManufactureDate.toString())
+                .withFacilityName(facilityName + "updated")
+                .withAssignedDepartment(assignedDepartment + "updated")
+                .withNotes(notes + "updated")
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+        when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(updatedManufacturerModel);
+        when(facilityDepartmentDao.getFacilityDepartment(anyString(), anyString()))
+                .thenReturn(updatedFacilityDepartment);
+        when(dynamoDBMapper.load(Mockito.eq(Device.class), anyString())).thenReturn(device);
+
+        // WHEN
+        UpdateDeviceResult updateDeviceResult = updateDeviceActivity.handleRequest(updateDeviceRequest);
+        DeviceModel deviceModel = updateDeviceResult.getDevice();
+
+        // THEN
+        verify(dynamoDBMapper).load(eq(Device.class), anyString());
+        verify(dynamoDBMapper).save(any(Device.class));
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
+        DeviceTestHelper.assertDeviceEqualsDeviceModel(updatedDevice, deviceModel);
+    }
+
+    @Test
+    public void handleRequest_withAllValuesValidPmDoneButNoNext_updatesAndSavesDeviceNextDueInSyncWithCompliance() {
+        // GIVEN
+        // a device with a last pm and compliance, but no pm due date, which will now be set in sync with the
+        // compliance-through-date following the device update to a manufacturer-model that requires maintenance
+        // every 6 months instead of every 12
+        device.setLastPmCompletionDate(LocalDate.of(2023, 6, 10));
+        device.setComplianceThroughDate(LocalDate.of(2024, 6, 30));
+        device.setNextPmDueDate(null);
+
+        // an update request and expected updated device
+        ManufacturerModel updatedManufacturerModel = new ManufacturerModel();
+        updatedManufacturerModel.setManufacturer(manufacturer + "updated");
+        updatedManufacturerModel.setModel(model + "updated");
+        updatedManufacturerModel.setRequiredMaintenanceFrequencyInMonths(6);
+
+        FacilityDepartment updatedFacilityDepartment = new FacilityDepartment();
+        updatedFacilityDepartment.setFacilityName(facilityName + "updated");
+        updatedFacilityDepartment.setAssignedDepartment(assignedDepartment + "updated");
+
+        LocalDate updatedManufactureDate = LocalDate.now();
+
+        Device updatedDevice = new Device();
+        updatedDevice.setControlNumber(controlNumber);
+        updatedDevice.setSerialNumber(serialNumber + "updated");
+        updatedDevice.setManufacturerModel(updatedManufacturerModel);
+        updatedDevice.setServiceStatus(ServiceStatus.IN_SERVICE);
+        updatedDevice.setFacilityName(facilityName + "updated");
+        updatedDevice.setAssignedDepartment(assignedDepartment + "updated");
+        updatedDevice.setManufactureDate(updatedManufactureDate);
+        updatedDevice.setNotes(notes + "updated");
+        updatedDevice.setComplianceThroughDate(LocalDate.of(2023, 12, 31));
+        updatedDevice.setLastPmCompletionDate(LocalDate.of(2023, 6, 10));
+        updatedDevice.setNextPmDueDate(LocalDate.of(2023, 12, 31));
+        updatedDevice.setInventoryAddDate(LocalDate.of(2023, 6, 1));
+        updatedDevice.setAddedById(customerId);
+        updatedDevice.setAddedByName(customerName);
+
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber + "updated")
+                .withManufacturer(manufacturer + "updated")
+                .withModel(model + "updated")
+                .withManufactureDate(updatedManufactureDate.toString())
+                .withFacilityName(facilityName + "updated")
+                .withAssignedDepartment(assignedDepartment + "updated")
+                .withNotes(notes + "updated")
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+        when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(updatedManufacturerModel);
+        when(facilityDepartmentDao.getFacilityDepartment(anyString(), anyString()))
+                .thenReturn(updatedFacilityDepartment);
+        when(dynamoDBMapper.load(Mockito.eq(Device.class), anyString())).thenReturn(device);
+
+        // WHEN
+        UpdateDeviceResult updateDeviceResult = updateDeviceActivity.handleRequest(updateDeviceRequest);
+        DeviceModel deviceModel = updateDeviceResult.getDevice();
+
+        // THEN
+        verify(dynamoDBMapper).load(eq(Device.class), anyString());
+        verify(dynamoDBMapper).save(any(Device.class));
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
+        DeviceTestHelper.assertDeviceEqualsDeviceModel(updatedDevice, deviceModel);
+    }
+
+    @Test
+    public void handleRequest_withAllValuesValidNoPmDoneNoNext_updatesAndSavesDeviceNextDueNow() {
+        // GIVEN
+        // a device with no previous PM, compliance, or next pm date, will be set due now since maintenance
+        // is required following the change to manufacturer-model
+        device.setLastPmCompletionDate(null);
+        device.setComplianceThroughDate(null);
+        device.setNextPmDueDate(null);
+
+        // an update request and expected updated device
+        ManufacturerModel updatedManufacturerModel = new ManufacturerModel();
+        updatedManufacturerModel.setManufacturer(manufacturer + "updated");
+        updatedManufacturerModel.setModel(model + "updated");
+        updatedManufacturerModel.setRequiredMaintenanceFrequencyInMonths(6);
+
+        FacilityDepartment updatedFacilityDepartment = new FacilityDepartment();
+        updatedFacilityDepartment.setFacilityName(facilityName + "updated");
+        updatedFacilityDepartment.setAssignedDepartment(assignedDepartment + "updated");
+
+        LocalDate updatedManufactureDate = LocalDate.now();
+
+        Device updatedDevice = new Device();
+        updatedDevice.setControlNumber(controlNumber);
+        updatedDevice.setSerialNumber(serialNumber + "updated");
+        updatedDevice.setManufacturerModel(updatedManufacturerModel);
+        updatedDevice.setServiceStatus(ServiceStatus.IN_SERVICE);
+        updatedDevice.setFacilityName(facilityName + "updated");
+        updatedDevice.setAssignedDepartment(assignedDepartment + "updated");
+        updatedDevice.setManufactureDate(updatedManufactureDate);
+        updatedDevice.setNotes(notes + "updated");
+        updatedDevice.setComplianceThroughDate(null);
+        updatedDevice.setLastPmCompletionDate(null);
+        LocalDate current = LocalDate.now();
+        updatedDevice.setNextPmDueDate(LocalDate.of(current.getYear(), current.getMonth(), current.getDayOfMonth()));
+        updatedDevice.setInventoryAddDate(LocalDate.of(2023, 6, 1));
+        updatedDevice.setAddedById(customerId);
+        updatedDevice.setAddedByName(customerName);
+
+        UpdateDeviceRequest updateDeviceRequest = UpdateDeviceRequest.builder()
+                .withControlNumber(controlNumber)
+                .withSerialNumber(serialNumber + "updated")
+                .withManufacturer(manufacturer + "updated")
+                .withModel(model + "updated")
+                .withManufactureDate(updatedManufactureDate.toString())
+                .withFacilityName(facilityName + "updated")
+                .withAssignedDepartment(assignedDepartment + "updated")
+                .withNotes(notes + "updated")
+                .withCustomerId(customerId)
+                .withCustomerName(customerName)
+                .build();
+        when(manufacturerModelDao.getManufacturerModel(anyString(), anyString())).thenReturn(updatedManufacturerModel);
+        when(facilityDepartmentDao.getFacilityDepartment(anyString(), anyString()))
+                .thenReturn(updatedFacilityDepartment);
+        when(dynamoDBMapper.load(Mockito.eq(Device.class), anyString())).thenReturn(device);
+
+        // WHEN
+        UpdateDeviceResult updateDeviceResult = updateDeviceActivity.handleRequest(updateDeviceRequest);
+        DeviceModel deviceModel = updateDeviceResult.getDevice();
+
+        // THEN
+        verify(dynamoDBMapper).load(eq(Device.class), anyString());
+        verify(dynamoDBMapper).save(any(Device.class));
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
+        DeviceTestHelper.assertDeviceEqualsDeviceModel(updatedDevice, deviceModel);
+    }
+
+    @Test
+    public void handleRequest_withAllValuesValidNoPmDoneNextPostCompliance_updatesAndSavesDeviceNextDueNow() {
+        // GIVEN
+        // a device with no previous PM, compliance, but scheduled for a future pm date, will be set due now
+        // since maintenance is required now following the change to manufacturer-model
+        device.setLastPmCompletionDate(null);
+        device.setComplianceThroughDate(null);
+        LocalDate current = LocalDate.now();
+        device.setNextPmDueDate(LocalDate.of(current.getYear(), current.getMonth(), current.getDayOfMonth())
+                .plusDays(1));
+
+        // an update request and expected updated device
+        ManufacturerModel updatedManufacturerModel = new ManufacturerModel();
+        updatedManufacturerModel.setManufacturer(manufacturer + "updated");
+        updatedManufacturerModel.setModel(model + "updated");
+        updatedManufacturerModel.setRequiredMaintenanceFrequencyInMonths(6);
+
+        FacilityDepartment updatedFacilityDepartment = new FacilityDepartment();
+        updatedFacilityDepartment.setFacilityName(facilityName + "updated");
+        updatedFacilityDepartment.setAssignedDepartment(assignedDepartment + "updated");
+
+        LocalDate updatedManufactureDate = LocalDate.now();
+
+        Device updatedDevice = new Device();
+        updatedDevice.setControlNumber(controlNumber);
+        updatedDevice.setSerialNumber(serialNumber + "updated");
+        updatedDevice.setManufacturerModel(updatedManufacturerModel);
+        updatedDevice.setServiceStatus(ServiceStatus.IN_SERVICE);
+        updatedDevice.setFacilityName(facilityName + "updated");
+        updatedDevice.setAssignedDepartment(assignedDepartment + "updated");
+        updatedDevice.setManufactureDate(updatedManufactureDate);
+        updatedDevice.setNotes(notes + "updated");
+        updatedDevice.setComplianceThroughDate(null);
+        updatedDevice.setLastPmCompletionDate(null);
+        updatedDevice.setNextPmDueDate(LocalDate.of(current.getYear(), current.getMonth(), current.getDayOfMonth()));
         updatedDevice.setInventoryAddDate(LocalDate.of(2023, 6, 1));
         updatedDevice.setAddedById(customerId);
         updatedDevice.setAddedByName(customerName);
