@@ -134,11 +134,14 @@ public class UpdateDeviceActivity {
             if (!(null == device.getLastPmCompletionDate())) {
                 // set the next compliance through date to the last day of the month, "maintenance frequency" number of
                 // months after the month in which the last pm was completed
+
+                // one month past the updated compliance month
                 LocalDate updatedComplianceThroughDate =
                         device.getLastPmCompletionDate()
                                 .plusMonths(requiredMaintenanceFrequencyInMonths + 1);
                 int month = updatedComplianceThroughDate.getMonthValue() - 1;
                 int year = updatedComplianceThroughDate.getYear() - 1;
+                // subtract days to reach the last day of the previous calendar month
                 while(updatedComplianceThroughDate.getMonthValue() > month &&
                         updatedComplianceThroughDate.getYear() > year) {
                     updatedComplianceThroughDate = updatedComplianceThroughDate.minusDays(1);
@@ -157,12 +160,21 @@ public class UpdateDeviceActivity {
                         device.setNextPmDueDate(device.getComplianceThroughDate());
                     }
                 }
-            // a pm is required, but has never been done, so it's due now
+            // a pm is required, but has never been done, so it's due now (if not already set)
             } else {
                 device.setComplianceThroughDate(null);
 
                 LocalDate dueDate = LocalDate.now();
-                device.setNextPmDueDate(LocalDate.of(dueDate.getYear(), dueDate.getMonth(), dueDate.getDayOfMonth()));
+                LocalDate dueDateNoNanos = LocalDate.of(dueDate.getYear(), dueDate.getMonth(),
+                        dueDate.getDayOfMonth());
+                if (null == device.getNextPmDueDate()) {
+                    device.setNextPmDueDate(dueDateNoNanos);
+                } else {
+                    int comparison = device.getNextPmDueDate().compareTo(dueDateNoNanos);
+                    if (comparison > 0) {
+                        device.setNextPmDueDate(dueDateNoNanos);
+                    }
+                }
             }
         }
 
