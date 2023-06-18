@@ -160,21 +160,10 @@ public class UpdateDeviceActivity {
                         device.setNextPmDueDate(device.getComplianceThroughDate());
                     }
                 }
-            // a pm is required, but has never been done, so it's due now (if not already set)
+            // a pm is required, but has never been done, so it's been due since the add date
             } else {
                 device.setComplianceThroughDate(null);
-
-                LocalDate dueDate = LocalDate.now();
-                LocalDate dueDateNoNanos = LocalDate.of(dueDate.getYear(), dueDate.getMonth(),
-                        dueDate.getDayOfMonth());
-                if (null == device.getNextPmDueDate()) {
-                    device.setNextPmDueDate(dueDateNoNanos);
-                } else {
-                    int comparison = device.getNextPmDueDate().compareTo(dueDateNoNanos);
-                    if (comparison > 0) {
-                        device.setNextPmDueDate(dueDateNoNanos);
-                    }
-                }
+                device.setNextPmDueDate(device.getInventoryAddDate());
             }
         }
 
