@@ -1,5 +1,6 @@
 package com.nashss.se.htmvault.activity;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.nashss.se.htmvault.activity.requests.RetireDeviceRequest;
 import com.nashss.se.htmvault.activity.results.RetireDeviceResult;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
@@ -78,8 +79,12 @@ class RetireDeviceActivityTest {
                 .withCustomerId("an ID")
                 .withCustomerName("a name")
                 .build();
-        when(deviceDao.getDevice("123")).thenReturn(device);
-        when(workOrderDao.getWorkOrders(anyString())).thenThrow(RetireDeviceWithOpenWorkOrdersException.class);
+
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestManufacturer", "TestModel");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+        when(deviceDao.getDevice(anyString())).thenReturn(device);
+        when(workOrderDao.getWorkOrders(anyString())).thenReturn(new ArrayList<>(List.of(workOrder)));
 
         // WHEN & THEN
         assertThrows(RetireDeviceWithOpenWorkOrdersException.class, () ->
