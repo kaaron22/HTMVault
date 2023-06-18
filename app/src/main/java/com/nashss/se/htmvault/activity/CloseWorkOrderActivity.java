@@ -141,11 +141,11 @@ public class CloseWorkOrderActivity {
             // will still advance to next january, so the department-based schedule (every january) is maintained.
             //
             // however, as a different example, if the work order in question that we're basing potential changes on
-            // is completed in mid-cycle (i.e. in June 2023 for some reason, even though one was already done at the normal
-            // time in January 2023), we won't auto-advance the next pm due to the following July (2024), since it's
-            // normally done with everything else in the given department in January. if desired, the user can manually
-            // reschedule to another month up to and including the compliance-through-date of July 2024, through a
-            // separate process to be implemented for manually updating a device's next pm due date
+            // is completed in mid-cycle (i.e. in June 2023 for some reason, even though one was already done at the
+            // normal time in January 2023), we won't auto-advance the next pm due to the following June (2024), since
+            // it's normally done with everything else in the given department in January. if desired, the user can
+            // manually reschedule to another month up to and including the compliance-through-date of June 2024,
+            // through a separate process to be implemented for manually updating a device's next pm due date
 
             // if the next pm due date is null (should not be the case if the device requires maintenance, but we will
             // be defensive), there is no comparison to make - we'll sync maintenance with the

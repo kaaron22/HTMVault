@@ -466,6 +466,141 @@ class CloseWorkOrderActivityTest {
         assertEquals(copyDevice, result);
     }
 
+    @Test
+    public void advanceMaintenanceStatsWithWorkOrderIfApplicable_nullComplianceDate_updatesCompliance() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
+        workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
+        workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
+        workOrder.setProblemFound("a problem found");
+        workOrder.setSummary("a summary");
+        workOrder.setCompletionDateTime(new LocalDateTimeConverter()
+                .unconvert("2023-06-15T10:00:01"));
+        workOrder.setClosedById(workOrder.getCreatedById());
+        workOrder.setClosedByName(workOrder.getCreatedByName());
+        workOrder.setClosedDateTime(workOrder.getCreationDateTime().plusHours(1));
+
+        // a device with a last pm completed 6/15/2022, so the next pm is due 6/30/2023, but the
+        // compliance-through-date is null. we are attempting to update maintenance stats with a pm
+        // completed 6/15/2023, which would cause the compliance-through-date to advance, so we expect
+        // it should update t0 6/30/2024
+        Device device = DeviceTestHelper.generateActiveDevice(1, manufacturerModel,
+                "TestFacility", "TestDepartment");
+        device.setComplianceThroughDate(null);
+        device.setLastPmCompletionDate(LocalDate.of(2022, 6, 12));
+        device.setNextPmDueDate(LocalDate.of(2023, 6, 30));
+
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
+        when(dynamoDBMapper.load(eq(Device.class), anyString())).thenReturn(device);
+
+        Device copyDevice = copyDevice(device);
+        copyDevice.setComplianceThroughDate(LocalDate.of(2024, 6, 30));
+        copyDevice.setNextPmDueDate(LocalDate.of(2024, 6, 30));
+        copyDevice.setLastPmCompletionDate(LocalDate.of(2023, 6, 15));
+
+        // WHEN
+        Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
+
+        // THEN
+        assertEquals(copyDevice, result);
+    }
+
+    @Test
+    public void advanceMaintenanceStatsWithWorkOrderIfApplicable_notScheduled_syncsNextPmWithCompliance() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
+        workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
+        workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
+        workOrder.setProblemFound("a problem found");
+        workOrder.setSummary("a summary");
+        workOrder.setCompletionDateTime(new LocalDateTimeConverter()
+                .unconvert("2023-06-15T10:00:01"));
+        workOrder.setClosedById(workOrder.getCreatedById());
+        workOrder.setClosedByName(workOrder.getCreatedByName());
+        workOrder.setClosedDateTime(workOrder.getCreationDateTime().plusHours(1));
+
+        // a device with a last pm completed 6/15/2022, so the compliance-through-date is 6/30/2023,
+        // but there is no next pm due date. we are attempting to update maintenance stats with a pm
+        // completed 6/15/2023, which would cause the compliance-through-date to advance, so we expect
+        // it should update to 6/30/2024 and update the next pm due date to the same
+        Device device = DeviceTestHelper.generateActiveDevice(1, manufacturerModel,
+                "TestFacility", "TestDepartment");
+        device.setComplianceThroughDate(LocalDate.of(2023, 6, 30));
+        device.setLastPmCompletionDate(LocalDate.of(2022, 6, 12));
+        device.setNextPmDueDate(null);
+
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
+        when(dynamoDBMapper.load(eq(Device.class), anyString())).thenReturn(device);
+
+        Device copyDevice = copyDevice(device);
+        copyDevice.setComplianceThroughDate(LocalDate.of(2024, 6, 30));
+        copyDevice.setNextPmDueDate(LocalDate.of(2024, 6, 30));
+        copyDevice.setLastPmCompletionDate(LocalDate.of(2023, 6, 15));
+
+        // WHEN
+        Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
+
+        // THEN
+        assertEquals(copyDevice, result);
+    }
+
+    @Test
+    public void advanceMaintenanceStatsWithWorkOrderIfApplicable_nextCyclePmWithinCompliance_updatesNextPm() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
+        workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
+        workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
+        workOrder.setProblemFound("a problem found");
+        workOrder.setSummary("a summary");
+        workOrder.setCompletionDateTime(new LocalDateTimeConverter()
+                .unconvert("2023-02-15T10:00:01"));
+        workOrder.setClosedById(workOrder.getCreatedById());
+        workOrder.setClosedByName(workOrder.getCreatedByName());
+        workOrder.setClosedDateTime(workOrder.getCreationDateTime().plusHours(1));
+
+        // a device with a last pm completed 1/31/2022, so the compliance-through-date and next pm due
+        // is 1/31/2023. we are attempting to update maintenance stats with a pm completed 2/15/2023,
+        // which would cause the compliance-through-date to advance to 2/29/2024, but the next pm should
+        // remain on the normal yearly schedule of every january
+        Device device = DeviceTestHelper.generateActiveDevice(1, manufacturerModel,
+                "TestFacility", "TestDepartment");
+        device.setComplianceThroughDate(LocalDate.of(2023, 1, 31));
+        device.setLastPmCompletionDate(LocalDate.of(2022, 1, 12));
+        device.setNextPmDueDate(LocalDate.of(2023, 1, 31));
+
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
+        when(dynamoDBMapper.load(eq(Device.class), anyString())).thenReturn(device);
+
+        Device copyDevice = copyDevice(device);
+        copyDevice.setComplianceThroughDate(LocalDate.of(2024, 2, 29));
+        copyDevice.setNextPmDueDate(LocalDate.of(2024, 1, 31));
+        copyDevice.setLastPmCompletionDate(LocalDate.of(2023, 2, 15));
+
+        // WHEN
+        Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
+
+        // THEN
+        assertEquals(copyDevice, result);
+    }
+
     private WorkOrder copyWorkOrder(WorkOrder workOrder) {
         WorkOrder copyWorkOrder = new WorkOrder();
         copyWorkOrder.setWorkOrderId(workOrder.getWorkOrderId());
