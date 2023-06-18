@@ -379,6 +379,48 @@ class CloseWorkOrderActivityTest {
         assertEquals(copyDevice, result);
     }
 
+    @Test
+    public void advanceMaintenanceStatsWithWorkOrderIfApplicable_rollsBackComplianceDate_retainsOriginalCompliance() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
+        workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
+        workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
+        workOrder.setProblemFound("a problem found");
+        workOrder.setSummary("a summary");
+        workOrder.setCompletionDateTime(new LocalDateTimeConverter()
+                .unconvert("2023-04-15T10:00:01"));
+        workOrder.setClosedById(workOrder.getCreatedById());
+        workOrder.setClosedByName(workOrder.getCreatedByName());
+        workOrder.setClosedDateTime(workOrder.getCreationDateTime().plusHours(1));
+
+        // a device with a last pm completed 6/15/2023, so the next pm and compliance-through-date
+        // are 6/30/2024. we are attempting to update maintenance stats with a pm completed 4/15/2023,
+        // which would cause the compliance-through-date to roll back, so we expect it should not
+        // proceed to do so
+        Device device = DeviceTestHelper.generateActiveDevice(1, manufacturerModel,
+                "TestFacility", "TestDepartment");
+        device.setComplianceThroughDate(LocalDate.of(2024, 6, 30));
+        device.setLastPmCompletionDate(LocalDate.of(2023, 6, 15));
+        device.setNextPmDueDate(LocalDate.of(2024, 6, 30));
+
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
+        when(dynamoDBMapper.load(eq(Device.class), anyString())).thenReturn(device);
+
+        Device copyDevice = copyDevice(device);
+
+        // WHEN
+        Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
+
+        // THEN
+        assertEquals(copyDevice, result);
+    }
+
     private WorkOrder copyWorkOrder(WorkOrder workOrder) {
         WorkOrder copyWorkOrder = new WorkOrder();
         copyWorkOrder.setWorkOrderId(workOrder.getWorkOrderId());
