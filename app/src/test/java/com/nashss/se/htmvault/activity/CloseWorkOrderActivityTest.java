@@ -23,6 +23,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
@@ -292,6 +294,32 @@ class CloseWorkOrderActivityTest {
     }
 
     @Test
+    public void advanceMaintenanceStatsWithWorkOrderIfApplicable_workOrderOpen_returnsOriginalDevice() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
+
+        Device device = DeviceTestHelper.generateActiveDevice(1, manufacturerModel,
+                "TestFacility", "TestDepartment");
+
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
+        when(dynamoDBMapper.load(eq(Device.class), anyString())).thenReturn(device);
+
+        Device copyDevice = copyDevice(device);
+
+        // WHEN
+        Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
+
+        // THEN
+        assertEquals(copyDevice, result);
+    }
+
+    @Test
     public void advanceMaintenanceStatsWithWorkOrderIfApplicable_repairWorkOrder_returnsOriginalDevice() {
         // GIVEN
         ManufacturerModel manufacturerModel = new ManufacturerModel();
@@ -300,6 +328,7 @@ class CloseWorkOrderActivityTest {
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
         WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
                 "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
         workOrder.setWorkOrderType(WorkOrderType.REPAIR);
 
         Device device = DeviceTestHelper.generateActiveDevice(1, manufacturerModel,
@@ -309,6 +338,39 @@ class CloseWorkOrderActivityTest {
         when(dynamoDBMapper.load(eq(Device.class), anyString())).thenReturn(device);
 
         Device copyDevice = copyDevice(device);
+
+        // WHEN
+        Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
+
+        // THEN
+        assertEquals(copyDevice, result);
+    }
+
+    @Test
+    public void advanceMaintenanceStatsWithWorkOrderIfApplicable_noMaintenanceRequired_returnsDeviceUpdatedLastPmOnly() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(0);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
+        workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
+        workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
+        workOrder.setProblemFound("a problem found");
+        workOrder.setSummary("a summary");
+        workOrder.setCompletionDateTime(new LocalDateTimeConverter()
+                .unconvert("2023-06-15T10:00:01"));
+
+        Device device = DeviceTestHelper.generateActiveDevice(1, manufacturerModel,
+                "TestFacility", "TestDepartment");
+
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
+        when(dynamoDBMapper.load(eq(Device.class), anyString())).thenReturn(device);
+
+        Device copyDevice = copyDevice(device);
+        copyDevice.setLastPmCompletionDate(LocalDate.of(2023, 6, 15));
 
         // WHEN
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
