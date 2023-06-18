@@ -10,11 +10,13 @@ import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.exceptions.CloseWorkOrderNotCompleteException;
+import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
 import com.nashss.se.htmvault.exceptions.WorkOrderNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.WorkOrderAwaitStatus;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderModel;
+import com.nashss.se.htmvault.models.WorkOrderType;
 import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
 import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +35,10 @@ class CloseWorkOrderActivityTest {
     private DynamoDBMapper dynamoDBMapper;
     @Mock
     private MetricsPublisher metricsPublisher;
+    @Mock
+    private WorkOrderDao workOrderDaoMaintenanceStatUpdates;
+    @Mock
+    private DeviceDao deviceDaoMaintenanceStatUpdates;
 
     private CloseWorkOrderActivity closeWorkOrderActivity;
 
@@ -260,6 +266,57 @@ class CloseWorkOrderActivityTest {
                         "in a CloseWorkOrderNotCompleteException thrown");
     }
 
+    @Test
+    public void advanceMaintenanceStatsWithWorkOrderIfApplicable_workOrderNotFound_throwsWorkOrderNotFoundException() {
+        // GIVEN
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(null);
+
+        // WHEN & THEN
+        assertThrows(WorkOrderNotFoundException.class, () ->
+                closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123"),
+                "Expected attempting to advance maintenance stats with a work order ID not found to result " +
+                        "in a WorkOrderNotFoundException thrown");
+    }
+
+    @Test
+    public void advanceMaintenanceStatsWithWorkOrderIfApplicable_deviceNotFound_throwsDeviceNotFoundException() {
+        // GIVEN
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(new WorkOrder());
+        when(dynamoDBMapper.load(eq(Device.class), anyString())).thenReturn(null);
+
+        // WHEN & THEN
+        assertThrows(DeviceNotFoundException.class, () ->
+                        closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123"),
+                "Expected attempting to advance maintenance stats with a work order ID references a device " +
+                        "that is not found to result in a DeviceNotFoundException thrown");
+    }
+
+    @Test
+    public void advanceMaintenanceStatsWithWorkOrderIfApplicable_repairWorkOrder_returnsOriginalDevice() {
+        // GIVEN
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
+        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setWorkOrderType(WorkOrderType.REPAIR);
+
+        Device device = DeviceTestHelper.generateActiveDevice(1, manufacturerModel,
+                "TestFacility", "TestDepartment");
+
+        when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
+        when(dynamoDBMapper.load(eq(Device.class), anyString())).thenReturn(device);
+
+        Device copyDevice = copyDevice(device);
+
+        // WHEN
+        Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
+
+        // THEN
+        assertEquals(copyDevice, result);
+    }
+
     private WorkOrder copyWorkOrder(WorkOrder workOrder) {
         WorkOrder copyWorkOrder = new WorkOrder();
         copyWorkOrder.setWorkOrderId(workOrder.getWorkOrderId());
@@ -283,5 +340,30 @@ class CloseWorkOrderActivityTest {
         copyWorkOrder.setCompletionDateTime(workOrder.getCompletionDateTime());
 
         return copyWorkOrder;
+    }
+
+    private Device copyDevice(Device device) {
+        Device deviceCopy = new Device();
+        deviceCopy.setControlNumber(device.getControlNumber());
+        deviceCopy.setSerialNumber(device.getSerialNumber());
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
+        manufacturerModel.setManufacturer(device.getManufacturerModel().getManufacturer());
+        manufacturerModel.setModel(device.getManufacturerModel().getModel());
+        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(device.getManufacturerModel()
+                .getRequiredMaintenanceFrequencyInMonths());
+        deviceCopy.setManufactureDate(device.getManufactureDate());
+        deviceCopy.setManufacturerModel(manufacturerModel);
+        deviceCopy.setServiceStatus(device.getServiceStatus());
+        deviceCopy.setFacilityName(device.getFacilityName());
+        deviceCopy.setAssignedDepartment(device.getAssignedDepartment());
+        deviceCopy.setComplianceThroughDate(device.getComplianceThroughDate());
+        deviceCopy.setLastPmCompletionDate(device.getLastPmCompletionDate());
+        deviceCopy.setNextPmDueDate(device.getNextPmDueDate());
+        deviceCopy.setInventoryAddDate(device.getInventoryAddDate());
+        deviceCopy.setAddedById(device.getAddedById());
+        deviceCopy.setAddedByName(device.getAddedByName());
+        deviceCopy.setNotes(device.getNotes());
+
+        return deviceCopy;
     }
 }
