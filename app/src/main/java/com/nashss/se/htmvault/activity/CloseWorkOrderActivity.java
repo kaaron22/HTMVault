@@ -73,19 +73,123 @@ public class CloseWorkOrderActivity {
 
             workOrder = workOrderDao.saveWorkOrder(workOrder);
 
+            Device device = advanceMaintenanceStatsWithWorkOrderIfApplicable(workOrder.getWorkOrderId());
             // if it was a preventative maintenance or acceptance testing work order, update the last PM,
             // compliance through date, and next PM
-            if (workOrder.getWorkOrderType() == WorkOrderType.ACCEPTANCE_TESTING ||
+            /*if (workOrder.getWorkOrderType() == WorkOrderType.ACCEPTANCE_TESTING ||
                     workOrder.getWorkOrderType() == WorkOrderType.PREVENTATIVE_MAINTENANCE) {
                 LocalDate completionDate = LocalDate.of(completionDateTime.getYear(), completionDateTime.getMonth(),
                         completionDateTime.getDayOfMonth());
                 updateDevice(workOrder.getControlNumber(), completionDate);
-            }
+            }*/
         }
 
         return CloseWorkOrderResult.builder()
                 .withWorkOrderModel(new ModelConverter().toWorkOrderModel(workOrder))
                 .build();
+    }
+
+    public Device advanceMaintenanceStatsWithWorkOrderIfApplicable(String workOrderId) {
+        // we limit this attempt based on actual work order information in the database, to prevent unofficial
+        // work order information from affecting the maintenance stats
+        WorkOrder workOrder = workOrderDao.getWorkOrder(workOrderId);
+
+        // the device to which this work order pertains, which will potentially be updated
+        Device device = deviceDao.getDevice(workOrder.getControlNumber());
+
+        // if this is not a closed Preventative Maintenance or Acceptance Test work order, there's nothing to update
+        if (!(workOrder.getWorkOrderCompletionStatus() == WorkOrderCompletionStatus.CLOSED)) {
+            return device;
+        }
+
+        if (!(workOrder.getWorkOrderType() == WorkOrderType.PREVENTATIVE_MAINTENANCE ||
+                workOrder.getWorkOrderType() == WorkOrderType.ACCEPTANCE_TESTING)) {
+            return device;
+        }
+
+        // if the device requires routine preventative maintenance, update the compliance-through-date to
+        // 'maintenance frequency' number of months from the completion date of this work order, on the last day
+        // of that month (unless it causes the compliance date to roll back to an earlier date than it already has)
+        Integer maintenanceFrequency = device.getManufacturerModel().getRequiredMaintenanceFrequencyInMonths();
+        if (maintenanceFrequency != null && maintenanceFrequency > 0) {
+
+            // go to the month following the eventual updated compliance date and then subtract days until
+            // we get to the last day of the potential new compliance month
+            LocalDateTime completionDateTime = workOrder.getCompletionDateTime();
+            LocalDate proposedComplianceThroughDate = LocalDate.of(completionDateTime.getYear(),
+                    completionDateTime.getMonth(), completionDateTime.getDayOfMonth())
+                    .plusMonths(maintenanceFrequency + 1);
+            int month = proposedComplianceThroughDate.getMonthValue() - 1;
+            int year = proposedComplianceThroughDate.getYear() - 1;
+            while(proposedComplianceThroughDate.getMonthValue() > month &&
+                    proposedComplianceThroughDate.getYear() > year) {
+                proposedComplianceThroughDate = proposedComplianceThroughDate.minusDays(1);
+            }
+
+            // if the proposed update to compliance-through-date is earlier than the existing compliance-through-date,
+            // we make no change. otherwise, update it.
+            if (!(null == device.getComplianceThroughDate())) {
+                int comparison = proposedComplianceThroughDate.compareTo(device.getComplianceThroughDate());
+                if (comparison > 0) {
+                    device.setComplianceThroughDate(proposedComplianceThroughDate);
+                }
+            // if there is no existing compliance-through-date, then there is no comparison to make, our proposed
+            // date is the only one to consider
+            } else {
+                device.setComplianceThroughDate(proposedComplianceThroughDate);
+            }
+
+            // calculate the proposed next pm due date to 'maintenance frequency' number of months from the current next
+            // pm due date (if not null). if that is at or before the compliance-through-date, we can proceed to update.
+            // if, however, it would set the next pm to be due late, we make no change.
+            //
+            // for example, if the routine maintenance is normally done every 12 months in january, but the
+            // maintenance was done a month after the due date in february (i.e. because the device was in disrepair
+            // and awaiting parts until then), the new compliance date would be the following february, but the next pm
+            // will still advance to next january, so the department-based schedule (every january) is maintained.
+            //
+            // however, as a different example, if the work order in question that we're basing potential changes on
+            // is completed in mid-cycle (i.e. in June 2023 for some reason, even though one was already done at the normal
+            // time in January 2023), we won't auto-advance the next pm due to the following July (2024), since it's
+            // normally done with everything else in the given department in January. if desired, the user can manually
+            // reschedule to another month up to and including the compliance-through-date of July 2024, through a
+            // separate process to be implemented for manually updating a device's next pm due date
+
+            // if the next pm due date is null (should not be the case if the device requires maintenance, but we will
+            // be defensive), there is no comparison to make - we'll sync maintenance with the
+            // compliance-through-date. otherwise, we'll calculate the proposed date and make the comparison
+            if (null == device.getNextPmDueDate()) {
+                device.setNextPmDueDate(device.getComplianceThroughDate());
+            } else {
+                LocalDate proposedNextPmDueDate;
+                proposedNextPmDueDate = device.getNextPmDueDate().plusMonths(maintenanceFrequency + 1);
+                month = proposedNextPmDueDate.getMonthValue() - 1;
+                year = proposedNextPmDueDate.getYear() - 1;
+                // subtract days to reach the last day of the previous calendar month
+                while(proposedNextPmDueDate.getMonthValue() > month && proposedNextPmDueDate.getYear() > year) {
+                    proposedNextPmDueDate = proposedNextPmDueDate.minusDays(1);
+                }
+
+                int comparison = proposedNextPmDueDate.compareTo(device.getComplianceThroughDate());
+                if (comparison <= 0) {
+                    // the proposed next pm due date would be on time, so we will advance it to the next cycle
+                    device.setNextPmDueDate(proposedNextPmDueDate);
+                }
+                // otherwise it would be late, so we will retain the current next pm due date (making no change)
+            }
+        }
+
+        // now we can update the last pm completion date, if it won't roll it back to an earlier date
+        LocalDateTime completionDateTime = workOrder.getCompletionDateTime();
+        LocalDate completionDate = LocalDate.of(completionDateTime.getYear(), completionDateTime.getMonth(),
+                completionDateTime.getDayOfMonth());
+        int comparison = null == device.getLastPmCompletionDate() ? 1 :
+                completionDate.compareTo(device.getLastPmCompletionDate());
+        if (comparison > 0) {
+            device.setLastPmCompletionDate(completionDate);
+        }
+
+        return deviceDao.saveDevice(device);
     }
 
     private void updateDevice(String controlNumber, LocalDate completionDate) {
