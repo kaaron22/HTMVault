@@ -37,10 +37,6 @@ class CloseWorkOrderActivityTest {
     private DynamoDBMapper dynamoDBMapper;
     @Mock
     private MetricsPublisher metricsPublisher;
-    @Mock
-    private WorkOrderDao workOrderDaoMaintenanceStatUpdates;
-    @Mock
-    private DeviceDao deviceDaoMaintenanceStatUpdates;
 
     private CloseWorkOrderActivity closeWorkOrderActivity;
 
