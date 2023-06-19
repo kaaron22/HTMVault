@@ -13,6 +13,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,8 +27,8 @@ import javax.inject.Singleton;
 public class DeviceDao {
 
     private final DynamoDBMapper dynamoDBMapper;
-
     private final MetricsPublisher metricsPublisher;
+    private final Logger log = LogManager.getLogger();
 
     /**
      * Instantiates a new Device dao.
@@ -63,12 +65,15 @@ public class DeviceDao {
 
         if (null == device) {
             metricsPublisher.addCount(MetricsConstants.GETDEVICE_DEVICENOTFOUND_COUNT, 1);
+            log.info("An attempt was made to obtain a device with control number ({}), but could not be " +
+                    "found", controlNumber);
             throw new DeviceNotFoundException("Could not find device with control number " + controlNumber);
         }
         metricsPublisher.addCount(MetricsConstants.GETDEVICE_DEVICENOTFOUND_COUNT, 0);
         return device;
     }
 
+    // from project template, modified for search devices endpoint
     /**
      * Scans the devices database table for a list of devices matching the search criteria.
      *
@@ -123,6 +128,7 @@ public class DeviceDao {
         return this.dynamoDBMapper.scan(Device.class, dynamoDBScanExpression);
     }
 
+    // from project template, modified for search devices endpoint
     private StringBuilder filterExpressionPart(String target, String valueMapNamePrefix, int position) {
         String possiblyAnd = position == 0 ? "" : "and ";
         return new StringBuilder()
@@ -155,6 +161,9 @@ public class DeviceDao {
         PaginatedQueryList<Device> deviceList = dynamoDBMapper.query(Device.class, queryExpression);
 
         if (!deviceList.isEmpty()) {
+            log.info("An attempt was made to add a device with this manufacturer, model, and serial number " +
+                    "was previously added: Manufacturer/Model ({}), SerialNumber ({})", manufacturerModel,
+                    serialNumber);
             throw new DevicePreviouslyAddedException("A device with this manufacturer, model, and serial number was " +
                     "previously added");
         }
