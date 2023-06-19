@@ -31,8 +31,12 @@ public class ManufacturerModels {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ManufacturerModels that = (ManufacturerModels) o;
         return Objects.equals(manufacturer, that.manufacturer) && Objects.equals(models, that.models);
     }
@@ -42,6 +46,7 @@ public class ManufacturerModels {
         return Objects.hash(manufacturer, models);
     }
 
+    //CHECKSTYLE:OFF:Builder
     public static Builder builder() {
         return new Builder();
     }

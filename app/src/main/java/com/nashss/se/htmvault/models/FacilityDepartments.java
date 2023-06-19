@@ -31,8 +31,12 @@ public class FacilityDepartments {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         FacilityDepartments that = (FacilityDepartments) o;
         return Objects.equals(facility, that.facility) && Objects.equals(departments, that.departments);
     }
@@ -42,6 +46,7 @@ public class FacilityDepartments {
         return Objects.hash(facility, departments);
     }
 
+    //CHECKSTYLE:OFF:Builder
     public static Builder builder() {
         return new Builder();
     }
