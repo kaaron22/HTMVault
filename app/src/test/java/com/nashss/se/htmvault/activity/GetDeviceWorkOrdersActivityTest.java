@@ -2,7 +2,6 @@ package com.nashss.se.htmvault.activity;
 
 import com.nashss.se.htmvault.activity.requests.GetDeviceWorkOrdersRequest;
 import com.nashss.se.htmvault.activity.results.GetDeviceWorkOrdersResult;
-import com.nashss.se.htmvault.converters.LocalDateTimeConverter;
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
@@ -11,6 +10,7 @@ import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.WorkOrderModel;
 import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,7 +24,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,7 +43,6 @@ class GetDeviceWorkOrdersActivityTest {
 
     private LocalDateTime basis = LocalDateTime.now();
     private List<WorkOrder> workOrders;
-    private ManufacturerModel manufacturerModel;
 
 
     @BeforeEach
@@ -49,7 +50,7 @@ class GetDeviceWorkOrdersActivityTest {
         openMocks(this);
 
         basis = LocalDateTime.now();
-        manufacturerModel = new ManufacturerModel();
+        ManufacturerModel manufacturerModel = new ManufacturerModel();
         manufacturerModel.setManufacturer("TestManufacturer");
         manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
@@ -294,16 +295,6 @@ class GetDeviceWorkOrdersActivityTest {
                 .withSortOrder("INVALID")
                 .build();
 
-        List<WorkOrder> workOrders = new ArrayList<>();
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
-
-        for (int i = 0; i < 4; i++) {
-            workOrders.add(WorkOrderTestHelper.generateWorkOrder(i, "123", "SN123",
-                    manufacturerModel, "TestFacility", "TestDepartment"));
-        }
-
         // WHEN & THEN
         assertThrows(InvalidAttributeValueException.class, () ->
                 getDeviceWorkOrdersActivity.handleRequest(getDeviceWorkOrdersRequest),
@@ -318,12 +309,7 @@ class GetDeviceWorkOrdersActivityTest {
                 .withControlNumber("123")
                 .build();
 
-        List<WorkOrder> workOrders = new ArrayList<>();
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
-
-        when(workOrderDao.getWorkOrders(anyString())).thenReturn(workOrders);
+        when(workOrderDao.getWorkOrders(anyString())).thenReturn(new ArrayList<>());
 
         // WHEN
         GetDeviceWorkOrdersResult getDeviceWorkOrdersResult =
@@ -347,7 +333,7 @@ class GetDeviceWorkOrdersActivityTest {
 
     private void assertWorkOrderModelsSortedCorrectly(List<String> expectedSortedWorkOrderIds,
                                                        List<WorkOrderModel> sortedWorkOrderModels) {
-        for(int i = 0; i < sortedWorkOrderModels.size(); i++) {
+        for (int i = 0; i < sortedWorkOrderModels.size(); i++) {
             assertEquals(expectedSortedWorkOrderIds.get(i), sortedWorkOrderModels.get(i).getWorkOrderId());
         }
     }
