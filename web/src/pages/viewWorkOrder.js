@@ -183,6 +183,13 @@ class ViewWorkOrder extends BindingClass {
         updateWorkOrderDiv.classList.remove('hidden');
     }
 
+    async cancelUpdatesWorkOrder() {
+        const workOrderDiv = document.getElementById('work-order-display-div');
+        const updateWorkOrderDiv = document.getElementById('update-work-order-form-div');
+        updateWorkOrderDiv.classList.add('hidden');
+        workOrderDiv.classList.remove('hidden');
+    }
+
     async clientLoaded() {
         const urlParams = new URLSearchParams(window.location.search);
         const workOrderId = urlParams.get('workOrderId');
@@ -208,7 +215,7 @@ class ViewWorkOrder extends BindingClass {
 
         document.getElementById('work-order-id').innerText = workOrder.workOrderId;
         document.getElementById('work-order-type').innerText = workOrder.workOrderType;
-        document.getElementById('control-number').innerText = workOrder.controlNumber;
+        document.getElementById('control-number').innerHTML = `<a href="device.html?controlNumber=${workOrder.controlNumber}&order=DESCENDING">${workOrder.controlNumber}</a>`;
         document.getElementById('serial-number').innerText = workOrder.serialNumber;
         document.getElementById('completion-status').innerText = workOrder.workOrderCompletionStatus;
         if (workOrder.workOrderCompletionStatus == "CLOSED") {
@@ -236,6 +243,7 @@ class ViewWorkOrder extends BindingClass {
         document.getElementById('update-work-order').addEventListener('click', this.displayUpdateWorkOrderForm);
         document.getElementById('submit-updates-work-order').addEventListener('click', this.submitUpdatesWorkOrder);
         document.getElementById('close-work-order').addEventListener('click', this.closeWorkOrder);
+        document.getElementById('cancel-updates-work-order').addEventListener('click', this.cancelUpdatesWorkOrder);
 
         this.header.addHeaderToPage();
 
