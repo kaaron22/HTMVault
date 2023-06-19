@@ -1,6 +1,5 @@
 package com.nashss.se.htmvault.activity;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.nashss.se.htmvault.activity.requests.UpdateDeviceRequest;
 import com.nashss.se.htmvault.activity.results.UpdateDeviceResult;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
@@ -9,12 +8,19 @@ import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.FacilityDepartment;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
-import com.nashss.se.htmvault.exceptions.*;
+import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
+import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
+import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
+import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
+import com.nashss.se.htmvault.exceptions.UpdateRetiredDeviceException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.DeviceModel;
 import com.nashss.se.htmvault.models.ServiceStatus;
 import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,10 +29,13 @@ import org.mockito.Mockito;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 class UpdateDeviceActivityTest {
@@ -43,7 +52,7 @@ class UpdateDeviceActivityTest {
     @InjectMocks
     private UpdateDeviceActivity updateDeviceActivity;
 
-    Device device = new Device();
+    private final Device device = new Device();
     private final String controlNumber = "123";
     private final String serialNumber = "G-456";
     private final String manufacturer = "a manufacturer";
