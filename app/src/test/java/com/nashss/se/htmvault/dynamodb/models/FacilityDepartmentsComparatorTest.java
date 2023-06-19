@@ -1,13 +1,15 @@
 package com.nashss.se.htmvault.dynamodb.models;
 
 import com.nashss.se.htmvault.models.FacilityDepartments;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FacilityDepartmentsComparatorTest {
 
@@ -52,5 +54,4 @@ class FacilityDepartmentsComparatorTest {
                         "be equal to facilityDepartment with facility name %s",
                 facilityDepartments1.getFacility(), facilityDepartments2.getFacility()));
     }
-
 }
