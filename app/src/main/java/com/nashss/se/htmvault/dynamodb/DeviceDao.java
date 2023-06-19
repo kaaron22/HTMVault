@@ -1,10 +1,5 @@
 package com.nashss.se.htmvault.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.nashss.se.htmvault.converters.ManufacturerModelConverter;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
@@ -13,11 +8,18 @@ import com.nashss.se.htmvault.exceptions.DevicePreviouslyAddedException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Singleton
 public class DeviceDao {
@@ -26,17 +28,36 @@ public class DeviceDao {
 
     private final MetricsPublisher metricsPublisher;
 
+    /**
+     * Instantiates a new Device dao.
+     *
+     * @param dynamoDBMapper   the dynamo db mapper
+     * @param metricsPublisher the metrics publisher
+     */
     @Inject
     public DeviceDao(DynamoDBMapper dynamoDBMapper, MetricsPublisher metricsPublisher) {
         this.dynamoDBMapper = dynamoDBMapper;
         this.metricsPublisher = metricsPublisher;
     }
 
+    /**
+     * Saves the device in the database.
+     *
+     * @param device the device to save
+     * @return the device saved
+     */
     public Device saveDevice(Device device) {
         dynamoDBMapper.save(device);
         return device;
     }
 
+    /**
+     * Gets the device from the database, throwing a DeviceNotFoundException if a device cannot be found
+     * for the provided controlNumber.
+     *
+     * @param controlNumber the control number (hash key for the device)
+     * @return the device
+     */
     public Device getDevice(String controlNumber) {
         Device device = dynamoDBMapper.load(Device.class, controlNumber);
 
@@ -48,6 +69,12 @@ public class DeviceDao {
         return device;
     }
 
+    /**
+     * Scans the devices database table for a list of devices matching the search criteria.
+     *
+     * @param criteria the criteria for which to scan the table for matching values
+     * @return the list of devices matching the criteria
+     */
     public List<Device> searchDevices(String[] criteria) {
         DynamoDBScanExpression dynamoDBScanExpression = new DynamoDBScanExpression();
 
@@ -107,6 +134,13 @@ public class DeviceDao {
                 .append(") ");
     }
 
+    /**
+     * Checks to see if the device matching the manufacturer, model, and serial number was previously added. If so,
+     * throws a DevicePreviouslyAddedException
+     *
+     * @param manufacturerModel the manufacturer model with which to compare
+     * @param serialNumber      the serial number with which to compare
+     */
     public void checkDevicePreviouslyAdded(ManufacturerModel manufacturerModel, String serialNumber) {
         Map<String, AttributeValue> valueMap = new HashMap<>();
         valueMap.put(":manufacturerModel",
