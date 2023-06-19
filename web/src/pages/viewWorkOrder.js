@@ -215,7 +215,7 @@ class ViewWorkOrder extends BindingClass {
 
         document.getElementById('work-order-id').innerText = workOrder.workOrderId;
         document.getElementById('work-order-type').innerText = workOrder.workOrderType;
-        document.getElementById('control-number').innerHTML = `<a href="device.html?controlNumber=${workOrder.controlNumber}">${workOrder.controlNumber}</a>`;
+        document.getElementById('control-number').innerHTML = `<a href="device.html?controlNumber=${workOrder.controlNumber}&order=DESCENDING">${workOrder.controlNumber}</a>`;
         document.getElementById('serial-number').innerText = workOrder.serialNumber;
         document.getElementById('completion-status').innerText = workOrder.workOrderCompletionStatus;
         if (workOrder.workOrderCompletionStatus == "CLOSED") {
