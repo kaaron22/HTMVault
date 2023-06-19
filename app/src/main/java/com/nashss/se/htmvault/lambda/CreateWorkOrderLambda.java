@@ -1,9 +1,11 @@
 package com.nashss.se.htmvault.lambda;
 
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.nashss.se.htmvault.activity.requests.CreateWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.CreateWorkOrderResult;
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,9 +16,9 @@ public class CreateWorkOrderLambda
     private final Logger log = LogManager.getLogger();
 
     /**
-     * Handles a Lambda Function request
+     * Handles a Lambda Function request for creating a work order.
      *
-     * @param input   The Lambda Function input
+     * @param input   The Lambda Function input, an authenticated close work order request
      * @param context The Lambda execution environment context object.
      * @return The Lambda Function output
      */
@@ -24,21 +26,25 @@ public class CreateWorkOrderLambda
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<CreateWorkOrderRequest> input, Context context) {
         log.info("handleRequest");
         return super.runActivity(
-                () -> {
-                    CreateWorkOrderRequest unauthenticatedRequest = input.fromBody(CreateWorkOrderRequest.class);
-                    return input.fromUserClaims(claims ->
-                            CreateWorkOrderRequest.builder()
-                                    .withControlNumber(unauthenticatedRequest.getControlNumber())
-                                    .withWorkOrderType(unauthenticatedRequest.getWorkOrderType())
-                                    .withProblemReported(unauthenticatedRequest.getProblemReported())
-                                    .withProblemFound(unauthenticatedRequest.getProblemFound())
-                                    .withSortOrder(unauthenticatedRequest.getSortOrder())
-                                    .withCreatedById(claims.get("email"))
-                                    .withCreatedByName(claims.get("name"))
-                                    .build());
-                },
-                (request, serviceComponent) ->
-                        serviceComponent.provideCreateWorkOrderActivity().handleRequest(request)
+            () -> {
+                // the unauthenticated request, after deserializing the json data received
+                CreateWorkOrderRequest unauthenticatedRequest = input.fromBody(CreateWorkOrderRequest.class);
+
+                // the final request, including authentication information
+                return input.fromUserClaims(claims ->
+                    CreateWorkOrderRequest.builder()
+                        .withControlNumber(unauthenticatedRequest.getControlNumber())
+                        .withWorkOrderType(unauthenticatedRequest.getWorkOrderType())
+                        .withProblemReported(unauthenticatedRequest.getProblemReported())
+                        .withProblemFound(unauthenticatedRequest.getProblemFound())
+                        .withSortOrder(unauthenticatedRequest.getSortOrder())
+                        .withCreatedById(claims.get("email"))
+                        .withCreatedByName(claims.get("name"))
+                        .build());
+            },
+            // the call to our activity
+            (request, serviceComponent) ->
+                serviceComponent.provideCreateWorkOrderActivity().handleRequest(request)
         );
     }
 }
