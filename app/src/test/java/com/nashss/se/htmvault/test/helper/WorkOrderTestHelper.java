@@ -24,7 +24,7 @@ public final class WorkOrderTestHelper {
                                        String assignedDepartment) {
 
         WorkOrder workOrder = new WorkOrder();
-        workOrder.setWorkOrderId(HTMVaultServiceUtils.generateId("WR",6));
+        workOrder.setWorkOrderId(HTMVaultServiceUtils.generateId("WR", 6));
         workOrder.setWorkOrderType(getRandomEnumValue(WorkOrderType.values()));
         workOrder.setControlNumber(controlNumber);
         workOrder.setSerialNumber(serialNumber);
