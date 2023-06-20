@@ -4,6 +4,9 @@ import com.nashss.se.htmvault.models.ManufacturerModels;
 
 import java.util.Comparator;
 
+/**
+ * Compares manufacturer/model objects by the manufacturer name.
+ */
 public class ManufacturerModelsComparator implements Comparator<ManufacturerModels> {
     @Override
     public int compare(ManufacturerModels o1, ManufacturerModels o2) {

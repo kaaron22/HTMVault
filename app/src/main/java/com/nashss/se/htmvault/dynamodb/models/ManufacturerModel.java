@@ -43,8 +43,12 @@ public class ManufacturerModel {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ManufacturerModel that = (ManufacturerModel) o;
         return requiredMaintenanceFrequencyInMonths == that.requiredMaintenanceFrequencyInMonths &&
                 Objects.equals(manufacturer, that.manufacturer) && Objects.equals(model, that.model);
