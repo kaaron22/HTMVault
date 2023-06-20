@@ -19,7 +19,7 @@ import javax.inject.Singleton;
 public class DaoModule {
 
     /**
-     * Provides a DynamoDBMapper
+     * Provides a DynamoDBMapper.
      *
      * @return the DynamoDBMapper
      */
