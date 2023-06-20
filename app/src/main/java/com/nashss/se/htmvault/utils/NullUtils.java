@@ -1,11 +1,8 @@
 package com.nashss.se.htmvault.utils;
 
-import com.nashss.se.htmvault.exceptions.InvalidAttributeException;
-import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
-
-import java.util.Map;
 import java.util.function.Supplier;
 
+// from project template
 /**
  * Various utilities to deal with null.
  */

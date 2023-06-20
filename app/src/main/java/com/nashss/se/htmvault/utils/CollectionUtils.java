@@ -1,9 +1,14 @@
 package com.nashss.se.htmvault.utils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static com.nashss.se.htmvault.utils.NullUtils.ifNotNull;
 
+// from project template
 /**
  * Various helpful utilities for converting collections.
  */

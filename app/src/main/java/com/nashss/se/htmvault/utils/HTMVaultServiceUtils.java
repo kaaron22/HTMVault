@@ -6,6 +6,9 @@ import org.apache.commons.lang3.StringUtils;
 import java.time.LocalDateTime;
 import java.util.Random;
 
+/**
+ * Various helpful utility methods used by the HTM Vault Service.
+ */
 public class HTMVaultServiceUtils {
 
     public static final String ALPHA_NUMERIC_SPACE_OR_DASH = "^[A-Za-z0-9- ]+$";
@@ -37,7 +40,7 @@ public class HTMVaultServiceUtils {
 
     /**
      * Formats a LocalDateTime object to a String containing a LocalDate and LocalTime,
-     * separated by a space
+     * separated by a space.
      * @param localDateTime the LocalDateTime to format as a String
      * @return the formatted String containing the date and time or an empty string if the localDateTime is null
      */
@@ -46,10 +49,23 @@ public class HTMVaultServiceUtils {
                 localDateTime.toLocalTime().toString();
     }
 
+    /**
+     * Generate a random id of specified length, with a specified prefix (can be an empty prefix).
+     *
+     * @param prefix the prefix to which to append a randomly generated id
+     * @param length the length of the non-prefix portion of the randomly generated id
+     * @return the resulting id
+     */
     public static String generateId(String prefix, int length) {
         return prefix + RandomStringUtils.randomNumeric(length);
     }
 
+    /**
+     * Generate random integer from 0, up to and excluding a specified limit.
+     *
+     * @param exclusiveLimit the exclusive limit
+     * @return the randomly generated integer
+     */
     public static int generateRandomIntWithLimit(int exclusiveLimit) {
         Random random = new Random();
         return random.nextInt(exclusiveLimit);
