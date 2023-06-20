@@ -317,7 +317,7 @@ class GetDeviceWorkOrdersActivityTest {
         List<WorkOrderModel> workOrderModels = getDeviceWorkOrdersResult.getWorkOrders();
 
         // THEN
-        assertTrue(workOrderModels.isEmpty());
+        assertTrue(workOrderModels.isEmpty(), "Expected the list of work order models to be empty");
         verify(workOrderDao).getWorkOrders("123");
         verify(metricsPublisher).addCount(MetricsConstants.GETDEVICEWORKORDERS_INVALIDATTRIBUTEVALUE_COUNT, 0);
     }
