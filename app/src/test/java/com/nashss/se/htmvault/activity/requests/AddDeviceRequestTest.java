@@ -180,12 +180,12 @@ class AddDeviceRequestTest {
                 "manufacturer"));
         assertEquals(model, addDeviceRequest.getModel(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
                 "model"));
-        assertEquals(manufactureDate, addDeviceRequest.getManufactureDate(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
-                "manufacture date"));
+        assertEquals(manufactureDate, addDeviceRequest.getManufactureDate(),
+                String.format(ASSERT_EQUALS_FAILURE_MESSAGE, "manufacture date"));
         assertEquals(facilityName, addDeviceRequest.getFacilityName(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
                 "facility name"));
-        assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
-                "assigned department"));
+        assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(),
+                String.format(ASSERT_EQUALS_FAILURE_MESSAGE, "assigned department"));
         assertNull(addDeviceRequest.getNotes(), "Expected value for notes not built to be null");
         assertEquals(customerId, addDeviceRequest.getCustomerId(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
                 "customer id"));
