@@ -1,5 +1,6 @@
 package com.nashss.se.htmvault.metrics;
 
+// initial from project template; additional constants added
 /**
  * Constant values for use with metrics.
  */
