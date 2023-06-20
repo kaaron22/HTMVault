@@ -1,5 +1,8 @@
 package com.nashss.se.htmvault.exceptions;
 
+/**
+ * An exception used when a work order specified by work order id is not found in the database.
+ */
 public class WorkOrderNotFoundException extends RuntimeException {
     private static final long serialVersionUID = -3593057595469138155L;
 

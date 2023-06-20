@@ -1,5 +1,9 @@
 package com.nashss.se.htmvault.exceptions;
 
+/**
+ * An exception class to use when a facility and assigned department which does not exist is selected
+ * while adding or updating a device record.
+ */
 public class FacilityDepartmentNotFoundException extends RuntimeException {
     private static final long serialVersionUID = 6387140391932125423L;
 

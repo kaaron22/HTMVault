@@ -1,5 +1,8 @@
 package com.nashss.se.htmvault.exceptions;
 
+/**
+ * An exception class used when a work order is incomplete and an attempt request is made to close it.
+ */
 public class CloseWorkOrderNotCompleteException extends RuntimeException {
     private static final long serialVersionUID = 6484053031901892689L;
 

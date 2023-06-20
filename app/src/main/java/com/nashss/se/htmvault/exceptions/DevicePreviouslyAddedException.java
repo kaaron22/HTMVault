@@ -1,5 +1,9 @@
 package com.nashss.se.htmvault.exceptions;
 
+/**
+ * An exception class used when an attempt is made to add a device to the inventory, but one by this
+ * manufacturer, model, and serial number already exists.
+ */
 public class DevicePreviouslyAddedException extends RuntimeException {
 
     private static final long serialVersionUID = 7555733438817388724L;

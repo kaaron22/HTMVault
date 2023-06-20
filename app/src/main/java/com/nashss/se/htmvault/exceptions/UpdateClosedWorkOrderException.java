@@ -1,5 +1,8 @@
 package com.nashss.se.htmvault.exceptions;
 
+/**
+ * An exception used when attempting to update a work order that has already been completed/closed.
+ */
 public class UpdateClosedWorkOrderException extends RuntimeException {
     private static final long serialVersionUID = -3453158469020176782L;
 

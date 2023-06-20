@@ -1,5 +1,9 @@
 package com.nashss.se.htmvault.exceptions;
 
+/**
+ * An exception used when an attempt is made to retire a device that has any work orders remaining
+ * in an open (incomplete) status.
+ */
 public class RetireDeviceWithOpenWorkOrdersException extends RuntimeException {
     private static final long serialVersionUID = 3912372867250903276L;
 

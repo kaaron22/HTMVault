@@ -1,5 +1,9 @@
 package com.nashss.se.htmvault.exceptions;
 
+/**
+ * An exception used when attempting to update a device record for a device that is an
+ * inactive/retired status.
+ */
 public class UpdateRetiredDeviceException extends RuntimeException {
     private static final long serialVersionUID = 8793902683850361008L;
 

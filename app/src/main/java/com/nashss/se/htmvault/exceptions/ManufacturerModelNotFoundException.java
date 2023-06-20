@@ -1,5 +1,9 @@
 package com.nashss.se.htmvault.exceptions;
 
+/**
+ * An exception class used when a manufacturer/model combination that does not exist is selected while
+ * adding or updating a device record.
+ */
 public class ManufacturerModelNotFoundException extends RuntimeException {
     private static final long serialVersionUID = 7057812302176365609L;
 

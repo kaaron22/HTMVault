@@ -1,5 +1,8 @@
 package com.nashss.se.htmvault.exceptions;
 
+/**
+ * An exception class used when a device specified by device id is not found in the database.
+ */
 public class DeviceNotFoundException extends RuntimeException {
     private static final long serialVersionUID = -844696552853752078L;
 
