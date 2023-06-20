@@ -10,6 +10,7 @@ import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.DeviceModel;
 import com.nashss.se.htmvault.models.ServiceStatus;
 
+import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -83,21 +84,6 @@ class GetDeviceActivityTest {
 
         // THEN
         verify(deviceDao).getDevice(anyString());
-        assertEquals(controlNumber, deviceModel.getControlNumber());
-        assertEquals(serialNumber, deviceModel.getSerialNumber());
-        assertEquals(manufacturer, deviceModel.getManufacturer());
-        assertEquals(model, deviceModel.getModel());
-        assertEquals(manufactureDate, deviceModel.getManufactureDate());
-        assertEquals(ServiceStatus.IN_SERVICE.toString(), deviceModel.getServiceStatus());
-        assertEquals(facilityName, deviceModel.getFacilityName());
-        assertEquals(assignedDepartment, deviceModel.getAssignedDepartment());
-        assertEquals("", deviceModel.getComplianceThroughDate());
-        assertEquals("", deviceModel.getLastPmCompletionDate());
-        assertEquals(LocalDate.now().toString(), deviceModel.getNextPmDueDate());
-        assertEquals(maintenanceFrequencyInMonths, deviceModel.getMaintenanceFrequencyInMonths());
-        assertEquals(LocalDate.now().toString(), deviceModel.getInventoryAddDate());
-        assertEquals(customerId, deviceModel.getAddedById());
-        assertEquals(customerName, deviceModel.getAddedByName());
-        assertEquals(notes, deviceModel.getNotes());
+        DeviceTestHelper.assertDeviceEqualsDeviceModel(device, deviceModel);
     }
 }
