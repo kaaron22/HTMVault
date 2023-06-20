@@ -1,9 +1,11 @@
 package com.nashss.se.htmvault.lambda;
 
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.nashss.se.htmvault.activity.requests.UpdateWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.UpdateWorkOrderResult;
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,9 +16,9 @@ public class UpdateWorkOrderLambda
     private final Logger log = LogManager.getLogger();
 
     /**
-     * Handles a Lambda Function request
+     * Handles a Lambda Function request for updating a work order's editable information.
      *
-     * @param input   The Lambda Function input
+     * @param input   The Lambda Function input, an authenticated request
      * @param context The Lambda execution environment context object.
      * @return The Lambda Function output
      */
@@ -25,22 +27,27 @@ public class UpdateWorkOrderLambda
         log.info("handleRequest");
 
         return super.runActivity(
-                () -> {
-                    UpdateWorkOrderRequest unauthenticatedRequest = input.fromBody(UpdateWorkOrderRequest.class);
-                    return input.fromUserClaims(claims ->
-                            UpdateWorkOrderRequest.builder()
-                                    .withWorkOrderId(unauthenticatedRequest.getWorkOrderId())
-                                    .withWorkOrderType(unauthenticatedRequest.getWorkOrderType())
-                                    .withWorkOrderAwaitStatus(unauthenticatedRequest.getWorkOrderAwaitStatus())
-                                    .withProblemReported(unauthenticatedRequest.getProblemReported())
-                                    .withProblemFound(unauthenticatedRequest.getProblemFound())
-                                    .withSummary(unauthenticatedRequest.getSummary())
-                                    .withCompletionDateTime(unauthenticatedRequest.getCompletionDateTime())
-                                    .withCustomerId(claims.get("email"))
-                                    .withCustomerName(claims.get("name"))
-                                    .build());
-                },
-                (request, serviceComponent) -> serviceComponent.provideUpdateWorkOrderActivity().handleRequest(request)
+            () -> {
+                // the unauthenticated request, after deserializing the json data received
+                UpdateWorkOrderRequest unauthenticatedRequest = input.fromBody(UpdateWorkOrderRequest.class);
+
+                // the final request, including authentication information
+                return input.fromUserClaims(claims ->
+                    UpdateWorkOrderRequest.builder()
+                        .withWorkOrderId(unauthenticatedRequest.getWorkOrderId())
+                        .withWorkOrderType(unauthenticatedRequest.getWorkOrderType())
+                        .withWorkOrderAwaitStatus(unauthenticatedRequest.getWorkOrderAwaitStatus())
+                        .withProblemReported(unauthenticatedRequest.getProblemReported())
+                        .withProblemFound(unauthenticatedRequest.getProblemFound())
+                        .withSummary(unauthenticatedRequest.getSummary())
+                        .withCompletionDateTime(unauthenticatedRequest.getCompletionDateTime())
+                        .withCustomerId(claims.get("email"))
+                        .withCustomerName(claims.get("name"))
+                        .build());
+            },
+            // the call to our activity
+            (request, serviceComponent) ->
+                serviceComponent.provideUpdateWorkOrderActivity().handleRequest(request)
         );
     }
 }

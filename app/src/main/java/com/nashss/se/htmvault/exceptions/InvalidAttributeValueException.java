@@ -1,5 +1,6 @@
 package com.nashss.se.htmvault.exceptions;
 
+// from project template
 /**
  * Exception to throw when a provided value has invalid attribute values.
  */

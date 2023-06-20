@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+// from project template
 /**
  * Represents a generic, authenticated "APIGateway" request made to a lambda function.
  * @param <T> The type of the concrete request that should be created from this LambdaRequest

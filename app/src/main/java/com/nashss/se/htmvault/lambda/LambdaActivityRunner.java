@@ -2,12 +2,14 @@ package com.nashss.se.htmvault.lambda;
 
 import com.nashss.se.htmvault.dependency.DaggerServiceComponent;
 import com.nashss.se.htmvault.dependency.ServiceComponent;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
+// from project template
 public class LambdaActivityRunner<TRequest, TResult> {
     private ServiceComponent service;
     private final Logger log = LogManager.getLogger();

@@ -1,5 +1,6 @@
 package com.nashss.se.htmvault.exceptions;
 
+// from project template
 /**
  * General exception covering cases where an attribute is invalid.
  *

@@ -2,7 +2,6 @@ package com.nashss.se.htmvault.lambda;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,6 +12,7 @@ import java.util.function.Function;
 
 import static com.nashss.se.htmvault.utils.NullUtils.ifNull;
 
+// from project template
 /**
  * Represents a generic "APIGateway" request made to a lambda function.
  * @param <T> The type of the concrete request that should be created from this LambdaRequest
