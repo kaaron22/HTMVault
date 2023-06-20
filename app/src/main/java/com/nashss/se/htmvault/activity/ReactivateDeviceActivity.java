@@ -7,6 +7,7 @@ import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.ServiceStatus;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,12 +19,24 @@ public class ReactivateDeviceActivity {
     private final MetricsPublisher metricsPublisher;
     private final Logger log = LogManager.getLogger();
 
+    /**
+     * Instantiates a new Reactivate device activity.
+     *
+     * @param deviceDao        the device dao
+     * @param metricsPublisher the metrics publisher
+     */
     @Inject
     public ReactivateDeviceActivity(DeviceDao deviceDao, MetricsPublisher metricsPublisher) {
         this.deviceDao = deviceDao;
         this.metricsPublisher = metricsPublisher;
     }
 
+    /**
+     * Handles a request to reactivate/un-retire a device that was previously deactivated.
+     *
+     * @param reactivateDeviceRequest the reactivate device request
+     * @return the reactivate device result
+     */
     public ReactivateDeviceResult handleRequest(final ReactivateDeviceRequest reactivateDeviceRequest) {
         log.info("Received ReactivateDeviceRequest {}", reactivateDeviceRequest);
 
