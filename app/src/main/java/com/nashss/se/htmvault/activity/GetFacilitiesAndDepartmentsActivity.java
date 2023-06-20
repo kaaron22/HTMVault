@@ -46,6 +46,8 @@ public class GetFacilitiesAndDepartmentsActivity {
      * @return the get facilities and departments result
      */
     public GetFacilitiesAndDepartmentsResult handleRequest(final GetFacilitiesAndDepartmentsRequest request) {
+        log.info("Received GetFacilitiesAndDepartmentsRequest {}", request);
+
         List<FacilityDepartment> facilityDepartments = facilityDepartmentDao.getFacilityDepartments();
 
         // for each facility department (a single facility/department combination), add it to a map of the facilities

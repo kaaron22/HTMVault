@@ -67,6 +67,8 @@ class GetFacilitiesAndDepartmentsActivityTest {
 
         // WHEN
         GetFacilitiesAndDepartmentsResult result = getFacilitiesAndDepartmentsActivity.handleRequest(request);
+        List<FacilityDepartments> results = result.getFacilitiesAndDepartments();
+
         // the expected, sorted result
         FacilityDepartments facilityDepartments1 = FacilityDepartments.builder()
                 .withFacility("Test Hospital")
@@ -82,7 +84,6 @@ class GetFacilitiesAndDepartmentsActivityTest {
                 .build();
         List<FacilityDepartments> expected = new ArrayList<>(Arrays.asList(facilityDepartments2, facilityDepartments1,
                 facilityDepartments3));
-        List<FacilityDepartments> results = result.getFacilitiesAndDepartments();
 
         // THEN
         for (int i = 0; i < results.size(); i++) {
