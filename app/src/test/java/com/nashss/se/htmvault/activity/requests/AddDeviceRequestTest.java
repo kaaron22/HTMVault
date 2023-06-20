@@ -8,8 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class AddDeviceRequestTest {
 
-    private static final String ASSERT_EQUALS_FAILURE_MESSAGE = "Expected value set in request object to be what was " +
-            "passed to builder";
+    private static final String ASSERT_EQUALS_FAILURE_MESSAGE = "Expected value set in request object for the %s to " +
+            "be what was passed to builder";
     private String serialNumber;
     private String manufacturer;
     private String model;
@@ -54,15 +54,24 @@ class AddDeviceRequestTest {
 
         // THEN
         // all values should be set in the request object and should match the parameter passed in
-        assertEquals(serialNumber, addDeviceRequest.getSerialNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(manufacturer, addDeviceRequest.getManufacturer(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(model, addDeviceRequest.getModel(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(manufactureDate, addDeviceRequest.getManufactureDate(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(facilityName, addDeviceRequest.getFacilityName(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(notes, addDeviceRequest.getNotes(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(customerId, addDeviceRequest.getCustomerId(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(customerName, addDeviceRequest.getCustomerName(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(serialNumber, addDeviceRequest.getSerialNumber(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "serialNumber"));
+        assertEquals(manufacturer, addDeviceRequest.getManufacturer(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "manufacturer"));
+        assertEquals(model, addDeviceRequest.getModel(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "model"));
+        assertEquals(manufactureDate, addDeviceRequest.getManufactureDate(),
+                String.format(ASSERT_EQUALS_FAILURE_MESSAGE, "manufacture date"));
+        assertEquals(facilityName, addDeviceRequest.getFacilityName(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "facility name"));
+        assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(),
+                String.format(ASSERT_EQUALS_FAILURE_MESSAGE, "assigned department"));
+        assertEquals(notes, addDeviceRequest.getNotes(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "notes"));
+        assertEquals(customerId, addDeviceRequest.getCustomerId(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "customer id"));
+        assertEquals(customerName, addDeviceRequest.getCustomerName(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "customer name"));
     }
 
     @Test
@@ -84,15 +93,23 @@ class AddDeviceRequestTest {
 
         // THEN
         // those values should be null; the ones that were set should match the value passed in
-        assertEquals(serialNumber, addDeviceRequest.getSerialNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(manufacturer, addDeviceRequest.getManufacturer(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(model, addDeviceRequest.getModel(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertNull(addDeviceRequest.getManufactureDate(), "Expected value not built to be null");
-        assertEquals(facilityName, addDeviceRequest.getFacilityName(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertNull(addDeviceRequest.getNotes(), "Expected value not built to be null");
-        assertEquals(customerId, addDeviceRequest.getCustomerId(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(customerName, addDeviceRequest.getCustomerName(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(serialNumber, addDeviceRequest.getSerialNumber(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "serialNumber"));
+        assertEquals(manufacturer, addDeviceRequest.getManufacturer(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "manufacturer"));
+        assertEquals(model, addDeviceRequest.getModel(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "model"));
+        assertNull(addDeviceRequest.getManufactureDate(), "Expected value for manufacture date not built to " +
+                "be null");
+        assertEquals(facilityName, addDeviceRequest.getFacilityName(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "facility name"));
+        assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(),
+                String.format(ASSERT_EQUALS_FAILURE_MESSAGE, "assigned department"));
+        assertNull(addDeviceRequest.getNotes(), "Expected value for notes not built to be null");
+        assertEquals(customerId, addDeviceRequest.getCustomerId(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "customer id"));
+        assertEquals(customerName, addDeviceRequest.getCustomerName(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "customer name"));
     }
 
     @Test
@@ -117,15 +134,24 @@ class AddDeviceRequestTest {
         // THEN
         // the maintenance frequency set is 0, the remaining values should be set in the request object and should match
         // the values passed in
-        assertEquals(serialNumber, addDeviceRequest.getSerialNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(manufacturer, addDeviceRequest.getManufacturer(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(model, addDeviceRequest.getModel(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(manufactureDate, addDeviceRequest.getManufactureDate(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(facilityName, addDeviceRequest.getFacilityName(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(notes, addDeviceRequest.getNotes(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(customerId, addDeviceRequest.getCustomerId(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(customerName, addDeviceRequest.getCustomerName(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(serialNumber, addDeviceRequest.getSerialNumber(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "serialNumber"));
+        assertEquals(manufacturer, addDeviceRequest.getManufacturer(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "manufacturer"));
+        assertEquals(model, addDeviceRequest.getModel(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "model"));
+        assertEquals(manufactureDate, addDeviceRequest.getManufactureDate(),
+                String.format(ASSERT_EQUALS_FAILURE_MESSAGE, "manufacture date"));
+        assertEquals(facilityName, addDeviceRequest.getFacilityName(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "facility name"));
+        assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(),
+                String.format(ASSERT_EQUALS_FAILURE_MESSAGE, "assigned department"));
+        assertEquals(notes, addDeviceRequest.getNotes(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "notes"));
+        assertEquals(customerId, addDeviceRequest.getCustomerId(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "customer id"));
+        assertEquals(customerName, addDeviceRequest.getCustomerName(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "customer name"));
     }
 
     @Test
@@ -148,15 +174,23 @@ class AddDeviceRequestTest {
                 .build();
 
         // THEN
-        assertEquals(serialNumber, addDeviceRequest.getSerialNumber(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(manufacturer, addDeviceRequest.getManufacturer(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(model, addDeviceRequest.getModel(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(manufactureDate, addDeviceRequest.getManufactureDate(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(facilityName, addDeviceRequest.getFacilityName(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertNull(addDeviceRequest.getNotes(), "Expected value not built to be null");
-        assertEquals(customerId, addDeviceRequest.getCustomerId(), ASSERT_EQUALS_FAILURE_MESSAGE);
-        assertEquals(customerName, addDeviceRequest.getCustomerName(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(serialNumber, addDeviceRequest.getSerialNumber(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "serialNumber"));
+        assertEquals(manufacturer, addDeviceRequest.getManufacturer(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "manufacturer"));
+        assertEquals(model, addDeviceRequest.getModel(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "model"));
+        assertEquals(manufactureDate, addDeviceRequest.getManufactureDate(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "manufacture date"));
+        assertEquals(facilityName, addDeviceRequest.getFacilityName(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "facility name"));
+        assertEquals(assignedDepartment, addDeviceRequest.getAssignedDepartment(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "assigned department"));
+        assertNull(addDeviceRequest.getNotes(), "Expected value for notes not built to be null");
+        assertEquals(customerId, addDeviceRequest.getCustomerId(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "customer id"));
+        assertEquals(customerName, addDeviceRequest.getCustomerName(), String.format(ASSERT_EQUALS_FAILURE_MESSAGE,
+                "customer name"));
     }
 
     @Test
@@ -191,7 +225,8 @@ class AddDeviceRequestTest {
                 '}';
 
         // THEN
-        assertEquals(expectedString, addDeviceRequest.toString(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(expectedString, addDeviceRequest.toString(), "the 'toString' method did not match what " +
+                "was expected with all values non-null");
     }
 
     @Test
@@ -225,6 +260,7 @@ class AddDeviceRequestTest {
 
         // THEN
         // those values should be "null" in the string; the ones that were built should match the value passed in
-        assertEquals(expectedString, addDeviceRequest.toString(), ASSERT_EQUALS_FAILURE_MESSAGE);
+        assertEquals(expectedString, addDeviceRequest.toString(), "the 'toString' method did not match what " +
+                "was expected with some values null");
     }
 }
