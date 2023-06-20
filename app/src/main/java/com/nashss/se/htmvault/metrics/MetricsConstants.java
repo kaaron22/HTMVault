@@ -23,6 +23,8 @@ public class MetricsConstants {
             "UpdateDevice.InvalidAttributeValueException.Count";
     public static final String UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT =
             "UpdateWorkOrder.WorkOrderNotFoundException.Count";
+    public static final String CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT =
+            "CloseWorkOrder.CloseWorkOrderNotComplete.Count";
 
     public static final String SERVICE = "Service";
     public static final String SERVICE_NAME = "HTMVault";
