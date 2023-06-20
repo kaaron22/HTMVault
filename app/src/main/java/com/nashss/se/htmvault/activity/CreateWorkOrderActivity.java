@@ -17,13 +17,15 @@ import com.nashss.se.htmvault.models.SortOrder;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderType;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class CreateWorkOrderActivity {
 
@@ -32,6 +34,13 @@ public class CreateWorkOrderActivity {
     private final MetricsPublisher metricsPublisher;
     private final Logger log = LogManager.getLogger();
 
+    /**
+     * Instantiates a new Create work order activity.
+     *
+     * @param deviceDao        the device dao
+     * @param workOrderDao     the work order dao
+     * @param metricsPublisher the metrics publisher
+     */
     @Inject
     public CreateWorkOrderActivity(DeviceDao deviceDao, WorkOrderDao workOrderDao, MetricsPublisher metricsPublisher) {
         this.deviceDao = deviceDao;
@@ -39,6 +48,15 @@ public class CreateWorkOrderActivity {
         this.metricsPublisher = metricsPublisher;
     }
 
+    /**
+     * Handles a request to create a new work order, with checks to verify the device to which this work
+     * order is attached does exist, and that the inputs for creating the work order are valid (i.e. a valid
+     * work order type, such as 'preventative maintenance' or 'repair'). Additionally, verifies that required
+     * input is not null or blank.
+     *
+     * @param createWorkOrderRequest the create work order request
+     * @return the create work order result
+     */
     public CreateWorkOrderResult handleRequest(final CreateWorkOrderRequest createWorkOrderRequest) {
         log.info("Received CreateWorkOrderRequest {}", createWorkOrderRequest);
 
@@ -124,6 +142,16 @@ public class CreateWorkOrderActivity {
                 .build();
     }
 
+    // from project template
+    /**
+     * A helper method to check that the sort order for the resulting, updated list of work orders
+     * that is to be returned, is a valid sort order. Throws an exception if the sort order is invalid,
+     * though a null sort order is handled as the default (descending), for cases when the user does
+     * not explicitly provide one.
+     *
+     * @param sortOrder the sort order (i.e. descending or ascending by the work order's defined comparator)
+     * @return the sort order to use, including descending by default if none selected
+     */
     private String computeOrder(String sortOrder) {
         String computedSortOrder = sortOrder;
 
