@@ -5,7 +5,8 @@ import com.nashss.se.htmvault.models.FacilityDepartments;
 import java.util.Comparator;
 
 /**
- * Compares facility/department objects by the facility name (hash key).
+ * Compares public FacilityDepartments objects, each containing a facility name and a list
+ * of associated models, by the facility name.
  */
 public class FacilityDepartmentsComparator implements Comparator<FacilityDepartments> {
     @Override
