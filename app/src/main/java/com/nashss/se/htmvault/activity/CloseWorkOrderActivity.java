@@ -9,6 +9,8 @@ import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.exceptions.CloseWorkOrderNotCompleteException;
+import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
+import com.nashss.se.htmvault.exceptions.WorkOrderNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
@@ -54,7 +56,17 @@ public class CloseWorkOrderActivity {
         log.info("Received CloseWorkOrderRequest {}", closeWorkOrderRequest);
 
         // retrieve work order from database (work order not found exception is thrown by dao if applicable)
-        WorkOrder workOrder = workOrderDao.getWorkOrder(closeWorkOrderRequest.getWorkOrderId());
+        WorkOrder workOrder;
+        try {
+            workOrder = workOrderDao.getWorkOrder(closeWorkOrderRequest.getWorkOrderId());
+            metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        } catch (WorkOrderNotFoundException e) {
+            metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
+            log.info("A request was made to close a work order ({}) that could not be found",
+                    closeWorkOrderRequest.getWorkOrderId());
+            throw new WorkOrderNotFoundException("Attempted to close a work order that was not found " +
+                    e.getMessage());
+        }
 
         // if the work order is already closed, there's nothing to do except return the result with the converted
         // work order
@@ -136,10 +148,30 @@ public class CloseWorkOrderActivity {
     public Device advanceMaintenanceStatsWithWorkOrderIfApplicable(String workOrderId) {
         // we limit this attempt based on actual work order information in the database, to prevent unofficial
         // work order information from affecting the maintenance stats
-        WorkOrder workOrder = workOrderDao.getWorkOrder(workOrderId);
+        WorkOrder workOrder;
+        try {
+            workOrder = workOrderDao.getWorkOrder(workOrderId);
+            metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        } catch (WorkOrderNotFoundException e) {
+            metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
+            log.info("Could not find work order ({}) while attempting to update maintenance stats",
+                    workOrderId);
+            throw new WorkOrderNotFoundException("Unable to find the work order " + workOrderId + "while attempting " +
+                    "to update maintenance stats");
+        }
 
         // the device to which this work order pertains, which will potentially be updated
-        Device device = deviceDao.getDevice(workOrder.getControlNumber());
+        Device device;
+        try {
+            device = deviceDao.getDevice(workOrder.getControlNumber());
+            metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
+        } catch (DeviceNotFoundException e) {
+            metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 1);
+            log.info("Could not find device ({}) while attempting to update maintenance stats",
+                    workOrder.getControlNumber());
+            throw new DeviceNotFoundException("Unable to find the device for the provided work order while " +
+                    "attempting to update maintenance stats");
+        }
 
         // if this is not a closed Preventative Maintenance or Acceptance Test work order, there's nothing to update
         if (!(workOrder.getWorkOrderCompletionStatus() == WorkOrderCompletionStatus.CLOSED)) {

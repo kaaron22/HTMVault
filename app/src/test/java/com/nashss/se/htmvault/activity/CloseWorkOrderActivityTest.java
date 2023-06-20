@@ -11,6 +11,7 @@ import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.exceptions.CloseWorkOrderNotCompleteException;
 import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
 import com.nashss.se.htmvault.exceptions.WorkOrderNotFoundException;
+import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.WorkOrderAwaitStatus;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
@@ -33,6 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -98,6 +100,7 @@ class CloseWorkOrderActivityTest {
 
         // THEN
         WorkOrderTestHelper.assertWorkOrderEqualsWorkOrderModel(expectedWorkOrder, workOrderModel);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 0);
     }
 
     @Test
@@ -110,6 +113,7 @@ class CloseWorkOrderActivityTest {
                 closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
                 "Expected a request to close a work order that was not found to result in a " +
                         "WorkOrderNotFoundException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
     }
 
     @Test
@@ -126,6 +130,7 @@ class CloseWorkOrderActivityTest {
 
         // THEN
         WorkOrderTestHelper.assertWorkOrderEqualsWorkOrderModel(expectedWorkOrder, closeWorkOrderResult.getWorkOrder());
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
     }
 
     @Test
@@ -145,6 +150,7 @@ class CloseWorkOrderActivityTest {
                         closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
                 "Expected a request to close a work order that has a blank 'problem found' to result in a " +
                         "CloseWorkOrderNotCompleteException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 1);
     }
 
     @Test
@@ -164,6 +170,7 @@ class CloseWorkOrderActivityTest {
                         closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
                 "Expected a request to close a work order that has a null 'problem found' to result in a " +
                         "CloseWorkOrderNotCompleteException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 1);
     }
 
     @Test
@@ -182,6 +189,7 @@ class CloseWorkOrderActivityTest {
                         closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
                 "Expected a request to close a work order that has an empty 'summary' to result in a " +
                         "CloseWorkOrderNotCompleteException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 1);
     }
 
     @Test
@@ -200,6 +208,7 @@ class CloseWorkOrderActivityTest {
                         closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
                 "Expected a request to close a work order that has a null 'summary' to result in a " +
                         "CloseWorkOrderNotCompleteException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 1);
     }
 
     @Test
@@ -217,6 +226,7 @@ class CloseWorkOrderActivityTest {
                         closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
                 "Expected a request to close a work order that has a null 'completion date time' to result " +
                         "in a CloseWorkOrderNotCompleteException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 1);
     }
 
     @Test
@@ -229,6 +239,7 @@ class CloseWorkOrderActivityTest {
                 closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123"),
                 "Expected attempting to advance maintenance stats with a work order ID not found to result " +
                         "in a WorkOrderNotFoundException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
     }
 
     @Test
@@ -242,6 +253,8 @@ class CloseWorkOrderActivityTest {
                         closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123"),
                 "Expected attempting to advance maintenance stats with a work order ID references a device " +
                         "that is not found to result in a DeviceNotFoundException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 1);
     }
 
     @Test
@@ -264,6 +277,8 @@ class CloseWorkOrderActivityTest {
         // THEN
         assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
                 "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
@@ -287,6 +302,8 @@ class CloseWorkOrderActivityTest {
         // THEN
         assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
                 "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
@@ -314,6 +331,8 @@ class CloseWorkOrderActivityTest {
         // THEN
         assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
                 "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
@@ -350,6 +369,8 @@ class CloseWorkOrderActivityTest {
         // THEN
         assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
                 "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
@@ -389,6 +410,8 @@ class CloseWorkOrderActivityTest {
         // THEN
         assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
                 "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
@@ -428,6 +451,8 @@ class CloseWorkOrderActivityTest {
         // THEN
         assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
                 "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
@@ -467,6 +492,8 @@ class CloseWorkOrderActivityTest {
         // THEN
         assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
                 "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
@@ -506,6 +533,8 @@ class CloseWorkOrderActivityTest {
         // THEN
         assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
                 "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
@@ -545,6 +574,8 @@ class CloseWorkOrderActivityTest {
         // THEN
         assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
                 "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
@@ -581,6 +612,8 @@ class CloseWorkOrderActivityTest {
         // THEN
         assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
                 "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
@@ -619,6 +652,8 @@ class CloseWorkOrderActivityTest {
         // THEN
         assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
                 "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     private WorkOrder copyWorkOrder(WorkOrder workOrderToCopy) {

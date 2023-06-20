@@ -24,7 +24,11 @@ public class MetricsConstants {
     public static final String UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT =
             "UpdateWorkOrder.WorkOrderNotFoundException.Count";
     public static final String CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT =
-            "CloseWorkOrder.CloseWorkOrderNotComplete.Count";
+            "CloseWorkOrder.CloseWorkOrderNotCompleteException.Count";
+    public static final String CLOSEWORKORDER_DEVICENOTFOUND_COUNT =
+            "CloseWorkOrder.DeviceNotFoundException.Count";
+    public static final String CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT =
+            "CloseWorkOrder.WorkOrderNotFoundException.Count";
 
     public static final String SERVICE = "Service";
     public static final String SERVICE_NAME = "HTMVault";
