@@ -38,11 +38,12 @@ class GetFacilitiesAndDepartmentsActivityTest {
     }
 
     @Test
-    public void handleRequest_requestForFacilitiesAndModels_returnsSortedListOfFacilitiesAndDepartmentsInResult() {
+    public void handleRequest_requestForFacilitiesAndDepartments_returnsSortedListOfFacilitiesAndDepartmentsInResult() {
         // GIVEN
         GetFacilitiesAndDepartmentsRequest request = GetFacilitiesAndDepartmentsRequest.builder()
                 .build();
 
+        // our individual facility/department objects to be returned when a mock call to the database is made
         FacilityDepartment facilityDepartment1 = new FacilityDepartment();
         facilityDepartment1.setFacilityName("Test Hospital");
         facilityDepartment1.setAssignedDepartment("ICU");
@@ -66,6 +67,7 @@ class GetFacilitiesAndDepartmentsActivityTest {
 
         // WHEN
         GetFacilitiesAndDepartmentsResult result = getFacilitiesAndDepartmentsActivity.handleRequest(request);
+        // the expected, sorted result
         FacilityDepartments facilityDepartments1 = FacilityDepartments.builder()
                 .withFacility("Test Hospital")
                 .withDepartments(new ArrayList<>(Arrays.asList("ER", "ICU")))
@@ -84,7 +86,9 @@ class GetFacilitiesAndDepartmentsActivityTest {
 
         // THEN
         for (int i = 0; i < results.size(); i++) {
-            assertTrue(results.contains(expected.get(i)));
+            assertTrue(results.contains(expected.get(i)), "The resulting list of FacilityDepartments " +
+                    "converted from a list of individual facility/department objects did not match what was expected," +
+                    "in the order expected");
         }
     }
 
