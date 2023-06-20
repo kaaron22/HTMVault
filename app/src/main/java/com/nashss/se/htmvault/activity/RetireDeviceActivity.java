@@ -4,7 +4,6 @@ import com.nashss.se.htmvault.activity.requests.RetireDeviceRequest;
 import com.nashss.se.htmvault.activity.results.RetireDeviceResult;
 import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
-
 import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
@@ -12,12 +11,13 @@ import com.nashss.se.htmvault.exceptions.RetireDeviceWithOpenWorkOrdersException
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.ServiceStatus;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.inject.Inject;
 import java.util.List;
 
+import javax.inject.Inject;
 
 public class RetireDeviceActivity {
 
@@ -26,6 +26,13 @@ public class RetireDeviceActivity {
     private final Logger log = LogManager.getLogger();
     private final MetricsPublisher metricsPublisher;
 
+    /**
+     * Instantiates a new Retire device activity.
+     *
+     * @param deviceDao        the device dao
+     * @param workOrderDao     the work order dao
+     * @param metricsPublisher the metrics publisher
+     */
     @Inject
     public RetireDeviceActivity(DeviceDao deviceDao, WorkOrderDao workOrderDao, MetricsPublisher metricsPublisher) {
         this.deviceDao = deviceDao;
@@ -33,6 +40,13 @@ public class RetireDeviceActivity {
         this.metricsPublisher = metricsPublisher;
     }
 
+    /**
+     * Handles a request to perform a soft delete of a device (moving it to an inactive status). If the device has
+     * any work orders that are in an open status, a RetireDeviceWithOpenWorkOrdersException will be thrown.
+     *
+     * @param retireDeviceRequest the retire device request
+     * @return the retire device result
+     */
     public RetireDeviceResult handleRequest(final RetireDeviceRequest retireDeviceRequest) {
         log.info("Received RetireDeviceRequest {}", retireDeviceRequest);
 
