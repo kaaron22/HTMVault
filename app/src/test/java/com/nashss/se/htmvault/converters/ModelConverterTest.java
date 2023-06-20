@@ -100,22 +100,7 @@ class ModelConverterTest {
         DeviceModel deviceModel = modelConverter.toDeviceModel(device);
 
         // THEN
-        assertEquals(controlNumber, deviceModel.getControlNumber());
-        assertEquals(serialNumber, deviceModel.getSerialNumber());
-        assertEquals(manufacturer, deviceModel.getManufacturer());
-        assertEquals(model, deviceModel.getModel());
-        assertEquals(manufactureDate.toString(), deviceModel.getManufactureDate());
-        assertEquals(serviceStatus.toString(), deviceModel.getServiceStatus());
-        assertEquals(facilityName, deviceModel.getFacilityName());
-        assertEquals(assignedDepartment, deviceModel.getAssignedDepartment());
-        assertEquals(complianceThroughDate.toString(), deviceModel.getComplianceThroughDate());
-        assertEquals(lastPmCompletionDate.toString(), deviceModel.getLastPmCompletionDate());
-        assertEquals(nextPmDueDate.toString(), deviceModel.getNextPmDueDate());
-        assertEquals(maintenanceFrequencyInMonths, deviceModel.getMaintenanceFrequencyInMonths());
-        assertEquals(inventoryAddDate.toString(), deviceModel.getInventoryAddDate());
-        assertEquals(addedById, deviceModel.getAddedById());
-        assertEquals(addedByName, deviceModel.getAddedByName());
-        assertEquals(notes, deviceModel.getNotes());
+        DeviceTestHelper.assertDeviceEqualsDeviceModel(device, deviceModel);
     }
 
     @Test
@@ -142,22 +127,7 @@ class ModelConverterTest {
         DeviceModel deviceModel = modelConverter.toDeviceModel(device);
 
         // THEN
-        assertEquals(controlNumber, deviceModel.getControlNumber());
-        assertEquals(serialNumber, deviceModel.getSerialNumber());
-        assertEquals(manufacturer, deviceModel.getManufacturer());
-        assertEquals(model, deviceModel.getModel());
-        assertEquals("", deviceModel.getManufactureDate());
-        assertEquals(serviceStatus.toString(), deviceModel.getServiceStatus());
-        assertEquals(facilityName, deviceModel.getFacilityName());
-        assertEquals(assignedDepartment, deviceModel.getAssignedDepartment());
-        assertEquals("", deviceModel.getComplianceThroughDate());
-        assertEquals("", deviceModel.getLastPmCompletionDate());
-        assertEquals("", deviceModel.getNextPmDueDate());
-        assertEquals(0, deviceModel.getMaintenanceFrequencyInMonths());
-        assertEquals(inventoryAddDate.toString(), deviceModel.getInventoryAddDate());
-        assertEquals(addedById, deviceModel.getAddedById());
-        assertEquals(addedByName, deviceModel.getAddedByName());
-        assertEquals("", deviceModel.getNotes());
+        DeviceTestHelper.assertDeviceEqualsDeviceModel(device, deviceModel);
     }
 
     @Test
