@@ -65,8 +65,13 @@ public class CreateWorkOrderActivity {
         Device device;
         try {
             device = deviceDao.getDevice(controlNumber);
+            metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 0);
         } catch (DeviceNotFoundException e) {
-            throw new DeviceNotFoundException(e.getMessage());
+            metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 1);
+            log.info("Could not find a device in the database matching the control number ({}) to which this work" +
+                    "order should be attached", controlNumber);
+            throw new DeviceNotFoundException("Unable to find the device to which the new work order should " +
+                    "be attached when attempting to create a new work order. " + e.getMessage());
         }
 
         // verify the work order type is one of the types allowed
@@ -79,6 +84,8 @@ public class CreateWorkOrderActivity {
         }
         if (!validWorkOrderType) {
             metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            log.info("An attempt was made to create a work order using an invalid work order type ({})",
+                    createWorkOrderRequest.getWorkOrderType());
             throw new InvalidAttributeValueException("The work order type provided must be one of: " +
                     Arrays.toString(WorkOrderType.values()));
         }
@@ -87,7 +94,10 @@ public class CreateWorkOrderActivity {
         String problemReported = createWorkOrderRequest.getProblemReported();
         if (null == problemReported || problemReported.isBlank()) {
             metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            throw new InvalidAttributeValueException("The problem reported cannot be null or blank");
+            log.info("A create work order request was made with an invalid 'problem reported' ({})",
+                    problemReported);
+            throw new InvalidAttributeValueException("The problem reported while creating a work order cannot be " +
+                    "null or blank");
         }
 
         // if the request passes validation, create the new work order, with initial values set,
@@ -142,7 +152,7 @@ public class CreateWorkOrderActivity {
                 .build();
     }
 
-    // from project template
+    // from project template, modified for project
     /**
      * A helper method to check that the sort order for the resulting, updated list of work orders
      * that is to be returned, is a valid sort order. Throws an exception if the sort order is invalid,
@@ -159,7 +169,10 @@ public class CreateWorkOrderActivity {
             computedSortOrder = SortOrder.DEFAULT;
         } else if (!Arrays.asList(SortOrder.values()).contains(sortOrder)) {
             metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            throw new InvalidAttributeValueException(String.format("Unrecognized sort order: '%s'", sortOrder));
+            log.info("The sort order specified ({}) while attempting to create a work order was invalid",
+                    sortOrder);
+            throw new InvalidAttributeValueException(String.format("Unrecognized sort order (%s) while attempting to " +
+                    "create new work order.", sortOrder));
         }
 
         return computedSortOrder;
