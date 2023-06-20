@@ -117,22 +117,31 @@ class AddDeviceActivityTest {
         // THEN
         verify(deviceDao).saveDevice(any(Device.class));
         verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
-        assertEquals(controlNumber, deviceModel.getControlNumber());
-        assertEquals(serialNumber, deviceModel.getSerialNumber());
-        assertEquals(manufacturer, deviceModel.getManufacturer());
-        assertEquals(model, deviceModel.getModel());
-        assertEquals(manufactureDate, deviceModel.getManufactureDate());
-        assertEquals(ServiceStatus.IN_SERVICE.toString(), deviceModel.getServiceStatus());
-        assertEquals(facilityName, deviceModel.getFacilityName());
-        assertEquals(assignedDepartment, deviceModel.getAssignedDepartment());
-        assertEquals("", deviceModel.getComplianceThroughDate());
-        assertEquals("", deviceModel.getLastPmCompletionDate());
-        assertEquals(LocalDate.now().toString(), deviceModel.getNextPmDueDate());
-        assertEquals(maintenanceFrequencyInMonths, deviceModel.getMaintenanceFrequencyInMonths());
-        assertEquals(LocalDate.now().toString(), deviceModel.getInventoryAddDate());
-        assertEquals(customerId, deviceModel.getAddedById());
-        assertEquals(customerName, deviceModel.getAddedByName());
-        assertEquals(notes, deviceModel.getNotes());
+        assertEquals(controlNumber, deviceModel.getControlNumber(), "expected the control number to match");
+        assertEquals(serialNumber, deviceModel.getSerialNumber(), "expected the serial number to match");
+        assertEquals(manufacturer, deviceModel.getManufacturer(), "expected the manufacturer to match");
+        assertEquals(model, deviceModel.getModel(), "expected the model to match");
+        assertEquals(manufactureDate, deviceModel.getManufactureDate(), "expected the manufacture date to match");
+        assertEquals(ServiceStatus.IN_SERVICE.toString(), deviceModel.getServiceStatus(), "expected the " +
+                "service status for the device to match");
+        assertEquals(facilityName, deviceModel.getFacilityName(), "expected the facility name to match");
+        assertEquals(assignedDepartment, deviceModel.getAssignedDepartment(), "expected the department to " +
+                "match");
+        assertEquals("", deviceModel.getComplianceThroughDate(), "expected the " +
+                "compliance-through-date to match");
+        assertEquals("", deviceModel.getLastPmCompletionDate(), "expected the last pm completion " +
+                "date to match");
+        assertEquals(LocalDate.now().toString(), deviceModel.getNextPmDueDate(), "expected the next pm due " +
+                "date to match");
+        assertEquals(maintenanceFrequencyInMonths, deviceModel.getMaintenanceFrequencyInMonths(), "expected " +
+                "the maintenance frequency to match");
+        assertEquals(LocalDate.now().toString(), deviceModel.getInventoryAddDate(), "expected the inventory " +
+                "add date to match");
+        assertEquals(customerId, deviceModel.getAddedById(), "expected the id of the customer that added the device " +
+                "to match");
+        assertEquals(customerName, deviceModel.getAddedByName(), "expected the name of the customer that " +
+                "added the device to match");
+        assertEquals(notes, deviceModel.getNotes(), "expected the device's notes to match");
     }
 
     @Test
@@ -163,22 +172,31 @@ class AddDeviceActivityTest {
         // THEN
         verify(deviceDao).saveDevice(any(Device.class));
         verify(metricsPublisher).addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
-        assertEquals(controlNumber, deviceModel.getControlNumber());
-        assertEquals(serialNumber, deviceModel.getSerialNumber());
-        assertEquals(manufacturer, deviceModel.getManufacturer());
-        assertEquals(model, deviceModel.getModel());
-        assertEquals(manufactureDate, deviceModel.getManufactureDate());
-        assertEquals(ServiceStatus.IN_SERVICE.toString(), deviceModel.getServiceStatus());
-        assertEquals(facilityName, deviceModel.getFacilityName());
-        assertEquals(assignedDepartment, deviceModel.getAssignedDepartment());
-        assertEquals("", deviceModel.getComplianceThroughDate());
-        assertEquals("", deviceModel.getLastPmCompletionDate());
-        assertEquals("", deviceModel.getNextPmDueDate());
-        assertEquals(0, deviceModel.getMaintenanceFrequencyInMonths());
-        assertEquals(LocalDate.now().toString(), deviceModel.getInventoryAddDate());
-        assertEquals(customerId, deviceModel.getAddedById());
-        assertEquals(customerName, deviceModel.getAddedByName());
-        assertEquals(notes, deviceModel.getNotes());
+        assertEquals(controlNumber, deviceModel.getControlNumber(), "expected the control number to match");
+        assertEquals(serialNumber, deviceModel.getSerialNumber(), "expected the serial number to match");
+        assertEquals(manufacturer, deviceModel.getManufacturer(), "expected the manufacturer to match");
+        assertEquals(model, deviceModel.getModel(), "expected the model to match");
+        assertEquals(manufactureDate, deviceModel.getManufactureDate(), "expected the manufacture date to match");
+        assertEquals(ServiceStatus.IN_SERVICE.toString(), deviceModel.getServiceStatus(), "expected the " +
+                "service status for the device to match");
+        assertEquals(facilityName, deviceModel.getFacilityName(), "expected the facility name to match");
+        assertEquals(assignedDepartment, deviceModel.getAssignedDepartment(), "expected the department to " +
+                "match");
+        assertEquals("", deviceModel.getComplianceThroughDate(), "expected the " +
+                "compliance-through-date to match");
+        assertEquals("", deviceModel.getLastPmCompletionDate(), "expected the last pm completion " +
+                "date to match");
+        assertEquals("", deviceModel.getNextPmDueDate(), "expected the next pm due " +
+                "date to match");
+        assertEquals(0, deviceModel.getMaintenanceFrequencyInMonths(), "expected " +
+                "the maintenance frequency to match");
+        assertEquals(LocalDate.now().toString(), deviceModel.getInventoryAddDate(), "expected the inventory " +
+                "add date to match");
+        assertEquals(customerId, deviceModel.getAddedById(), "expected the id of the customer that added the device " +
+                "to match");
+        assertEquals(customerName, deviceModel.getAddedByName(), "expected the name of the customer that " +
+                "added the device to match");
+        assertEquals(notes, deviceModel.getNotes(), "expected the device's notes to match");
     }
 
     @Test
