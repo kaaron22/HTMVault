@@ -18,6 +18,7 @@ import static org.mockito.MockitoAnnotations.openMocks;
 class GetWorkOrderActivityTest {
     @Mock
     private WorkOrderDao workOrderDao;
+    @Mock
     private MetricsPublisher metricsPublisher;
 
     private GetWorkOrderActivity getWorkOrderActivity;
