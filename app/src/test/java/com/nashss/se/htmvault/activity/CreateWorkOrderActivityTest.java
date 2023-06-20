@@ -67,6 +67,7 @@ class CreateWorkOrderActivityTest {
                 "Expected a create work order request for a device not found to result in an" +
                         "DeviceNotFoundException thrown");
         verifyNoInteractions(workOrderDao);
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 1);
     }
 
     @Test
@@ -83,6 +84,7 @@ class CreateWorkOrderActivityTest {
                 createWorkOrderActivity.handleRequest(createWorkOrderRequest),
                 "Expected a create work order request with an invalid work order type to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
         verifyNoInteractions(workOrderDao);
     }
@@ -101,6 +103,7 @@ class CreateWorkOrderActivityTest {
                         createWorkOrderActivity.handleRequest(createWorkOrderRequest),
                 "Expected a create work order request with problem reported null to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
         verifyNoInteractions(workOrderDao);
     }
@@ -120,6 +123,7 @@ class CreateWorkOrderActivityTest {
                         createWorkOrderActivity.handleRequest(createWorkOrderRequest),
                 "Expected a create work order request with a blank problem reported to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
         verifyNoInteractions(workOrderDao);
     }
@@ -141,6 +145,7 @@ class CreateWorkOrderActivityTest {
                 "Expected a create work order request with an invalid sort order to result in an " +
                         "InvalidAttributeValueException thrown");
         verifyNoInteractions(workOrderDao);
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
@@ -217,6 +222,7 @@ class CreateWorkOrderActivityTest {
         // verify the work order models are in the proper sort order
         assertWorkOrderModelsSortedCorrectly(expectedOrderWorkOrders, workOrderModels);
         verify(workOrderDao).saveWorkOrder(any(WorkOrder.class));
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 0);
     }
 
