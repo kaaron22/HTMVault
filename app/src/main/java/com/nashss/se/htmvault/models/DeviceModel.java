@@ -1,6 +1,5 @@
 package com.nashss.se.htmvault.models;
 
-
 import java.util.Objects;
 
 public class DeviceModel {
