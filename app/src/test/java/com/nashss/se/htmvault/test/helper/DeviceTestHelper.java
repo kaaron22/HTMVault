@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+// initial from template project, modified/added methods for capstone
 public final class DeviceTestHelper {
     private DeviceTestHelper() {
     }
@@ -64,28 +65,40 @@ public final class DeviceTestHelper {
     }
 
     public static void assertDeviceEqualsDeviceModel(Device device, DeviceModel deviceModel, String message) {
-        assertEquals(device.getControlNumber(), deviceModel.getControlNumber());
-        assertEquals(device.getSerialNumber(), deviceModel.getSerialNumber());
-        assertEquals(device.getManufacturerModel().getManufacturer(), deviceModel.getManufacturer());
-        assertEquals(device.getManufacturerModel().getModel(), deviceModel.getModel());
+        assertEquals(device.getControlNumber(), deviceModel.getControlNumber(), "expected the control " +
+                "number to match");
+        assertEquals(device.getSerialNumber(), deviceModel.getSerialNumber(), "expected the serial number " +
+                "to match");
+        assertEquals(device.getManufacturerModel().getManufacturer(), deviceModel.getManufacturer(),
+                "expected the manufacturer to match");
+        assertEquals(device.getManufacturerModel().getModel(), deviceModel.getModel(), "expected the model " +
+                "to match");
         assertEquals(null == device.getManufactureDate() ? "" : device.getManufactureDate().toString(),
-                deviceModel.getManufactureDate());
-        assertEquals(device.getServiceStatus().toString(), deviceModel.getServiceStatus());
-        assertEquals(device.getFacilityName(), deviceModel.getFacilityName());
-        assertEquals(device.getAssignedDepartment(), deviceModel.getAssignedDepartment());
+                deviceModel.getManufactureDate(), "expected the manufacture date to match");
+        assertEquals(device.getServiceStatus().toString(), deviceModel.getServiceStatus(), "expected the " +
+                "service status to match");
+        assertEquals(device.getFacilityName(), deviceModel.getFacilityName(), "expected the facility name " +
+                "to match");
+        assertEquals(device.getAssignedDepartment(), deviceModel.getAssignedDepartment(), "expected the " +
+                "assigned department to match");
         assertEquals(null == device.getComplianceThroughDate() ? "" : device.getComplianceThroughDate().toString(),
-                deviceModel.getComplianceThroughDate());
+                deviceModel.getComplianceThroughDate(), "expected the compliance-through-date to match");
         assertEquals(null == device.getLastPmCompletionDate() ? "" : device.getLastPmCompletionDate().toString(),
-                deviceModel.getLastPmCompletionDate());
+                deviceModel.getLastPmCompletionDate(), "expected the last pm completion date to match");
         assertEquals(null == device.getNextPmDueDate() ? "" : device.getNextPmDueDate().toString(),
-                deviceModel.getNextPmDueDate());
+                deviceModel.getNextPmDueDate(), "expected the next pm due date to match");
         assertEquals(null == device.getManufacturerModel()
                 .getRequiredMaintenanceFrequencyInMonths() ? 0 : device.getManufacturerModel()
-                .getRequiredMaintenanceFrequencyInMonths(), deviceModel.getMaintenanceFrequencyInMonths());
-        assertEquals(device.getInventoryAddDate().toString(), deviceModel.getInventoryAddDate());
-        assertEquals(device.getAddedById(), deviceModel.getAddedById());
-        assertEquals(device.getAddedByName(), deviceModel.getAddedByName());
-        assertEquals(null == device.getNotes() ? "" : device.getNotes(), deviceModel.getNotes());
+                .getRequiredMaintenanceFrequencyInMonths(), deviceModel.getMaintenanceFrequencyInMonths(),
+                "expected the maintenance frequency to match");
+        assertEquals(device.getInventoryAddDate().toString(), deviceModel.getInventoryAddDate(), "expected " +
+                "the inventory add date to match");
+        assertEquals(device.getAddedById(), deviceModel.getAddedById(), "expected the customer " +
+                "id that added the device to match");
+        assertEquals(device.getAddedByName(), deviceModel.getAddedByName(), "expected the customer name" +
+                "that added the device to match");
+        assertEquals(null == device.getNotes() ? "" : device.getNotes(), deviceModel.getNotes(), "expected " +
+                "the device notes to match");
     }
 
     public static void assertDeviceEqualsDeviceModel(Device device, DeviceModel deviceModel) {
