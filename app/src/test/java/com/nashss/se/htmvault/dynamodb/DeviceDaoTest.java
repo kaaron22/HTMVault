@@ -106,18 +106,8 @@ class DeviceDaoTest {
         manufacturerModel.setModel("Their First Monitor Model");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
 
-        // an array of, for this test, one mocked "matching" device found in the database for the "new"
-        // device we are trying to add with serial number, manufacturer, and model, so we should not be able to add it
-        // "again" (an exception should be thrown)
-        Device[] deviceArray = new Device[1];
-        deviceArray[0] = new Device();
-
         // mocked paginated query list to return
         when(dynamoDBMapper.query(eq(Device.class), any(DynamoDBQueryExpression.class))).thenReturn(queryList);
-
-        // mocked device array to return when the arraylist constructor attempts to convert the mocked
-        // paginated query list
-        when(queryList.toArray()).thenReturn(deviceArray);
 
         // captor for the query expression invoked when we call the method under test
         ArgumentCaptor<DynamoDBQueryExpression<Device>> captor = ArgumentCaptor.forClass(DynamoDBQueryExpression.class);
