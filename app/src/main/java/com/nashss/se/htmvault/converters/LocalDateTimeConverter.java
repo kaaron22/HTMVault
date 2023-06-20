@@ -15,10 +15,11 @@ public class LocalDateTimeConverter implements DynamoDBTypeConverter<String, Loc
 
     @Override
     public String convert(LocalDateTime localDateTimeToSerialize) {
+        // filters out nanos from the local date time, if present, when converting to a string
         LocalDate localDate = LocalDate.of(localDateTimeToSerialize.getYear(), localDateTimeToSerialize.getMonth(),
                 localDateTimeToSerialize.getDayOfMonth());
-        LocalTime localTimeWithoutNanos = LocalTime.of(localDateTimeToSerialize.getHour(), localDateTimeToSerialize.getMinute(),
-                localDateTimeToSerialize.getSecond());
+        LocalTime localTimeWithoutNanos = LocalTime.of(localDateTimeToSerialize.getHour(),
+                localDateTimeToSerialize.getMinute(), localDateTimeToSerialize.getSecond());
         LocalDateTime localDateTimeWithoutNanos = LocalDateTime.of(localDate, localTimeWithoutNanos);
         return localDateTimeWithoutNanos.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
