@@ -53,7 +53,6 @@ public class AddDeviceActivity {
         this.metricsPublisher = metricsPublisher;
     }
 
-
     /**
      * Creates and adds the device per the request, with checks for valid input (i.e. the serial number is not null or
      * blank and contains only the characters allowed, the manufacturer/model combination is a valid one, etc.).
@@ -86,7 +85,8 @@ public class AddDeviceActivity {
             metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             log.info("The manufacturer/model combination specified ({}/{}) while attempting to add a new " +
                     "device is not a valid combination", manufacturer, model);
-            throw new InvalidAttributeValueException(e.getMessage());
+            throw new InvalidAttributeValueException("Invalid manufacturer/model specified while attempting to add a " +
+                    "new device to the inventory. " + e.getMessage());
         }
         // if the manufacturer/model retrieved from the database has a null maintenance frequency,
         // for our purposes, there is no maintenance required
@@ -118,7 +118,8 @@ public class AddDeviceActivity {
             metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             log.info("The facility/department combination specified ({}/{}) while attempting to add a new " +
                     "device is not a valid combination", facilityName, assignedDepartment);
-            throw new InvalidAttributeValueException(e.getMessage());
+            throw new InvalidAttributeValueException("Invalid facility/department specified while attempting to add " +
+                    "a new device to the inventory. " + e.getMessage());
         }
 
         // ensure the optional manufacture date, if provided, has the correct format, and is not a future date
@@ -182,8 +183,8 @@ public class AddDeviceActivity {
             metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             log.info("The {} provided ({}) while attempting to add a new device contained invalid " +
                     "characters.", attributeName, attribute);
-            throw new InvalidAttributeValueException(String.format("The %s provided (%s) contained invalid " +
-                            "characters.", attributeName, attribute));
+            throw new InvalidAttributeValueException(String.format("The %s provided (%s) while attempting to add a " +
+                    "new device contained invalid characters.", attributeName, attribute));
         }
     }
 }
