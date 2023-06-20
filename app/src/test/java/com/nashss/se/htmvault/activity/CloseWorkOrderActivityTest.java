@@ -262,7 +262,8 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
     }
 
     @Test
@@ -284,7 +285,8 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
     }
 
     @Test
@@ -310,7 +312,8 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
     }
 
     @Test
@@ -345,7 +348,8 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
     }
 
     @Test
@@ -383,7 +387,8 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
     }
 
     @Test
@@ -421,7 +426,8 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
     }
 
     @Test
@@ -459,7 +465,8 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
     }
 
     @Test
@@ -497,7 +504,8 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
     }
 
     @Test
@@ -535,7 +543,8 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
     }
 
     @Test
@@ -570,7 +579,8 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
     }
 
     @Test
@@ -607,7 +617,8 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
     }
 
     private WorkOrder copyWorkOrder(WorkOrder workOrderToCopy) {
