@@ -21,6 +21,10 @@ public class MetricsConstants {
             "UpdateWorkOrder.InvalidAttributeValueException.Count";
     public static final String UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT =
             "UpdateDevice.InvalidAttributeValueException.Count";
+    public static final String UPDATEDEVICE_DEVICENOTFOUND_COUNT =
+            "UpdateDevice.DeviceNotFoundException.Count";
+    public static final String UPDATEDEVICE_DEVICERETIRED_COUNT =
+            "UpdateDevice.UpdateDeviceRetiredException.Count";
     public static final String UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT =
             "UpdateWorkOrder.WorkOrderNotFoundException.Count";
     public static final String CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT =

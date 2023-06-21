@@ -9,6 +9,7 @@ import com.nashss.se.htmvault.dynamodb.FacilityDepartmentDao;
 import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
+import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
 import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
 import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
 import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
@@ -17,13 +18,14 @@ import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.ServiceStatus;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.inject.Inject;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+
+import javax.inject.Inject;
 
 import static com.nashss.se.htmvault.utils.NullUtils.ifNull;
 
@@ -35,6 +37,14 @@ public class UpdateDeviceActivity {
     private final MetricsPublisher metricsPublisher;
     private final Logger log = LogManager.getLogger();
 
+    /**
+     * Instantiates a new Update device activity.
+     *
+     * @param deviceDao             the device dao
+     * @param manufacturerModelDao  the manufacturer model dao
+     * @param facilityDepartmentDao the facility department dao
+     * @param metricsPublisher      the metrics publisher
+     */
     @Inject
     public UpdateDeviceActivity(DeviceDao deviceDao, ManufacturerModelDao manufacturerModelDao,
                                 FacilityDepartmentDao facilityDepartmentDao, MetricsPublisher metricsPublisher) {
@@ -44,19 +54,45 @@ public class UpdateDeviceActivity {
         this.metricsPublisher = metricsPublisher;
     }
 
+    /**
+     * Handles a request to update a device's editable information, verifying that the input provided
+     * in the request contain valid information (i.e. not null or blank).
+     * Throws an InvalidAttributeValueException for invalid attributes.
+     * Throws a
+     *
+     * @param updateDeviceRequest the update device request
+     * @return the update device result
+     */
     public UpdateDeviceResult handleRequest(final UpdateDeviceRequest updateDeviceRequest) {
         log.info("Received UpdateDeviceRequest {}", updateDeviceRequest);
 
         if (null == updateDeviceRequest.getControlNumber() || updateDeviceRequest.getControlNumber().isBlank()) {
+            metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+            log.info("The control number provided ({}) while attempting to update a device contained " +
+                            "invalid characters.", updateDeviceRequest.getControlNumber());
             throw new InvalidAttributeValueException("A device id (control number) must be provided");
         }
 
         // verify the device being updated exists and is found in the database
-        Device device = deviceDao.getDevice(updateDeviceRequest.getControlNumber());
+        Device device;
+        try {
+            device = deviceDao.getDevice(updateDeviceRequest.getControlNumber());
+            metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        } catch (DeviceNotFoundException e) {
+            metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 1);
+            log.info("An attempt was made to update a device ({}) that could not be found",
+                    updateDeviceRequest.getControlNumber());
+            throw new DeviceNotFoundException(String.format("The device with id %s being retired could not be found",
+                    updateDeviceRequest.getControlNumber()));
+        }
 
         if (device.getServiceStatus() == ServiceStatus.RETIRED) {
-            throw new UpdateRetiredDeviceException("Cannot update a retired device");
+            metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 1);
+            log.info("A device update was attempted for a device ({}) that is inactive/retired",
+                    device.getControlNumber());
+            throw new UpdateRetiredDeviceException("Cannot update a retired device: " + device.getControlNumber());
         }
+        metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
 
         // validate the serial number in the request. it should not be null, blank, or empty. additionally, it should
         // contain alphanumeric characters, spaces, and dashes only
@@ -77,7 +113,10 @@ public class UpdateDeviceActivity {
             manufacturerModel = manufacturerModelDao.getManufacturerModel(manufacturer, model);
         } catch (ManufacturerModelNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            throw new InvalidAttributeValueException(e.getMessage());
+            log.info("The manufacturer/model combination specified ({}/{}) while attempting to add a new " +
+                    "device is not a valid combination", manufacturer, model);
+            throw new InvalidAttributeValueException("Invalid manufacturer/model specified while attempting to add a " +
+                    "new device to the inventory. " + e.getMessage());
         }
         int requiredMaintenanceFrequencyInMonths =
                 ifNull(manufacturerModel.getRequiredMaintenanceFrequencyInMonths(), 0);
@@ -95,7 +134,10 @@ public class UpdateDeviceActivity {
             facilityDepartmentDao.getFacilityDepartment(facilityName, assignedDepartment);
         } catch (FacilityDepartmentNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            throw new InvalidAttributeValueException(e.getMessage());
+            log.info("The facility/department combination specified ({}/{}) while attempting to add a new " +
+                    "device is not a valid combination", facilityName, assignedDepartment);
+            throw new InvalidAttributeValueException("Invalid facility/department specified while attempting to add " +
+                    "a new device to the inventory. " + e.getMessage());
         }
 
         // ensure the optional manufacture date, if provided, has the correct format, and is not a future date
@@ -105,11 +147,15 @@ public class UpdateDeviceActivity {
                 LocalDate manufactureDateParsed = new LocalDateConverter().unconvert(manufactureDate);
                 if (manufactureDateParsed.isAfter(LocalDate.now())) {
                     metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+                    log.info("The optional manufacture date provided while attempting to add a new device " +
+                            "is a future date ({})", manufactureDateParsed);
                     throw new InvalidAttributeValueException(String.format("Cannot provide a future manufacture date " +
                             "(%s)", manufactureDateParsed));
                 }
             } catch (DateTimeParseException e) {
                 metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
+                log.info("The optional manufacture date provided while attempting to add a new device is not " +
+                        "in the correct format of YYYY-MM-DD ({})", manufactureDate);
                 throw new InvalidAttributeValueException("The date provided must be formatted as YYYY-MM-DD");
             }
         }
@@ -142,7 +188,7 @@ public class UpdateDeviceActivity {
                 int month = updatedComplianceThroughDate.getMonthValue() - 1;
                 int year = updatedComplianceThroughDate.getYear() - 1;
                 // subtract days to reach the last day of the previous calendar month
-                while(updatedComplianceThroughDate.getMonthValue() > month &&
+                while (updatedComplianceThroughDate.getMonthValue() > month &&
                         updatedComplianceThroughDate.getYear() > year) {
                     updatedComplianceThroughDate = updatedComplianceThroughDate.minusDays(1);
                 }
@@ -174,11 +220,20 @@ public class UpdateDeviceActivity {
                 .build();
     }
 
+    /**
+     * Ensures a given attribute only contains the characters allowed.
+     *
+     * @param attributeName the actual attribute name (i.e. "serialNumber")
+     * @param attribute the value of the attribute (i.e. M1722, G-33143, etc.)
+     * @param validCharacterPattern a regex formatted string for pattern matching using the String matches method
+     */
     private void validateRequestAttribute(String attributeName, String attribute, String validCharacterPattern) {
         if (!HTMVaultServiceUtils.isValidString(attribute, validCharacterPattern)) {
             metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            throw new InvalidAttributeValueException(String.format("The %s provided (%s) contained invalid " +
-                    "characters.", attributeName, attribute));
+            log.info("The {} provided ({}) while attempting to update a device contained invalid characters.",
+                    attributeName, attribute);
+            throw new InvalidAttributeValueException(String.format("The %s provided (%s) while attempting to update " +
+                    "a device contained invalid characters.", attributeName, attribute));
         }
     }
 
