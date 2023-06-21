@@ -56,7 +56,7 @@ class UpdateWorkOrderActivityTest {
                 "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
         workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
-        workOrder.setProblemReported("A reported problim with a misspelling");
+        workOrder.setProblemReported("A reported 'problim' with a misspelling");
 
         // a request with the minimum attributes required (problem found, summary, completion date/time are null)
         UpdateWorkOrderRequest updateWorkOrderRequest = UpdateWorkOrderRequest.builder()
