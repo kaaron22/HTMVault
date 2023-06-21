@@ -1,7 +1,6 @@
 package com.nashss.se.htmvault.activity.results;
 
 import com.nashss.se.htmvault.models.WorkOrderModel;
-import com.nashss.se.htmvault.models.WorkOrderType;
 
 public class GetWorkOrderResult {
 
@@ -22,6 +21,7 @@ public class GetWorkOrderResult {
                 '}';
     }
 
+    //CHECKSTYLE:OFF:Builder
     public static Builder builder() {
         return new Builder();
     }

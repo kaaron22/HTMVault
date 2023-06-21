@@ -23,7 +23,7 @@ const EMPTY_DATASTORE_STATE = {
 
 
 /**
- * Logic needed for the view playlist page of the website.
+ * Logic needed for the view device page of the website.
  */
 class SearchDevices extends BindingClass {
     constructor() {
@@ -31,7 +31,7 @@ class SearchDevices extends BindingClass {
 
         this.bindClassMethods(['mount', 'search', 'displaySearchResults', 'getHTMLForSearchResults'], this);
 
-        // Create a enw datastore with an initial "empty" state.
+        // Create a new datastore with an initial "empty" state.
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.header = new Header(this.dataStore);
         this.dataStore.addChangeListener(this.displaySearchResults);
@@ -57,7 +57,7 @@ class SearchDevices extends BindingClass {
      * @param evt The "event" object representing the user-initiated event that triggered this method.
      */
     async search(evt) {
-        // Prevent submitting the from from reloading the page.
+        // Prevent submitting the form from reloading the page.
         evt.preventDefault();
 
         const searchCriteria = document.getElementById('search-criteria').value;
@@ -104,7 +104,7 @@ class SearchDevices extends BindingClass {
 
     /**
      * Create appropriate HTML for displaying searchResults on the page.
-     * @param searchResults An array of playlists objects to be displayed on the page.
+     * @param searchResults An array of device objects to be displayed on the page.
      * @returns A string of HTML suitable for being dropped on the page.
      */
     getHTMLForSearchResults(searchResults) {

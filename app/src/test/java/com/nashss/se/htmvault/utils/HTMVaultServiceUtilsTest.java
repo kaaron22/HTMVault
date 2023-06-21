@@ -7,8 +7,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static com.nashss.se.htmvault.utils.HTMVaultServiceUtils.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.nashss.se.htmvault.utils.HTMVaultServiceUtils.ALPHA_NUMERIC_SPACE_OR_DASH;
+import static com.nashss.se.htmvault.utils.HTMVaultServiceUtils.formatLocalDateTime;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HTMVaultServiceUtilsTest {
 

@@ -2,7 +2,8 @@ package com.nashss.se.htmvault.activity.results;
 
 import com.nashss.se.htmvault.models.ManufacturerModels;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GetManufacturersAndModelsResult {
 
@@ -23,6 +24,7 @@ public class GetManufacturersAndModelsResult {
                 '}';
     }
 
+    //CHECKSTYLE:OFF:Builder
     public static Builder builder() {
         return new Builder();
     }

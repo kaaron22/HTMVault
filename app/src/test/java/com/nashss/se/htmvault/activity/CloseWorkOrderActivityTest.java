@@ -1,6 +1,5 @@
 package com.nashss.se.htmvault.activity;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.nashss.se.htmvault.activity.requests.CloseWorkOrderRequest;
 import com.nashss.se.htmvault.activity.results.CloseWorkOrderResult;
 import com.nashss.se.htmvault.converters.LocalDateTimeConverter;
@@ -12,6 +11,7 @@ import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.exceptions.CloseWorkOrderNotCompleteException;
 import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
 import com.nashss.se.htmvault.exceptions.WorkOrderNotFoundException;
+import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.WorkOrderAwaitStatus;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
@@ -19,15 +19,22 @@ import com.nashss.se.htmvault.models.WorkOrderModel;
 import com.nashss.se.htmvault.models.WorkOrderType;
 import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
 import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -37,8 +44,10 @@ class CloseWorkOrderActivityTest {
     private DynamoDBMapper dynamoDBMapper;
     @Mock
     private MetricsPublisher metricsPublisher;
-
     private CloseWorkOrderActivity closeWorkOrderActivity;
+    private CloseWorkOrderRequest closeWorkOrderRequest;
+    private final ManufacturerModel manufacturerModel = new ManufacturerModel();
+    private WorkOrder workOrder;
 
     @BeforeEach
     void setUp() {
@@ -46,32 +55,34 @@ class CloseWorkOrderActivityTest {
         WorkOrderDao workOrderDao = new WorkOrderDao(dynamoDBMapper, metricsPublisher);
         DeviceDao deviceDao = new DeviceDao(dynamoDBMapper, metricsPublisher);
         closeWorkOrderActivity = new CloseWorkOrderActivity(workOrderDao, deviceDao, metricsPublisher);
+
+        manufacturerModel.setManufacturer("TestManufacturer");
+        manufacturerModel.setModel("TestModel");
+
+        workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
+                "G321", manufacturerModel, "TestFacility", "TestDepartment");
+        workOrder.setProblemFound("a problem found");
+        workOrder.setSummary("a summary");
+
+        closeWorkOrderRequest = CloseWorkOrderRequest.builder()
+                .withWorkOrderId("a work order id")
+                .withCustomerId("123")
+                .withCustomerName("betty biomed")
+                .build();
     }
 
     @Test
     public void handleRequest_workOrderFullyDocumented_returnsUpdatedWorkOrderInResult() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(0);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
-        workOrder.setProblemFound("a problem found");
-        workOrder.setSummary("a summary");
         workOrder.setCompletionDateTime(new LocalDateTimeConverter()
                 .unconvert("2023-06-15T10:00:01"));
 
         Device device = DeviceTestHelper.generateActiveDevice(1, manufacturerModel,
                 "TestFacility", "TestDepartment");
 
-        CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
-                .withWorkOrderId("a work order id")
-                .withCustomerId("123")
-                .withCustomerName("betty biomed")
-                .build();
         when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
         when(dynamoDBMapper.load(eq(Device.class), anyString())).thenReturn(device);
         doNothing().when(dynamoDBMapper).save(any(WorkOrder.class));
@@ -89,14 +100,12 @@ class CloseWorkOrderActivityTest {
 
         // THEN
         WorkOrderTestHelper.assertWorkOrderEqualsWorkOrderModel(expectedWorkOrder, workOrderModel);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 0);
     }
 
     @Test
     public void handleRequest_workOrderNotFound_throwsWorkOrderNotFoundException() {
         // GIVEN
-        CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
-                .withWorkOrderId("a work order id")
-                .build();
         when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(null);
 
         // WHEN & THEN
@@ -104,21 +113,14 @@ class CloseWorkOrderActivityTest {
                 closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
                 "Expected a request to close a work order that was not found to result in a " +
                         "WorkOrderNotFoundException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
     }
 
     @Test
     public void handleRequest_workOrderAlreadyClosed_returnsWorkOrderInResult() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(0);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
-        CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
-                .withWorkOrderId("a work order id")
-                .build();
         when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
 
         WorkOrder expectedWorkOrder = copyWorkOrder(workOrder);
@@ -128,26 +130,19 @@ class CloseWorkOrderActivityTest {
 
         // THEN
         WorkOrderTestHelper.assertWorkOrderEqualsWorkOrderModel(expectedWorkOrder, closeWorkOrderResult.getWorkOrder());
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
     }
 
     @Test
     public void handleRequest_blankProblemFound_throwsCloseWorkOrderNotCompleteException() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(0);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
         workOrder.setProblemFound("  ");
         workOrder.setSummary("not empty");
         workOrder.setCompletionDateTime(new LocalDateTimeConverter()
                 .unconvert("2023-06-15T10:00:01"));
 
-        CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
-                .withWorkOrderId("a work order id")
-                .build();
         when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
 
         // WHEN & THEN
@@ -155,26 +150,19 @@ class CloseWorkOrderActivityTest {
                         closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
                 "Expected a request to close a work order that has a blank 'problem found' to result in a " +
                         "CloseWorkOrderNotCompleteException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 1);
     }
 
     @Test
     public void handleRequest_nullProblemFound_throwsCloseWorkOrderNotCompleteException() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(0);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
         workOrder.setProblemFound(null);
         workOrder.setSummary("not empty");
         workOrder.setCompletionDateTime(new LocalDateTimeConverter()
                 .unconvert("2023-06-15T10:00:01"));
 
-        CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
-                .withWorkOrderId("a work order id")
-                .build();
         when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
 
         // WHEN & THEN
@@ -182,26 +170,18 @@ class CloseWorkOrderActivityTest {
                         closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
                 "Expected a request to close a work order that has a null 'problem found' to result in a " +
                         "CloseWorkOrderNotCompleteException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 1);
     }
 
     @Test
     public void handleRequest_emptySummary_throwsCloseWorkOrderNotCompleteException() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(0);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
-        workOrder.setProblemFound("not empty");
         workOrder.setSummary("");
         workOrder.setCompletionDateTime(new LocalDateTimeConverter()
                 .unconvert("2023-06-15T10:00:01"));
 
-        CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
-                .withWorkOrderId("a work order id")
-                .build();
         when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
 
         // WHEN & THEN
@@ -209,26 +189,18 @@ class CloseWorkOrderActivityTest {
                         closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
                 "Expected a request to close a work order that has an empty 'summary' to result in a " +
                         "CloseWorkOrderNotCompleteException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 1);
     }
 
     @Test
     public void handleRequest_nullSummary_throwsCloseWorkOrderNotCompleteException() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(0);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
-        workOrder.setProblemFound("not empty");
         workOrder.setSummary(null);
         workOrder.setCompletionDateTime(new LocalDateTimeConverter()
                 .unconvert("2023-06-15T10:00:01"));
 
-        CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
-                .withWorkOrderId("a work order id")
-                .build();
         when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
 
         // WHEN & THEN
@@ -236,25 +208,17 @@ class CloseWorkOrderActivityTest {
                         closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
                 "Expected a request to close a work order that has a null 'summary' to result in a " +
                         "CloseWorkOrderNotCompleteException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 1);
     }
 
     @Test
     public void handleRequest_nullCompletionDateTime_throwsCloseWorkOrderNotCompleteException() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(0);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
-        workOrder.setProblemFound("not empty");
         workOrder.setSummary("not empty");
         workOrder.setCompletionDateTime(null);
 
-        CloseWorkOrderRequest closeWorkOrderRequest = CloseWorkOrderRequest.builder()
-                .withWorkOrderId("a work order id")
-                .build();
         when(dynamoDBMapper.load(eq(WorkOrder.class), anyString())).thenReturn(workOrder);
 
         // WHEN & THEN
@@ -262,6 +226,7 @@ class CloseWorkOrderActivityTest {
                         closeWorkOrderActivity.handleRequest(closeWorkOrderRequest),
                 "Expected a request to close a work order that has a null 'completion date time' to result " +
                         "in a CloseWorkOrderNotCompleteException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 1);
     }
 
     @Test
@@ -274,6 +239,7 @@ class CloseWorkOrderActivityTest {
                 closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123"),
                 "Expected attempting to advance maintenance stats with a work order ID not found to result " +
                         "in a WorkOrderNotFoundException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
     }
 
     @Test
@@ -287,17 +253,14 @@ class CloseWorkOrderActivityTest {
                         closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123"),
                 "Expected attempting to advance maintenance stats with a work order ID references a device " +
                         "that is not found to result in a DeviceNotFoundException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 1);
     }
 
     @Test
     public void advanceMaintenanceStatsWithWorkOrderIfApplicable_workOrderOpen_returnsOriginalDevice() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.OPEN);
 
         Device device = DeviceTestHelper.generateActiveDevice(1, manufacturerModel,
@@ -312,18 +275,16 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
     public void advanceMaintenanceStatsWithWorkOrderIfApplicable_repairWorkOrder_returnsOriginalDevice() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
         workOrder.setWorkOrderType(WorkOrderType.REPAIR);
 
@@ -339,23 +300,19 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
-    public void advanceMaintenanceStatsWithWorkOrderIfApplicable_noMaintenanceRequired_returnsDeviceUpdatedLastPmOnly() {
+    public void advanceMaintenanceStatsWithWorkOrderIfApplicable_noMaintenanceRequired_updatesLastPmOnly() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(0);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
         workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
         workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
-        workOrder.setProblemFound("a problem found");
-        workOrder.setSummary("a summary");
         workOrder.setCompletionDateTime(new LocalDateTimeConverter()
                 .unconvert("2023-06-15T10:00:01"));
 
@@ -372,23 +329,19 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
     public void advanceMaintenanceStatsWithWorkOrderIfApplicable_rollsBackComplianceDate_retainsOriginalCompliance() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
         workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
         workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
-        workOrder.setProblemFound("a problem found");
-        workOrder.setSummary("a summary");
         workOrder.setCompletionDateTime(new LocalDateTimeConverter()
                 .unconvert("2023-04-15T10:00:01"));
         workOrder.setClosedById(workOrder.getCreatedById());
@@ -414,23 +367,19 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
     public void advanceMaintenanceStatsWithWorkOrderIfApplicable_willAdvanceComplianceDate_updatesCompliance() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
         workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
         workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
-        workOrder.setProblemFound("a problem found");
-        workOrder.setSummary("a summary");
         workOrder.setCompletionDateTime(new LocalDateTimeConverter()
                 .unconvert("2023-06-15T10:00:01"));
         workOrder.setClosedById(workOrder.getCreatedById());
@@ -459,23 +408,19 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
     public void advanceMaintenanceStatsWithWorkOrderIfApplicable_nullComplianceDate_updatesCompliance() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
         workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
         workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
-        workOrder.setProblemFound("a problem found");
-        workOrder.setSummary("a summary");
         workOrder.setCompletionDateTime(new LocalDateTimeConverter()
                 .unconvert("2023-04-15T10:00:01"));
         workOrder.setClosedById(workOrder.getCreatedById());
@@ -504,23 +449,19 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
     public void advanceMaintenanceStatsWithWorkOrderIfApplicable_notScheduled_syncsNextPmWithCompliance() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
         workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
         workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
-        workOrder.setProblemFound("a problem found");
-        workOrder.setSummary("a summary");
         workOrder.setCompletionDateTime(new LocalDateTimeConverter()
                 .unconvert("2023-06-15T10:00:01"));
         workOrder.setClosedById(workOrder.getCreatedById());
@@ -549,23 +490,19 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
     public void advanceMaintenanceStatsWithWorkOrderIfApplicable_nextCyclePmWithinCompliance_updatesNextPm() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
         workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
         workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
-        workOrder.setProblemFound("a problem found");
-        workOrder.setSummary("a summary");
         workOrder.setCompletionDateTime(new LocalDateTimeConverter()
                 .unconvert("2023-02-15T10:00:01"));
         workOrder.setClosedById(workOrder.getCreatedById());
@@ -594,23 +531,19 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
     public void advanceMaintenanceStatsWithWorkOrderIfApplicable_nextCyclePmPostCompliance_retainsOriginalNextPm() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
         workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
         workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
-        workOrder.setProblemFound("a problem found");
-        workOrder.setSummary("a summary");
         workOrder.setCompletionDateTime(new LocalDateTimeConverter()
                 .unconvert("2022-06-15T10:00:01"));
         workOrder.setClosedById(workOrder.getCreatedById());
@@ -639,23 +572,19 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
     public void advanceMaintenanceStatsWithWorkOrderIfApplicable_rollsBackLastPm_retainsOriginalLastPm() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
         workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
         workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
-        workOrder.setProblemFound("a problem found");
-        workOrder.setSummary("a summary");
         workOrder.setCompletionDateTime(new LocalDateTimeConverter()
                 .unconvert("2022-04-15T10:00:01"));
         workOrder.setClosedById(workOrder.getCreatedById());
@@ -681,23 +610,19 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
     @Test
     public void advanceMaintenanceStatsWithWorkOrderIfApplicable_noLastPm_updatesLastPm() {
         // GIVEN
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer("TestManufacturer");
-        manufacturerModel.setModel("TestModel");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
-        WorkOrder workOrder = WorkOrderTestHelper.generateWorkOrder(1, "123",
-                "G321", manufacturerModel, "TestFacility", "TestDepartment");
         workOrder.setWorkOrderCompletionStatus(WorkOrderCompletionStatus.CLOSED);
         workOrder.setWorkOrderType(WorkOrderType.PREVENTATIVE_MAINTENANCE);
         workOrder.setWorkOrderAwaitStatus(WorkOrderAwaitStatus.AWAITING_PARTS);
-        workOrder.setProblemFound("a problem found");
-        workOrder.setSummary("a summary");
         workOrder.setCompletionDateTime(new LocalDateTimeConverter()
                 .unconvert("2022-06-15T10:00:01"));
         workOrder.setClosedById(workOrder.getCreatedById());
@@ -725,55 +650,58 @@ class CloseWorkOrderActivityTest {
         Device result = closeWorkOrderActivity.advanceMaintenanceStatsWithWorkOrderIfApplicable("WR123");
 
         // THEN
-        assertEquals(copyDevice, result);
+        assertEquals(copyDevice, result, "The device as updated by the close work order activity did not " +
+                "match what was expected");
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
     }
 
-    private WorkOrder copyWorkOrder(WorkOrder workOrder) {
+    private WorkOrder copyWorkOrder(WorkOrder workOrderToCopy) {
         WorkOrder copyWorkOrder = new WorkOrder();
-        copyWorkOrder.setWorkOrderId(workOrder.getWorkOrderId());
-        copyWorkOrder.setWorkOrderType(workOrder.getWorkOrderType());
-        copyWorkOrder.setControlNumber(workOrder.getControlNumber());
-        copyWorkOrder.setSerialNumber(workOrder.getSerialNumber());
-        copyWorkOrder.setWorkOrderCompletionStatus(workOrder.getWorkOrderCompletionStatus());
-        copyWorkOrder.setWorkOrderAwaitStatus(workOrder.getWorkOrderAwaitStatus());
-        copyWorkOrder.setManufacturerModel(workOrder.getManufacturerModel());
-        copyWorkOrder.setFacilityName(workOrder.getFacilityName());
-        copyWorkOrder.setAssignedDepartment(workOrder.getAssignedDepartment());
-        copyWorkOrder.setProblemReported(workOrder.getProblemReported());
-        copyWorkOrder.setProblemFound(workOrder.getProblemFound());
-        copyWorkOrder.setCreatedById(workOrder.getCreatedById());
-        copyWorkOrder.setCreatedByName(workOrder.getCreatedByName());
-        copyWorkOrder.setCreationDateTime(workOrder.getCreationDateTime());
-        copyWorkOrder.setClosedById(workOrder.getClosedById());
-        copyWorkOrder.setClosedByName(workOrder.getClosedByName());
-        copyWorkOrder.setClosedDateTime(workOrder.getClosedDateTime());
-        copyWorkOrder.setSummary(workOrder.getSummary());
-        copyWorkOrder.setCompletionDateTime(workOrder.getCompletionDateTime());
+        copyWorkOrder.setWorkOrderId(workOrderToCopy.getWorkOrderId());
+        copyWorkOrder.setWorkOrderType(workOrderToCopy.getWorkOrderType());
+        copyWorkOrder.setControlNumber(workOrderToCopy.getControlNumber());
+        copyWorkOrder.setSerialNumber(workOrderToCopy.getSerialNumber());
+        copyWorkOrder.setWorkOrderCompletionStatus(workOrderToCopy.getWorkOrderCompletionStatus());
+        copyWorkOrder.setWorkOrderAwaitStatus(workOrderToCopy.getWorkOrderAwaitStatus());
+        copyWorkOrder.setManufacturerModel(workOrderToCopy.getManufacturerModel());
+        copyWorkOrder.setFacilityName(workOrderToCopy.getFacilityName());
+        copyWorkOrder.setAssignedDepartment(workOrderToCopy.getAssignedDepartment());
+        copyWorkOrder.setProblemReported(workOrderToCopy.getProblemReported());
+        copyWorkOrder.setProblemFound(workOrderToCopy.getProblemFound());
+        copyWorkOrder.setCreatedById(workOrderToCopy.getCreatedById());
+        copyWorkOrder.setCreatedByName(workOrderToCopy.getCreatedByName());
+        copyWorkOrder.setCreationDateTime(workOrderToCopy.getCreationDateTime());
+        copyWorkOrder.setClosedById(workOrderToCopy.getClosedById());
+        copyWorkOrder.setClosedByName(workOrderToCopy.getClosedByName());
+        copyWorkOrder.setClosedDateTime(workOrderToCopy.getClosedDateTime());
+        copyWorkOrder.setSummary(workOrderToCopy.getSummary());
+        copyWorkOrder.setCompletionDateTime(workOrderToCopy.getCompletionDateTime());
 
         return copyWorkOrder;
     }
 
-    private Device copyDevice(Device device) {
+    private Device copyDevice(Device deviceToCopy) {
         Device deviceCopy = new Device();
-        deviceCopy.setControlNumber(device.getControlNumber());
-        deviceCopy.setSerialNumber(device.getSerialNumber());
-        ManufacturerModel manufacturerModel = new ManufacturerModel();
-        manufacturerModel.setManufacturer(device.getManufacturerModel().getManufacturer());
-        manufacturerModel.setModel(device.getManufacturerModel().getModel());
-        manufacturerModel.setRequiredMaintenanceFrequencyInMonths(device.getManufacturerModel()
+        deviceCopy.setControlNumber(deviceToCopy.getControlNumber());
+        deviceCopy.setSerialNumber(deviceToCopy.getSerialNumber());
+        ManufacturerModel copyManufacturerModel = new ManufacturerModel();
+        copyManufacturerModel.setManufacturer(deviceToCopy.getManufacturerModel().getManufacturer());
+        copyManufacturerModel.setModel(deviceToCopy.getManufacturerModel().getModel());
+        copyManufacturerModel.setRequiredMaintenanceFrequencyInMonths(deviceToCopy.getManufacturerModel()
                 .getRequiredMaintenanceFrequencyInMonths());
-        deviceCopy.setManufactureDate(device.getManufactureDate());
-        deviceCopy.setManufacturerModel(manufacturerModel);
-        deviceCopy.setServiceStatus(device.getServiceStatus());
-        deviceCopy.setFacilityName(device.getFacilityName());
-        deviceCopy.setAssignedDepartment(device.getAssignedDepartment());
-        deviceCopy.setComplianceThroughDate(device.getComplianceThroughDate());
-        deviceCopy.setLastPmCompletionDate(device.getLastPmCompletionDate());
-        deviceCopy.setNextPmDueDate(device.getNextPmDueDate());
-        deviceCopy.setInventoryAddDate(device.getInventoryAddDate());
-        deviceCopy.setAddedById(device.getAddedById());
-        deviceCopy.setAddedByName(device.getAddedByName());
-        deviceCopy.setNotes(device.getNotes());
+        deviceCopy.setManufactureDate(deviceToCopy.getManufactureDate());
+        deviceCopy.setManufacturerModel(copyManufacturerModel);
+        deviceCopy.setServiceStatus(deviceToCopy.getServiceStatus());
+        deviceCopy.setFacilityName(deviceToCopy.getFacilityName());
+        deviceCopy.setAssignedDepartment(deviceToCopy.getAssignedDepartment());
+        deviceCopy.setComplianceThroughDate(deviceToCopy.getComplianceThroughDate());
+        deviceCopy.setLastPmCompletionDate(deviceToCopy.getLastPmCompletionDate());
+        deviceCopy.setNextPmDueDate(deviceToCopy.getNextPmDueDate());
+        deviceCopy.setInventoryAddDate(deviceToCopy.getInventoryAddDate());
+        deviceCopy.setAddedById(deviceToCopy.getAddedById());
+        deviceCopy.setAddedByName(deviceToCopy.getAddedByName());
+        deviceCopy.setNotes(deviceToCopy.getNotes());
 
         return deviceCopy;
     }

@@ -17,13 +17,15 @@ import com.nashss.se.htmvault.models.SortOrder;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderType;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class CreateWorkOrderActivity {
 
@@ -32,6 +34,13 @@ public class CreateWorkOrderActivity {
     private final MetricsPublisher metricsPublisher;
     private final Logger log = LogManager.getLogger();
 
+    /**
+     * Instantiates a new Create work order activity.
+     *
+     * @param deviceDao        the device dao
+     * @param workOrderDao     the work order dao
+     * @param metricsPublisher the metrics publisher
+     */
     @Inject
     public CreateWorkOrderActivity(DeviceDao deviceDao, WorkOrderDao workOrderDao, MetricsPublisher metricsPublisher) {
         this.deviceDao = deviceDao;
@@ -39,6 +48,17 @@ public class CreateWorkOrderActivity {
         this.metricsPublisher = metricsPublisher;
     }
 
+    /**
+     * Handles a request to create a new work order, with checks to verify the device to which this work
+     * order is attached does exist, and that the inputs for creating the work order are valid (i.e. a valid
+     * work order type, such as 'preventative maintenance' or 'repair'). Additionally, verifies that required
+     * input is not null or blank.
+     * If an attribute is not a valid input for creating the work order, an InvalidAttributeValueException is thrown
+     * If the device that this work order is to be attached to is not found, throws a DeviceNotFoundException
+     *
+     * @param createWorkOrderRequest the create work order request
+     * @return the create work order result
+     */
     public CreateWorkOrderResult handleRequest(final CreateWorkOrderRequest createWorkOrderRequest) {
         log.info("Received CreateWorkOrderRequest {}", createWorkOrderRequest);
 
@@ -47,8 +67,13 @@ public class CreateWorkOrderActivity {
         Device device;
         try {
             device = deviceDao.getDevice(controlNumber);
+            metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 0);
         } catch (DeviceNotFoundException e) {
-            throw new DeviceNotFoundException(e.getMessage());
+            metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 1);
+            log.info("Could not find a device in the database matching the control number ({}) to which " +
+                    "this work order should be attached.", controlNumber);
+            throw new DeviceNotFoundException("Unable to find the device to which the new work order should " +
+                    "be attached when attempting to create a new work order. " + e.getMessage());
         }
 
         // verify the work order type is one of the types allowed
@@ -61,15 +86,20 @@ public class CreateWorkOrderActivity {
         }
         if (!validWorkOrderType) {
             metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            throw new InvalidAttributeValueException("The work order type provided must be one of: " +
-                    Arrays.toString(WorkOrderType.values()));
+            log.info("An attempt was made to create a work order using an invalid work order type ({}).",
+                    createWorkOrderRequest.getWorkOrderType());
+            throw new InvalidAttributeValueException("The work order type provided when creating a work order must " +
+                    "be one of: " + Arrays.toString(WorkOrderType.values()) + ".");
         }
 
         // verify the problem reported is not null or blank
         String problemReported = createWorkOrderRequest.getProblemReported();
         if (null == problemReported || problemReported.isBlank()) {
             metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            throw new InvalidAttributeValueException("The problem reported cannot be null or blank");
+            log.info("A create work order request was made with an invalid 'problem reported' ({}).",
+                    problemReported);
+            throw new InvalidAttributeValueException("The 'problem reported' while creating a work order cannot be " +
+                    "null or blank.");
         }
 
         // if the request passes validation, create the new work order, with initial values set,
@@ -124,6 +154,16 @@ public class CreateWorkOrderActivity {
                 .build();
     }
 
+    // from project template, modified for project
+    /**
+     * A helper method to check that the sort order for the resulting, updated list of work orders
+     * that is to be returned, is a valid sort order. Throws an InvalidAttributeValueException if the sort
+     * order is invalid, though a null sort order is handled as the default (descending), for cases when the
+     * user does not explicitly provide one.
+     *
+     * @param sortOrder the sort order (i.e. descending or ascending by the work order's defined comparator)
+     * @return the sort order to use, including descending by default if none selected
+     */
     private String computeOrder(String sortOrder) {
         String computedSortOrder = sortOrder;
 
@@ -131,7 +171,10 @@ public class CreateWorkOrderActivity {
             computedSortOrder = SortOrder.DEFAULT;
         } else if (!Arrays.asList(SortOrder.values()).contains(sortOrder)) {
             metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            throw new InvalidAttributeValueException(String.format("Unrecognized sort order: '%s'", sortOrder));
+            log.info("The sort order specified ({}) while attempting to create a work order was invalid.",
+                    sortOrder);
+            throw new InvalidAttributeValueException(String.format("Unrecognized sort order (%s) while attempting to " +
+                    "create new work order.", sortOrder));
         }
 
         return computedSortOrder;

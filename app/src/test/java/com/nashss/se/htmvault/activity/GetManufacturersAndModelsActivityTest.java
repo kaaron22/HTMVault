@@ -7,6 +7,7 @@ import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.ManufacturerModels;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -15,7 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -41,6 +43,7 @@ class GetManufacturersAndModelsActivityTest {
         GetManufacturersAndModelsRequest request = GetManufacturersAndModelsRequest.builder()
                 .build();
 
+        // our individual manufacturer/model objects to be returned when a mock call to the database is made
         ManufacturerModel manufacturerModel1 = new ManufacturerModel();
         manufacturerModel1.setManufacturer("Monitor Co.");
         manufacturerModel1.setModel("Their First Monitor Model");
@@ -68,6 +71,9 @@ class GetManufacturersAndModelsActivityTest {
 
         // WHEN
         GetManufacturersAndModelsResult result = getManufacturersAndModelsActivity.handleRequest(request);
+        List<ManufacturerModels> results = result.getManufacturersAndModels();
+
+        // the expected, sorted result
         ManufacturerModels manufacturerModels1 = ManufacturerModels.builder()
                 .withManufacturer("Monitor Co.")
                 .withModels(new ArrayList<>(Arrays.asList("Their First Monitor Model", "Their Second Monitor Model")))
@@ -82,11 +88,12 @@ class GetManufacturersAndModelsActivityTest {
                 .build();
         List<ManufacturerModels> expected = new ArrayList<>(Arrays.asList(manufacturerModels3, manufacturerModels2,
                 manufacturerModels1));
-        List<ManufacturerModels> results = result.getManufacturersAndModels();
 
         // THEN
         for (int i = 0; i < results.size(); i++) {
-            assertTrue(results.contains(expected.get(i)));
+            assertTrue(results.contains(expected.get(i)), "The resulting list of ManufacturerModels " +
+                    "converted from a list of individual manufacturer/model objects did not match what was expected," +
+                    "in the order expected");
         }
     }
 

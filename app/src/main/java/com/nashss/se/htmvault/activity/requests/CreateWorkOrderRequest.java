@@ -67,6 +67,7 @@ public class CreateWorkOrderRequest {
                 '}';
     }
 
+    //CHECKSTYLE:OFF:Builder
     public static Builder builder() {
         return new Builder();
     }

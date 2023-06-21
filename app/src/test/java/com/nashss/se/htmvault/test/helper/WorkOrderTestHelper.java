@@ -13,8 +13,8 @@ import java.util.List;
 import static com.nashss.se.htmvault.utils.HTMVaultServiceUtils.generateRandomIntWithLimit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+// initial from template project, modified/added methods for capstone
 public final class WorkOrderTestHelper {
-
 
     private WorkOrderTestHelper() {
     }
@@ -24,7 +24,7 @@ public final class WorkOrderTestHelper {
                                        String assignedDepartment) {
 
         WorkOrder workOrder = new WorkOrder();
-        workOrder.setWorkOrderId(HTMVaultServiceUtils.generateId("WR",6));
+        workOrder.setWorkOrderId(HTMVaultServiceUtils.generateId("WR", 6));
         workOrder.setWorkOrderType(getRandomEnumValue(WorkOrderType.values()));
         workOrder.setControlNumber(controlNumber);
         workOrder.setSerialNumber(serialNumber);

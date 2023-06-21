@@ -26,6 +26,7 @@ public class GetManufacturersAndModelsRequest {
                 '}';
     }
 
+    //CHECKSTYLE:OFF:Builder
     public static Builder builder() {
         return new Builder();
     }

@@ -1,6 +1,5 @@
 package com.nashss.se.htmvault.models;
 
-
 import java.util.Objects;
 
 public class DeviceModel {
@@ -111,8 +110,12 @@ public class DeviceModel {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         DeviceModel that = (DeviceModel) o;
         return maintenanceFrequencyInMonths == that.maintenanceFrequencyInMonths &&
                 Objects.equals(controlNumber, that.controlNumber) &&
@@ -139,6 +142,7 @@ public class DeviceModel {
                 maintenanceFrequencyInMonths, inventoryAddDate, addedById, addedByName, notes);
     }
 
+    //CHECKSTYLE:OFF:Builder
     public static Builder builder() {
         return new Builder();
     }

@@ -1,6 +1,5 @@
 package com.nashss.se.htmvault.activity;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.nashss.se.htmvault.activity.requests.UpdateDeviceRequest;
 import com.nashss.se.htmvault.activity.results.UpdateDeviceResult;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
@@ -9,12 +8,19 @@ import com.nashss.se.htmvault.dynamodb.ManufacturerModelDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.FacilityDepartment;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
-import com.nashss.se.htmvault.exceptions.*;
+import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
+import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
+import com.nashss.se.htmvault.exceptions.InvalidAttributeValueException;
+import com.nashss.se.htmvault.exceptions.ManufacturerModelNotFoundException;
+import com.nashss.se.htmvault.exceptions.UpdateRetiredDeviceException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.DeviceModel;
 import com.nashss.se.htmvault.models.ServiceStatus;
 import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,10 +29,13 @@ import org.mockito.Mockito;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 class UpdateDeviceActivityTest {
@@ -43,7 +52,7 @@ class UpdateDeviceActivityTest {
     @InjectMocks
     private UpdateDeviceActivity updateDeviceActivity;
 
-    Device device = new Device();
+    private final Device device = new Device();
     private final String controlNumber = "123";
     private final String serialNumber = "G-456";
     private final String manufacturer = "a manufacturer";
@@ -145,6 +154,8 @@ class UpdateDeviceActivityTest {
         // THEN
         verify(dynamoDBMapper).load(eq(Device.class), anyString());
         verify(dynamoDBMapper).save(any(Device.class));
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         DeviceTestHelper.assertDeviceEqualsDeviceModel(updatedDevice, deviceModel);
     }
@@ -208,6 +219,8 @@ class UpdateDeviceActivityTest {
         // THEN
         verify(dynamoDBMapper).load(eq(Device.class), anyString());
         verify(dynamoDBMapper).save(any(Device.class));
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         DeviceTestHelper.assertDeviceEqualsDeviceModel(updatedDevice, deviceModel);
     }
@@ -271,6 +284,8 @@ class UpdateDeviceActivityTest {
         // THEN
         verify(dynamoDBMapper).load(eq(Device.class), anyString());
         verify(dynamoDBMapper).save(any(Device.class));
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         DeviceTestHelper.assertDeviceEqualsDeviceModel(updatedDevice, deviceModel);
     }
@@ -289,7 +304,6 @@ class UpdateDeviceActivityTest {
         // since the next pm due date will then be after the updated compliance through date, it will
         // need to be updated to no later than 2023-12-31
         device.setNextPmDueDate(LocalDate.of(2024, 3, 31));
-
 
         // an update request and expected updated device
         ManufacturerModel updatedManufacturerModel = new ManufacturerModel();
@@ -343,6 +357,8 @@ class UpdateDeviceActivityTest {
         // THEN
         verify(dynamoDBMapper).load(eq(Device.class), anyString());
         verify(dynamoDBMapper).save(any(Device.class));
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         DeviceTestHelper.assertDeviceEqualsDeviceModel(updatedDevice, deviceModel);
     }
@@ -416,6 +432,8 @@ class UpdateDeviceActivityTest {
         // THEN
         verify(dynamoDBMapper).load(eq(Device.class), anyString());
         verify(dynamoDBMapper).save(any(Device.class));
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         DeviceTestHelper.assertDeviceEqualsDeviceModel(updatedDevice, deviceModel);
     }
@@ -482,6 +500,8 @@ class UpdateDeviceActivityTest {
         // THEN
         verify(dynamoDBMapper).load(eq(Device.class), anyString());
         verify(dynamoDBMapper).save(any(Device.class));
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         DeviceTestHelper.assertDeviceEqualsDeviceModel(updatedDevice, deviceModel);
     }
@@ -548,6 +568,8 @@ class UpdateDeviceActivityTest {
         // THEN
         verify(dynamoDBMapper).load(eq(Device.class), anyString());
         verify(dynamoDBMapper).save(any(Device.class));
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         DeviceTestHelper.assertDeviceEqualsDeviceModel(updatedDevice, deviceModel);
     }
@@ -613,6 +635,8 @@ class UpdateDeviceActivityTest {
         // THEN
         verify(dynamoDBMapper).load(eq(Device.class), anyString());
         verify(dynamoDBMapper).save(any(Device.class));
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         DeviceTestHelper.assertDeviceEqualsDeviceModel(updatedDevice, deviceModel);
     }
@@ -678,6 +702,8 @@ class UpdateDeviceActivityTest {
         // THEN
         verify(dynamoDBMapper).load(eq(Device.class), anyString());
         verify(dynamoDBMapper).save(any(Device.class));
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         DeviceTestHelper.assertDeviceEqualsDeviceModel(updatedDevice, deviceModel);
     }
@@ -694,6 +720,7 @@ class UpdateDeviceActivityTest {
                 updateDeviceActivity.handleRequest(updateDeviceRequest),
                 "Expected an update device request without a control number to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
     @Test
@@ -708,6 +735,7 @@ class UpdateDeviceActivityTest {
                         updateDeviceActivity.handleRequest(updateDeviceRequest),
                 "Expected an update device request without a control number to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
     @Test
@@ -735,6 +763,7 @@ class UpdateDeviceActivityTest {
                 updateDeviceActivity.handleRequest(updateDeviceRequest),
                 "Expected device not found to result in a DeviceNotFoundException thrown");
         verify(dynamoDBMapper).load(eq(Device.class), anyString());
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 1);
     }
 
     @Test
@@ -764,6 +793,8 @@ class UpdateDeviceActivityTest {
                         updateDeviceActivity.handleRequest(updateDeviceRequest),
                 "Expected device not found to result in a UpdateRetiredDeviceException thrown");
         verify(dynamoDBMapper).load(eq(Device.class), anyString());
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 1);
     }
 
     @Test
@@ -790,6 +821,7 @@ class UpdateDeviceActivityTest {
                         updateDeviceActivity.handleRequest(updateDeviceRequest),
                 "Expected a null value for control number to result in an InvalidAttributeValueException " +
                         "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
@@ -845,6 +877,8 @@ class UpdateDeviceActivityTest {
         DeviceModel deviceModel = updateDeviceResult.getDevice();
 
         // THEN
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 0);
         verify(dynamoDBMapper).load(eq(Device.class), anyString());
         verify(dynamoDBMapper).save(any(Device.class));
@@ -877,6 +911,8 @@ class UpdateDeviceActivityTest {
                         updateDeviceActivity.handleRequest(updateDeviceRequest),
                 "Expected an empty value for control number to result in an InvalidAttributeValueException " +
                         "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
@@ -905,6 +941,8 @@ class UpdateDeviceActivityTest {
                         updateDeviceActivity.handleRequest(updateDeviceRequest),
                 "Expected a blank value for serial number to result in an InvalidAttributeValueException " +
                         "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
@@ -933,6 +971,8 @@ class UpdateDeviceActivityTest {
                         updateDeviceActivity.handleRequest(updateDeviceRequest),
                 "Expected a serial number containing an invalid character to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
@@ -963,6 +1003,8 @@ class UpdateDeviceActivityTest {
                         updateDeviceActivity.handleRequest(updateDeviceRequest),
                 "Expected a manufacturer/model not found to result in an InvalidAttributeValueException " +
                         "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
@@ -999,6 +1041,8 @@ class UpdateDeviceActivityTest {
                         updateDeviceActivity.handleRequest(updateDeviceRequest),
                 "Expected a facility/department not found to result in an InvalidAttributeValueException " +
                         "thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
@@ -1036,6 +1080,8 @@ class UpdateDeviceActivityTest {
                         updateDeviceActivity.handleRequest(updateDeviceRequest),
                 "Expected a manufacture date with incorrect format to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
@@ -1076,6 +1122,8 @@ class UpdateDeviceActivityTest {
                         updateDeviceActivity.handleRequest(updateDeviceRequest),
                 "Expected an add device request with a future manufacture date to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 }

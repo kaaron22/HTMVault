@@ -135,8 +135,12 @@ public class WorkOrderModel {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         WorkOrderModel that = (WorkOrderModel) o;
         return Objects.equals(workOrderId, that.workOrderId) &&
                 Objects.equals(workOrderType, that.workOrderType) &&
@@ -168,6 +172,7 @@ public class WorkOrderModel {
                 summary, completionDateTime);
     }
 
+    //CHECKSTYLE:OFF:Builder
     public static Builder builder() {
         return new Builder();
     }

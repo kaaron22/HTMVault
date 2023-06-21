@@ -8,6 +8,7 @@ import com.amazonaws.services.cloudwatch.model.StandardUnit;
 
 import javax.inject.Inject;
 
+// from project template
 /**
  * Contains operations for publishing metrics.
  */

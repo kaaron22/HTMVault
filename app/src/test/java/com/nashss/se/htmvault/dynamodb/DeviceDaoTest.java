@@ -1,19 +1,19 @@
 package com.nashss.se.htmvault.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.nashss.se.htmvault.converters.ManufacturerModelConverter;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
-import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
 import com.nashss.se.htmvault.exceptions.DevicePreviouslyAddedException;
 import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
+import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -25,10 +25,16 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 class DeviceDaoTest {
@@ -101,17 +107,19 @@ class DeviceDaoTest {
         manufacturerModel.setModel("Their First Monitor Model");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
 
-        // an array of, for this test, one mocked "matching" device found in the database for the "new"
-        // device we are trying to add with serial number, manufacturer, and model, so we should not be able to add it
-        // "again" (an exception should be thrown)
+        // a mocked device array to return when the mocked paginated query list of 'found' devices matching
+        // the manufacturer, model, and serial number of a new device we are attempting to add, is then converted
+        // to an arraylist
+        Device device = DeviceTestHelper.generateActiveDevice(1, manufacturerModel,
+                "TestFacility", "TestDepartment");
+        device.setSerialNumber("G321");
         Device[] deviceArray = new Device[1];
-        deviceArray[0] = new Device();
+        deviceArray[0] = device;
 
         // mocked paginated query list to return
         when(dynamoDBMapper.query(eq(Device.class), any(DynamoDBQueryExpression.class))).thenReturn(queryList);
 
-        // mocked device array to return when the arraylist constructor attempts to convert the mocked
-        // paginated query list
+        // return the mocked device array
         when(queryList.toArray()).thenReturn(deviceArray);
 
         // captor for the query expression invoked when we call the method under test

@@ -9,15 +9,20 @@ import com.nashss.se.htmvault.dynamodb.WorkOrderDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.exceptions.CloseWorkOrderNotCompleteException;
+import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
+import com.nashss.se.htmvault.exceptions.WorkOrderNotFoundException;
+import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderType;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import javax.inject.Inject;
 
 public class CloseWorkOrderActivity {
 
@@ -26,6 +31,13 @@ public class CloseWorkOrderActivity {
     private final MetricsPublisher metricsPublisher;
     private final Logger log = LogManager.getLogger();
 
+    /**
+     * Instantiates a new Close work order activity.
+     *
+     * @param workOrderDao     the work order dao
+     * @param deviceDao        the device dao
+     * @param metricsPublisher the metrics publisher
+     */
     @Inject
     public CloseWorkOrderActivity(WorkOrderDao workOrderDao, DeviceDao deviceDao, MetricsPublisher metricsPublisher) {
         this.workOrderDao = workOrderDao;
@@ -33,11 +45,28 @@ public class CloseWorkOrderActivity {
         this.metricsPublisher = metricsPublisher;
     }
 
+    /**
+     * Processes a request to close a work order, including advancing the maintenance stats (i.e. the next pm due date),
+     * if applicable. If the work order is not found or is incomplete, throws corresponding exceptions.
+     *
+     * @param closeWorkOrderRequest the close work order request
+     * @return the close work order result
+     */
     public CloseWorkOrderResult handleRequest(final CloseWorkOrderRequest closeWorkOrderRequest) {
         log.info("Received CloseWorkOrderRequest {}", closeWorkOrderRequest);
 
         // retrieve work order from database (work order not found exception is thrown by dao if applicable)
-        WorkOrder workOrder = workOrderDao.getWorkOrder(closeWorkOrderRequest.getWorkOrderId());
+        WorkOrder workOrder;
+        try {
+            workOrder = workOrderDao.getWorkOrder(closeWorkOrderRequest.getWorkOrderId());
+            metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        } catch (WorkOrderNotFoundException e) {
+            metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
+            log.info("A request was made to close a work order ({}) that could not be found.",
+                    closeWorkOrderRequest.getWorkOrderId());
+            throw new WorkOrderNotFoundException(String.format("Attempted to close a work order %s that was not " +
+                    "found.", closeWorkOrderRequest.getWorkOrderId()));
+        }
 
         // if the work order is already closed, there's nothing to do except return the result with the converted
         // work order
@@ -48,14 +77,18 @@ public class CloseWorkOrderActivity {
             String problemFound = workOrder.getProblemFound();
             String summary = workOrder.getSummary();
             LocalDateTime completionDateTime = workOrder.getCompletionDateTime();
-            if (null == problemFound || problemFound.isBlank() || null == summary || summary.isBlank()
-                    || null == completionDateTime) {
+            if (null == problemFound || problemFound.isBlank() || null == summary || summary.isBlank() ||
+                    null == completionDateTime) {
+                metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 1);
+                log.info("An attempt was made to close a work order ({}) that was not yet completed.",
+                        workOrder.getWorkOrderId());
                 throw new CloseWorkOrderNotCompleteException("The work order information must be completed before " +
-                        "permanently closing " + workOrder.getWorkOrderId());
+                        "permanently closing " + workOrder.getWorkOrderId() + ".");
             }
 
+            metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 0);
             // proceed to update the work order as closed
-            // who closed it
+            // the user who closed it
             workOrder.setClosedById(closeWorkOrderRequest.getCustomerId());
             workOrder.setClosedByName(closeWorkOrderRequest.getCustomerName());
 
@@ -65,7 +98,7 @@ public class CloseWorkOrderActivity {
             LocalDateTime currentDateTimeNoNanos = new LocalDateTimeConverter().unconvert(currentDateTimeSerialized);
             workOrder.setClosedDateTime(currentDateTimeNoNanos);
 
-            // await status no longer applicable
+            // await status no longer applicable (i.e. awaiting parts, awaiting performance check, etc.)
             workOrder.setWorkOrderAwaitStatus(null);
 
             // close the work order
@@ -73,7 +106,10 @@ public class CloseWorkOrderActivity {
 
             workOrder = workOrderDao.saveWorkOrder(workOrder);
 
-            Device device = advanceMaintenanceStatsWithWorkOrderIfApplicable(workOrder.getWorkOrderId());
+            // update the maintenance dates, if applicable (i.e. the routine preventative maintenance has
+            // been completed and the next pm due date and compliance-through-date can be advanced to the
+            // next cycle)
+            advanceMaintenanceStatsWithWorkOrderIfApplicable(workOrder.getWorkOrderId());
         }
 
         return CloseWorkOrderResult.builder()
@@ -81,13 +117,63 @@ public class CloseWorkOrderActivity {
                 .build();
     }
 
+    /**
+     * Advances maintenance stats for the device by checking the database information on the work order specified by
+     * the provided work order id.
+     *
+     * If the work order is a preventative maintenance, or the initial acceptance test, the last
+     * pm completion date, compliance-through-date, and next pm due date are set/advanced. A repair work order
+     * is dismissed for the purposes of this check.
+     *
+     * If the work order would roll back a particular one of these values, the original value is retained,
+     * while the other values, if any would advance, are updated.
+     *
+     * If maintenance is not required for this device (i.e. maintenance frequency for the manufacturer/model is '0'
+     * or null), the last pm completion date.
+     *
+     * Finally, the next pm due dates are only advanced to the next cycle if the normal schedule can be kept. For
+     * example, if a PM is done every January, but a PM work order is then completed off-schedule in June (i.e. as a
+     * manufacturer requirement following a repair), the compliance-through-date will advance to next June, but the
+     * next pm, which was scheduled for next January, will be retained.
+     *
+     * For this example scenario, the user would be able manually adjust the next pm due date to as far as next June
+     * through a separate process to be implemented, if so desired, but this process is intended for automation and the
+     * device will typically remain on schedule with the rest of the devices in the department wherein it resides.
+     *
+     * Throws a WorkOrderNotFoundException or DeviceNotFoundException where appropriate.
+     *
+     * @param workOrderId the work order id of the work order to check for potential updates to the device's
+     *                    maintenance stats
+     * @return the device with updated compliance-through-date, next pm due date, and last pm completion date,
+     * if applicable
+     */
     public Device advanceMaintenanceStatsWithWorkOrderIfApplicable(String workOrderId) {
         // we limit this attempt based on actual work order information in the database, to prevent unofficial
         // work order information from affecting the maintenance stats
-        WorkOrder workOrder = workOrderDao.getWorkOrder(workOrderId);
+        WorkOrder workOrder;
+        try {
+            workOrder = workOrderDao.getWorkOrder(workOrderId);
+            metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        } catch (WorkOrderNotFoundException e) {
+            metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
+            log.info("Could not find work order ({}) while attempting to update maintenance stats.",
+                    workOrderId);
+            throw new WorkOrderNotFoundException("Unable to find the work order " + workOrderId + " while attempting " +
+                    "to update maintenance stats.");
+        }
 
         // the device to which this work order pertains, which will potentially be updated
-        Device device = deviceDao.getDevice(workOrder.getControlNumber());
+        Device device;
+        try {
+            device = deviceDao.getDevice(workOrder.getControlNumber());
+            metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
+        } catch (DeviceNotFoundException e) {
+            metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 1);
+            log.info("Could not find device ({}) while attempting to update maintenance stats.",
+                    workOrder.getControlNumber());
+            throw new DeviceNotFoundException("Unable to find the device for the provided work order while " +
+                    "attempting to update maintenance stats.");
+        }
 
         // if this is not a closed Preventative Maintenance or Acceptance Test work order, there's nothing to update
         if (!(workOrder.getWorkOrderCompletionStatus() == WorkOrderCompletionStatus.CLOSED)) {
@@ -113,7 +199,7 @@ public class CloseWorkOrderActivity {
                     .plusMonths(maintenanceFrequency + 1);
             int month = proposedComplianceThroughDate.getMonthValue() - 1;
             int year = proposedComplianceThroughDate.getYear() - 1;
-            while(proposedComplianceThroughDate.getMonthValue() > month &&
+            while (proposedComplianceThroughDate.getMonthValue() > month &&
                     proposedComplianceThroughDate.getYear() > year) {
                 proposedComplianceThroughDate = proposedComplianceThroughDate.minusDays(1);
             }
@@ -158,7 +244,7 @@ public class CloseWorkOrderActivity {
                 month = proposedNextPmDueDate.getMonthValue() - 1;
                 year = proposedNextPmDueDate.getYear() - 1;
                 // subtract days to reach the last day of the previous calendar month
-                while(proposedNextPmDueDate.getMonthValue() > month && proposedNextPmDueDate.getYear() > year) {
+                while (proposedNextPmDueDate.getMonthValue() > month && proposedNextPmDueDate.getYear() > year) {
                     proposedNextPmDueDate = proposedNextPmDueDate.minusDays(1);
                 }
 

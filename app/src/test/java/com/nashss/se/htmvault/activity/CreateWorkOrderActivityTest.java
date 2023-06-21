@@ -15,6 +15,7 @@ import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderModel;
 import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
 import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -26,9 +27,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 class CreateWorkOrderActivityTest {
@@ -62,6 +67,7 @@ class CreateWorkOrderActivityTest {
                 "Expected a create work order request for a device not found to result in an" +
                         "DeviceNotFoundException thrown");
         verifyNoInteractions(workOrderDao);
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 1);
     }
 
     @Test
@@ -78,6 +84,7 @@ class CreateWorkOrderActivityTest {
                 createWorkOrderActivity.handleRequest(createWorkOrderRequest),
                 "Expected a create work order request with an invalid work order type to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
         verifyNoInteractions(workOrderDao);
     }
@@ -96,6 +103,7 @@ class CreateWorkOrderActivityTest {
                         createWorkOrderActivity.handleRequest(createWorkOrderRequest),
                 "Expected a create work order request with problem reported null to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
         verifyNoInteractions(workOrderDao);
     }
@@ -115,6 +123,7 @@ class CreateWorkOrderActivityTest {
                         createWorkOrderActivity.handleRequest(createWorkOrderRequest),
                 "Expected a create work order request with a blank problem reported to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
         verifyNoInteractions(workOrderDao);
     }
@@ -136,6 +145,7 @@ class CreateWorkOrderActivityTest {
                 "Expected a create work order request with an invalid sort order to result in an " +
                         "InvalidAttributeValueException thrown");
         verifyNoInteractions(workOrderDao);
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
@@ -212,12 +222,13 @@ class CreateWorkOrderActivityTest {
         // verify the work order models are in the proper sort order
         assertWorkOrderModelsSortedCorrectly(expectedOrderWorkOrders, workOrderModels);
         verify(workOrderDao).saveWorkOrder(any(WorkOrder.class));
+        verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 0);
     }
 
     private void assertWorkOrderModelsSortedCorrectly(List<String> expectedSortedWorkOrderIds,
                                                       List<WorkOrderModel> sortedWorkOrderModels) {
-        for(int i = 0; i < sortedWorkOrderModels.size(); i++) {
+        for (int i = 0; i < sortedWorkOrderModels.size(); i++) {
             assertEquals(expectedSortedWorkOrderIds.get(i), sortedWorkOrderModels.get(i).getWorkOrderId());
         }
     }

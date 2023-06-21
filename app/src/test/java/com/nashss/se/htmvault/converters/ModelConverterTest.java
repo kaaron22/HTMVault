@@ -3,19 +3,29 @@ package com.nashss.se.htmvault.converters;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
-import com.nashss.se.htmvault.models.*;
+import com.nashss.se.htmvault.models.DeviceModel;
+import com.nashss.se.htmvault.models.FacilityDepartments;
+import com.nashss.se.htmvault.models.ManufacturerModels;
+import com.nashss.se.htmvault.models.ServiceStatus;
+import com.nashss.se.htmvault.models.WorkOrderModel;
 
 import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
 import com.nashss.se.htmvault.test.helper.WorkOrderTestHelper;
 import com.nashss.se.htmvault.utils.HTMVaultServiceUtils;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ModelConverterTest {
 
@@ -90,22 +100,7 @@ class ModelConverterTest {
         DeviceModel deviceModel = modelConverter.toDeviceModel(device);
 
         // THEN
-        assertEquals(controlNumber, deviceModel.getControlNumber());
-        assertEquals(serialNumber, deviceModel.getSerialNumber());
-        assertEquals(manufacturer, deviceModel.getManufacturer());
-        assertEquals(model, deviceModel.getModel());
-        assertEquals(manufactureDate.toString(), deviceModel.getManufactureDate());
-        assertEquals(serviceStatus.toString(), deviceModel.getServiceStatus());
-        assertEquals(facilityName, deviceModel.getFacilityName());
-        assertEquals(assignedDepartment, deviceModel.getAssignedDepartment());
-        assertEquals(complianceThroughDate.toString(), deviceModel.getComplianceThroughDate());
-        assertEquals(lastPmCompletionDate.toString(), deviceModel.getLastPmCompletionDate());
-        assertEquals(nextPmDueDate.toString(), deviceModel.getNextPmDueDate());
-        assertEquals(maintenanceFrequencyInMonths, deviceModel.getMaintenanceFrequencyInMonths());
-        assertEquals(inventoryAddDate.toString(), deviceModel.getInventoryAddDate());
-        assertEquals(addedById, deviceModel.getAddedById());
-        assertEquals(addedByName, deviceModel.getAddedByName());
-        assertEquals(notes, deviceModel.getNotes());
+        DeviceTestHelper.assertDeviceEqualsDeviceModel(device, deviceModel);
     }
 
     @Test
@@ -132,22 +127,7 @@ class ModelConverterTest {
         DeviceModel deviceModel = modelConverter.toDeviceModel(device);
 
         // THEN
-        assertEquals(controlNumber, deviceModel.getControlNumber());
-        assertEquals(serialNumber, deviceModel.getSerialNumber());
-        assertEquals(manufacturer, deviceModel.getManufacturer());
-        assertEquals(model, deviceModel.getModel());
-        assertEquals("", deviceModel.getManufactureDate());
-        assertEquals(serviceStatus.toString(), deviceModel.getServiceStatus());
-        assertEquals(facilityName, deviceModel.getFacilityName());
-        assertEquals(assignedDepartment, deviceModel.getAssignedDepartment());
-        assertEquals("", deviceModel.getComplianceThroughDate());
-        assertEquals("", deviceModel.getLastPmCompletionDate());
-        assertEquals("", deviceModel.getNextPmDueDate());
-        assertEquals(0, deviceModel.getMaintenanceFrequencyInMonths());
-        assertEquals(inventoryAddDate.toString(), deviceModel.getInventoryAddDate());
-        assertEquals(addedById, deviceModel.getAddedById());
-        assertEquals(addedByName, deviceModel.getAddedByName());
-        assertEquals("", deviceModel.getNotes());
+        DeviceTestHelper.assertDeviceEqualsDeviceModel(device, deviceModel);
     }
 
     @Test

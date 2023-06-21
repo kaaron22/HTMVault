@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 
+// from project template
 /**
  * An APIGateway response from a lambda function.
  */

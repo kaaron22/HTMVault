@@ -7,6 +7,7 @@ import com.nashss.se.htmvault.dynamodb.models.FacilityDepartment;
 import com.nashss.se.htmvault.exceptions.FacilityDepartmentNotFoundException;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.FacilityDepartments;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -15,7 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -36,11 +38,12 @@ class GetFacilitiesAndDepartmentsActivityTest {
     }
 
     @Test
-    public void handleRequest_requestForFacilitiesAndModels_returnsSortedListOfFacilitiesAndDepartmentsInResult() {
+    public void handleRequest_requestForFacilitiesAndDepartments_returnsSortedListOfFacilitiesAndDepartmentsInResult() {
         // GIVEN
         GetFacilitiesAndDepartmentsRequest request = GetFacilitiesAndDepartmentsRequest.builder()
                 .build();
 
+        // our individual facility/department objects to be returned when a mock call to the database is made
         FacilityDepartment facilityDepartment1 = new FacilityDepartment();
         facilityDepartment1.setFacilityName("Test Hospital");
         facilityDepartment1.setAssignedDepartment("ICU");
@@ -64,6 +67,9 @@ class GetFacilitiesAndDepartmentsActivityTest {
 
         // WHEN
         GetFacilitiesAndDepartmentsResult result = getFacilitiesAndDepartmentsActivity.handleRequest(request);
+        List<FacilityDepartments> results = result.getFacilitiesAndDepartments();
+
+        // the expected, sorted result
         FacilityDepartments facilityDepartments1 = FacilityDepartments.builder()
                 .withFacility("Test Hospital")
                 .withDepartments(new ArrayList<>(Arrays.asList("ER", "ICU")))
@@ -78,11 +84,12 @@ class GetFacilitiesAndDepartmentsActivityTest {
                 .build();
         List<FacilityDepartments> expected = new ArrayList<>(Arrays.asList(facilityDepartments2, facilityDepartments1,
                 facilityDepartments3));
-        List<FacilityDepartments> results = result.getFacilitiesAndDepartments();
 
         // THEN
         for (int i = 0; i < results.size(); i++) {
-            assertTrue(results.contains(expected.get(i)));
+            assertTrue(results.contains(expected.get(i)), "The resulting list of FacilityDepartments " +
+                    "converted from a list of individual facility/department objects did not match what was expected," +
+                    "in the order expected");
         }
     }
 
