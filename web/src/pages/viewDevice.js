@@ -109,7 +109,7 @@ class ViewDevice extends BindingClass {
         errorMessageDisplay.innerText = ``;
         errorMessageDisplay.classList.add('hidden');
 
-        // a success message to unhide if the endpoint succeeds
+        // an error message to unhide in the event a backend exception occurs and error message is returned
         const successMessageDisplay = document.getElementById('success-message');
         successMessageDisplay.innerText = 'Device successfully updated.';
         successMessageDisplay.classList.add('hidden');
@@ -158,7 +158,7 @@ class ViewDevice extends BindingClass {
 
         // if the update succeeds, the update device form will be hidden and the device information will be
         // unhidden, but the button text needs to be reset for the next time an attempt will potentially be made
-        // to update the device
+        // to update the device within this session
         updateButton.innerText = origButtonText;
 
         // if unsuccessful obtaining the device from the backend, return without updating the device in the datastore
