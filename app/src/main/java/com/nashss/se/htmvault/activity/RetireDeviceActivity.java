@@ -61,11 +61,11 @@ public class RetireDeviceActivity {
             device = deviceDao.getDevice(controlNumber);
             metricsPublisher.addCount(MetricsConstants.RETIREDEVICE_DEVICENOTFOUND_COUNT, 0);
         } catch (DeviceNotFoundException e) {
-            log.info("An attempt was made to retire a device ({}) that could not be found in the database",
+            log.info("An attempt was made to retire a device ({}) that could not be found in the database.",
                     controlNumber);
             metricsPublisher.addCount(MetricsConstants.RETIREDEVICE_DEVICENOTFOUND_COUNT, 1);
             throw new DeviceNotFoundException(String.format("Device %s could not be found while attempting to " +
-                    "retire/deactivate it", controlNumber));
+                    "retire/deactivate it.", controlNumber));
         }
 
         // get device's work orders, if any
@@ -76,10 +76,10 @@ public class RetireDeviceActivity {
             if (workOrder.getWorkOrderCompletionStatus() == WorkOrderCompletionStatus.OPEN) {
                 metricsPublisher.addCount(MetricsConstants.RETIREDEVICE_WORKORDERSOPEN_COUNT, 1);
                 log.info("A request was made to retire a device ({}), but it has at least one work order " +
-                        "({}) that has not yet been completed/closed, so it could not be retired", device, workOrder);
+                        "({}) that has not yet been completed/closed, so it could not be retired.", device, workOrder);
                 throw new RetireDeviceWithOpenWorkOrdersException("Work order " + workOrder.getWorkOrderId() +
                         " has not yet been completed/closed. All work orders for device (" + controlNumber + ") must " +
-                        "be completed and closed before device can be retired");
+                        "be completed and closed before device can be retired.");
             }
         }
 

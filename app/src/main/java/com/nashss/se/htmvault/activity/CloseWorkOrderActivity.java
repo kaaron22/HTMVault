@@ -62,10 +62,10 @@ public class CloseWorkOrderActivity {
             metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
         } catch (WorkOrderNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
-            log.info("A request was made to close a work order ({}) that could not be found",
+            log.info("A request was made to close a work order ({}) that could not be found.",
                     closeWorkOrderRequest.getWorkOrderId());
             throw new WorkOrderNotFoundException(String.format("Attempted to close a work order %s that was not " +
-                    "found " + e.getMessage(), closeWorkOrderRequest.getWorkOrderId()));
+                    "found.", closeWorkOrderRequest.getWorkOrderId()));
         }
 
         // if the work order is already closed, there's nothing to do except return the result with the converted
@@ -80,10 +80,10 @@ public class CloseWorkOrderActivity {
             if (null == problemFound || problemFound.isBlank() || null == summary || summary.isBlank() ||
                     null == completionDateTime) {
                 metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 1);
-                log.info("An attempt was made to close a work order ({}) that was not yet completed",
+                log.info("An attempt was made to close a work order ({}) that was not yet completed.",
                         workOrder.getWorkOrderId());
                 throw new CloseWorkOrderNotCompleteException("The work order information must be completed before " +
-                        "permanently closing " + workOrder.getWorkOrderId());
+                        "permanently closing " + workOrder.getWorkOrderId() + ".");
             }
 
             metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTCOMPLETE_COUNT, 0);
@@ -156,10 +156,10 @@ public class CloseWorkOrderActivity {
             metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
         } catch (WorkOrderNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
-            log.info("Could not find work order ({}) while attempting to update maintenance stats",
+            log.info("Could not find work order ({}) while attempting to update maintenance stats.",
                     workOrderId);
-            throw new WorkOrderNotFoundException("Unable to find the work order " + workOrderId + "while attempting " +
-                    "to update maintenance stats");
+            throw new WorkOrderNotFoundException("Unable to find the work order " + workOrderId + " while attempting " +
+                    "to update maintenance stats.");
         }
 
         // the device to which this work order pertains, which will potentially be updated
@@ -169,10 +169,10 @@ public class CloseWorkOrderActivity {
             metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 0);
         } catch (DeviceNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_DEVICENOTFOUND_COUNT, 1);
-            log.info("Could not find device ({}) while attempting to update maintenance stats",
+            log.info("Could not find device ({}) while attempting to update maintenance stats.",
                     workOrder.getControlNumber());
             throw new DeviceNotFoundException("Unable to find the device for the provided work order while " +
-                    "attempting to update maintenance stats");
+                    "attempting to update maintenance stats.");
         }
 
         // if this is not a closed Preventative Maintenance or Acceptance Test work order, there's nothing to update

@@ -49,9 +49,9 @@ public class ManufacturerModelDao {
         if (null == manufacturerModel) {
             metricsPublisher.addCount(MetricsConstants.GETMANUFACTURERMODEL_MANUFACTURERMODELNOTFOUND_COUNT, 1);
             log.info("Could not find a valid manufacturer model in the database for this combination of " +
-                    "manufacturer ({}) and model ({})", manufacturer, model);
+                    "manufacturer ({}) and model ({}).", manufacturer, model);
             throw new ManufacturerModelNotFoundException("Could not find a valid manufacturer model for this " +
-                    "combination of manufacturer (" + manufacturer + ") and model (" + model + ")");
+                    "combination of manufacturer (" + manufacturer + ") and model (" + model + ").");
         }
 
         metricsPublisher.addCount(MetricsConstants.GETMANUFACTURERMODEL_MANUFACTURERMODELNOTFOUND_COUNT, 0);
@@ -70,8 +70,8 @@ public class ManufacturerModelDao {
 
         if (null == manufacturerModels) {
             log.info("The list returned when scanning for a list of all manufacturer/models was null (should be an " +
-                    "empty list if none exist in the database");
-            throw new ManufacturerModelNotFoundException("There was a problem obtaining manufacturer models");
+                    "empty list if none exist in the database).");
+            throw new ManufacturerModelNotFoundException("There was a problem obtaining manufacturer models.");
         }
 
         return CollectionUtils.copyToList(manufacturerModels);

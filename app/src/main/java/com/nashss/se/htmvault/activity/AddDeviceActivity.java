@@ -84,7 +84,7 @@ public class AddDeviceActivity {
         } catch (ManufacturerModelNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             log.info("The manufacturer/model combination specified ({}/{}) while attempting to add a new " +
-                    "device is not a valid combination", manufacturer, model);
+                    "device is not a valid combination.", manufacturer, model);
             throw new InvalidAttributeValueException("Invalid manufacturer/model specified while attempting to add a " +
                     "new device to the inventory. " + e.getMessage());
         }
@@ -99,7 +99,7 @@ public class AddDeviceActivity {
         } catch (DevicePreviouslyAddedException e) {
             metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             log.info("An attempt was made to add a duplicate device with manufacturer/model {}/{} and " +
-                    "serial number {}", manufacturer, model, serialNumber);
+                    "serial number {}.", manufacturer, model, serialNumber);
             throw new InvalidAttributeValueException(e.getMessage());
         }
 
@@ -117,7 +117,7 @@ public class AddDeviceActivity {
         } catch (FacilityDepartmentNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             log.info("The facility/department combination specified ({}/{}) while attempting to add a new " +
-                    "device is not a valid combination", facilityName, assignedDepartment);
+                    "device is not a valid combination.", facilityName, assignedDepartment);
             throw new InvalidAttributeValueException("Invalid facility/department specified while attempting to add " +
                     "a new device to the inventory. " + e.getMessage());
         }
@@ -130,16 +130,16 @@ public class AddDeviceActivity {
                 if (manufactureDateParsed.isAfter(LocalDate.now())) {
                     metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
                     log.info("The optional manufacture date provided while attempting to add a new device " +
-                            "is a future date ({})", manufactureDateParsed);
+                            "is a future date ({}).", manufactureDateParsed);
                     throw new InvalidAttributeValueException(String.format("Cannot provide a future manufacture date " +
-                            "(%s)", manufactureDateParsed));
+                            "(%s) while adding a new device.", manufactureDateParsed));
                 }
             } catch (DateTimeParseException e) {
                 metricsPublisher.addCount(MetricsConstants.ADDDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-                log.info("The optional manufacture date provided while attempting to add a new device is not " +
-                        "in the correct format of YYYY-MM-DD ({})", manufactureDate);
-                throw new InvalidAttributeValueException("The optional manufacture date, if provided, must be " +
-                        "formatted as YYYY-MM-DD");
+                log.info("The optional manufacture date provided while attempting to add a new device is " +
+                        "not in the correct format of YYYY-MM-DD ({}).", manufactureDate);
+                throw new InvalidAttributeValueException("The optional manufacture date, if provided when adding a " +
+                        "new device, must be formatted as YYYY-MM-DD, but was: " + manufactureDate + ".");
             }
         }
 

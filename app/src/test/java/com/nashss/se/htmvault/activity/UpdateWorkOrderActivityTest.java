@@ -79,6 +79,8 @@ class UpdateWorkOrderActivityTest {
 
         // THEN
         WorkOrderTestHelper.assertWorkOrderEqualsWorkOrderModel(expectedWorkOrder, workOrderModel);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERCLOSED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 0);
     }
 
@@ -127,6 +129,8 @@ class UpdateWorkOrderActivityTest {
 
         // THEN
         WorkOrderTestHelper.assertWorkOrderEqualsWorkOrderModel(expectedWorkOrder, workOrderModel);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERCLOSED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 0);
     }
 
@@ -197,6 +201,8 @@ class UpdateWorkOrderActivityTest {
                 updateWorkOrderActivity.handleRequest(updateWorkOrderRequest),
                 "Expected request to update a closed work order to result in an " +
                         "UpdateClosedWorkOrderException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERCLOSED_COUNT, 1);
     }
 
     @Test
@@ -221,6 +227,8 @@ class UpdateWorkOrderActivityTest {
                         updateWorkOrderActivity.handleRequest(updateWorkOrderRequest),
                 "Expected request to update a work order with an invalid work order type to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERCLOSED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
@@ -247,6 +255,8 @@ class UpdateWorkOrderActivityTest {
                         updateWorkOrderActivity.handleRequest(updateWorkOrderRequest),
                 "Expected request to update a work order with an invalid work order await status to result " +
                         "in an InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERCLOSED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
@@ -274,6 +284,8 @@ class UpdateWorkOrderActivityTest {
                         updateWorkOrderActivity.handleRequest(updateWorkOrderRequest),
                 "Expected request to update a work order with a blank 'problem reported' to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERCLOSED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
@@ -301,6 +313,8 @@ class UpdateWorkOrderActivityTest {
                         updateWorkOrderActivity.handleRequest(updateWorkOrderRequest),
                 "Expected request to update a work order with an empty 'problem reported' to result in an " +
                         "InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERCLOSED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
@@ -329,6 +343,8 @@ class UpdateWorkOrderActivityTest {
                         updateWorkOrderActivity.handleRequest(updateWorkOrderRequest),
                 "Expected request to update a work order with an invalid 'completion date time' to result in" +
                         " an InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERCLOSED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 
@@ -359,6 +375,8 @@ class UpdateWorkOrderActivityTest {
                         updateWorkOrderActivity.handleRequest(updateWorkOrderRequest),
                 "Expected request to update a work order with an future 'completion date time' to result in" +
                         " an InvalidAttributeValueException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERCLOSED_COUNT, 0);
         verify(metricsPublisher).addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
     }
 

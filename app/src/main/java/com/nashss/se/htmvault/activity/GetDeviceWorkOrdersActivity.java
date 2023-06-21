@@ -81,7 +81,7 @@ public class GetDeviceWorkOrdersActivity {
         } else if (!Arrays.asList(SortOrder.values()).contains(sortOrder)) {
             metricsPublisher.addCount(MetricsConstants.GETDEVICEWORKORDERS_INVALIDATTRIBUTEVALUE_COUNT, 1);
             log.info("The sort order specified ({}) while attempting to get a device's work orders was " +
-                            "invalid", sortOrder);
+                            "invalid.", sortOrder);
             throw new InvalidAttributeValueException(String.format("Unrecognized sort order (%s) while attempting to " +
                     "get a device's work orders.", sortOrder));
         }

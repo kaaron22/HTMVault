@@ -13,6 +13,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
+import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -20,9 +21,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Array;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -106,8 +106,20 @@ class DeviceDaoTest {
         manufacturerModel.setModel("Their First Monitor Model");
         manufacturerModel.setRequiredMaintenanceFrequencyInMonths(12);
 
+        // a mocked device array to return when the mocked paginated query list of 'found' devices matching
+        // the manufacturer, model, and serial number of a new device we are attempting to add, is then converted
+        // to an arraylist
+        Device device = DeviceTestHelper.generateActiveDevice(1, manufacturerModel,
+                "TestFacility", "TestDepartment");
+        device.setSerialNumber("G321");
+        Device[] deviceArray = new Device[1];
+        deviceArray[0] = device;
+
         // mocked paginated query list to return
         when(dynamoDBMapper.query(eq(Device.class), any(DynamoDBQueryExpression.class))).thenReturn(queryList);
+
+        // return the mocked device array
+        when(queryList.toArray()).thenReturn(deviceArray);
 
         // captor for the query expression invoked when we call the method under test
         ArgumentCaptor<DynamoDBQueryExpression<Device>> captor = ArgumentCaptor.forClass(DynamoDBQueryExpression.class);

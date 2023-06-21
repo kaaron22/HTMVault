@@ -49,9 +49,9 @@ public class FacilityDepartmentDao {
         if (null == facilityDepartment) {
             metricsPublisher.addCount(MetricsConstants.GETFACILITYDEPARTMENT_FACILITYDEPARTMENTNOTFOUND_COUNT, 1);
             log.info("Could not find a valid facility department in the database for this combination of " +
-                    "facility ({}) and department ({})", facility, department);
+                    "facility ({}) and department ({}).", facility, department);
             throw new FacilityDepartmentNotFoundException("Could not find a valid facility department for this " +
-                    "combination of facility (" + facility + ") and department (" + department + ")");
+                    "combination of facility (" + facility + ") and department (" + department + ").");
         }
 
         metricsPublisher.addCount(MetricsConstants.GETFACILITYDEPARTMENT_FACILITYDEPARTMENTNOTFOUND_COUNT, 0);
@@ -70,8 +70,8 @@ public class FacilityDepartmentDao {
 
         if (null == facilityDepartments) {
             log.info("The list returned when scanning for a list of all facility/departments was null (should be an " +
-                    "empty list if none exist in the database");
-            throw new FacilityDepartmentNotFoundException("There was a problem obtaining facility departments");
+                    "empty list if none exist in the database).");
+            throw new FacilityDepartmentNotFoundException("There was a problem obtaining facility departments.");
         }
 
         return CollectionUtils.copyToList(facilityDepartments);

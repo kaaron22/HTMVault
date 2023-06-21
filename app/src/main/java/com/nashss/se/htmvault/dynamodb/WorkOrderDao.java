@@ -63,9 +63,9 @@ public class WorkOrderDao {
         if (null == workOrder) {
             metricsPublisher.addCount(MetricsConstants.GETWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
             log.info("An attempt was made to obtain a work order with work order id {}, but could not be " +
-                    "found", workOrderId);
+                    "found.", workOrderId);
             throw new WorkOrderNotFoundException("Could not find work order for work order id provided: " +
-                    workOrderId);
+                    workOrderId + ".");
         }
 
         metricsPublisher.addCount(MetricsConstants.GETWORKORDER_WORKORDERNOTFOUND_COUNT, 0);

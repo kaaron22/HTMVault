@@ -71,7 +71,7 @@ public class UpdateDeviceActivity {
             log.info("The control number provided ({}) while attempting to update a device contained " +
                             "invalid characters.", updateDeviceRequest.getControlNumber());
             throw new InvalidAttributeValueException("A device id (control number) must be provided in order to " +
-                    "update a device");
+                    "update a device.");
         }
 
         // verify the device being updated exists and is found in the database
@@ -81,17 +81,18 @@ public class UpdateDeviceActivity {
             metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 0);
         } catch (DeviceNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 1);
-            log.info("An attempt was made to update a device ({}) that could not be found",
+            log.info("An attempt was made to update a device ({}) that could not be found.",
                     updateDeviceRequest.getControlNumber());
-            throw new DeviceNotFoundException(String.format("The device with id %s being updated could not be found",
+            throw new DeviceNotFoundException(String.format("The device with id %s being updated could not be found.",
                     updateDeviceRequest.getControlNumber()));
         }
 
         if (device.getServiceStatus() == ServiceStatus.RETIRED) {
             metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 1);
-            log.info("A device update was attempted for a device ({}) that is inactive/retired",
+            log.info("A device update was attempted for a device ({}) that is inactive/retired.",
                     device.getControlNumber());
-            throw new UpdateRetiredDeviceException("Cannot update a retired device: " + device.getControlNumber());
+            throw new UpdateRetiredDeviceException("Cannot update a retired device: " + device.getControlNumber() +
+                    ".");
         }
         metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_DEVICERETIRED_COUNT, 0);
 
@@ -115,7 +116,7 @@ public class UpdateDeviceActivity {
         } catch (ManufacturerModelNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             log.info("The manufacturer/model combination specified ({}/{}) while attempting to update a " +
-                    "device is not a valid combination", manufacturer, model);
+                    "device is not a valid combination.", manufacturer, model);
             throw new InvalidAttributeValueException("Invalid manufacturer/model specified while attempting to " +
                     "update a device in the inventory. " + e.getMessage());
         }
@@ -136,7 +137,7 @@ public class UpdateDeviceActivity {
         } catch (FacilityDepartmentNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             log.info("The facility/department combination specified ({}/{}) while attempting to update a " +
-                    "device is not a valid combination", facilityName, assignedDepartment);
+                    "device is not a valid combination.", facilityName, assignedDepartment);
             throw new InvalidAttributeValueException("Invalid facility/department specified while attempting to " +
                     "update a device in the inventory. " + e.getMessage());
         }
@@ -149,16 +150,16 @@ public class UpdateDeviceActivity {
                 if (manufactureDateParsed.isAfter(LocalDate.now())) {
                     metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
                     log.info("The optional manufacture date provided while attempting to update a device " +
-                            "is a future date ({})", manufactureDateParsed);
+                            "is a future date ({}).", manufactureDateParsed);
                     throw new InvalidAttributeValueException(String.format("Cannot provide a future manufacture date " +
-                            "(%s) when updating a device", manufactureDateParsed));
+                            "(%s) when updating a device.", manufactureDateParsed));
                 }
             } catch (DateTimeParseException e) {
                 metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
                 log.info("The optional manufacture date provided while attempting to update a device is " +
-                        "not in the correct format of YYYY-MM-DD ({})", manufactureDate);
+                        "not in the correct format of YYYY-MM-DD ({}).", manufactureDate);
                 throw new InvalidAttributeValueException("The date provided must be formatted as YYYY-MM-DD when " +
-                        "submitting a request to update a device");
+                        "submitting a request to update a device, but was: " + manufactureDate + ".");
             }
         }
 

@@ -16,6 +16,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,8 +67,8 @@ public class DeviceDao {
         if (null == device) {
             metricsPublisher.addCount(MetricsConstants.GETDEVICE_DEVICENOTFOUND_COUNT, 1);
             log.info("An attempt was made to obtain a device with control number ({}), but could not be " +
-                    "found", controlNumber);
-            throw new DeviceNotFoundException("Could not find device with control number " + controlNumber);
+                    "found.", controlNumber);
+            throw new DeviceNotFoundException("Could not find device with control number " + controlNumber + ".");
         }
         metricsPublisher.addCount(MetricsConstants.GETDEVICE_DEVICENOTFOUND_COUNT, 0);
         return device;
@@ -159,13 +160,17 @@ public class DeviceDao {
                 .withExpressionAttributeValues(valueMap);
 
         PaginatedQueryList<Device> deviceList = dynamoDBMapper.query(Device.class, queryExpression);
+        List<Device> devices = new ArrayList<>(deviceList);
 
         if (!deviceList.isEmpty()) {
             log.info("An attempt was made to add a device with this manufacturer, model, and serial number " +
-                    "was previously added: Manufacturer/Model ({}), SerialNumber ({})", manufacturerModel,
-                    serialNumber);
-            throw new DevicePreviouslyAddedException("A device with this manufacturer, model, and serial number was " +
-                    "previously added");
+                    "was previously added (device ID {}): Manufacturer/Model ({}/{}), SerialNumber ({}).",
+                    devices.get(0).getControlNumber(), manufacturerModel.getManufacturer(),
+                    manufacturerModel.getModel(), serialNumber);
+            throw new DevicePreviouslyAddedException(String.format("A device with this manufacturer, model, and " +
+                    "serial number was previously added: Device ID %s - %s/%s, with serial number %s.",
+                    devices.get(0).getControlNumber(), manufacturerModel.getManufacturer(),
+                    manufacturerModel.getModel(), serialNumber));
         }
     }
 }

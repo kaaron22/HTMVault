@@ -52,10 +52,10 @@ public class ReactivateDeviceActivity {
             metricsPublisher.addCount(MetricsConstants.REACTIVATEDEVICE_DEVICENOTFOUND_COUNT, 0);
         } catch (DeviceNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.REACTIVATEDEVICE_DEVICENOTFOUND_COUNT, 1);
-            log.info("An attempt was made to reactivate a device, but the device ({}) could not be found",
+            log.info("An attempt was made to reactivate a device, but the device ({}) could not be found.",
                     controlNumber);
             throw new DeviceNotFoundException(String.format("Unable to locate device %s while attempting to " +
-                    "reactivate it", controlNumber));
+                    "reactivate it.", controlNumber));
         }
 
         device.setServiceStatus(ServiceStatus.IN_SERVICE);
