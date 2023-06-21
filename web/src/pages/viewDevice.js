@@ -41,10 +41,10 @@ class ViewDevice extends BindingClass {
         // call the client to get the device
         const device = await this.client.getDevice(deviceId);
 
-        // if the device is in service, hide the button to reactivate the device
+        // if the device is in service, hide the button to reactivate it, as the function is inapplicable in this case
         if (device.serviceStatus == "IN_SERVICE") {
             document.getElementById('reactivate-device').classList.add('hidden');
-        // otherwise, the device is retired, so hide the buttons to retire and to update the device    
+        // otherwise, the device is retired, so hide the buttons to retire and to update the device, since those functions are inapplicable in this case
         } else {
             document.getElementById('retire-device').classList.add('hidden');
             document.getElementById('update-device').classList.add('hidden');
@@ -67,15 +67,35 @@ class ViewDevice extends BindingClass {
         // the page, due to the change listener in the class constructor
         this.dataStore.set('workOrders', workOrders);
 
-        // pull a list of manufacturers and their associated models for populating the drop down selection on the update
+        // pull and store a list of manufacturers and their associated models for populating the drop down selection on the update
         // device form
         const manufacturersAndModels = await this.client.getManufacturersAndModels();
         this.dataStore.set('manufacturersAndModels', manufacturersAndModels);
 
-        // pull a list of facilities and their associated departments for populating the drop down selection on the
+        // pull and store a list of facilities and their associated departments for populating the drop down selection on the
         // update device form
         const facilitiesAndDepartments = await this.client.getFacilitiesAndDepartments();
         this.dataStore.set('facilitiesAndDepartments', facilitiesAndDepartments);
+    }
+
+    /**
+     * Add the header to the page, load the HTMVaultClient, and initialize the page information
+     */
+    mount() {
+        // event listeners for button clicks and drop down selections
+        document.getElementById('retire-device').addEventListener('click', this.submitRetire);
+        document.getElementById('reactivate-device').addEventListener('click', this.submitReactivate);
+        document.getElementById('add-new-work-order').addEventListener('click', this.createWorkOrder);
+        document.getElementById('update-device').addEventListener('click', this.displayUpdateDeviceForm);
+        document.getElementById('submit-updates-device').addEventListener('click', this.submitDeviceUpdates);
+        document.getElementById('cancel-updates-device').addEventListener('click', this.cancelUpdatesDevice);
+        document.getElementById('manufacturer-drop-down').addEventListener('change', this.populateModels);
+        document.getElementById('facility-drop-down').addEventListener('change', this.populateDepartments);
+
+        this.header.addHeaderToPage();
+
+        this.client = new HTMVaultClient();
+        this.clientLoaded();
     }
 
     /**
@@ -149,7 +169,7 @@ class ViewDevice extends BindingClass {
         // otherwise, update the device in the datastore
         this.dataStore.set('device', device);
 
-        // display the success message for 3-4 seconds
+        // temporarily display the success message for defined period of time
         successMessageDisplay.classList.remove('hidden');
         setTimeout(() => {
             successMessageDisplay.classList.add('hidden');
@@ -182,10 +202,12 @@ class ViewDevice extends BindingClass {
         // process (by displaying the update device form)
         document.getElementById("create-new-work-order-form").reset();
 
+        // an error message to unhide in the event a backend exception occurs and error message is returned
         const updateDeviceErrorMessageDisplay = document.getElementById('update-error-message');
         updateDeviceErrorMessageDisplay.innerText = ``;
         updateDeviceErrorMessageDisplay.classList.add('hidden');
 
+        // get the device from the datastore in order to populate current values on the update device form
         const device = this.dataStore.get('device');
         const deviceManufactureDate = device.manufactureDate;
         const deviceNotes = device.notes;
@@ -204,26 +226,31 @@ class ViewDevice extends BindingClass {
             notes = deviceNotes;
         }
 
+        // populate the manufacturer drop down for the update device form, then initialize the form's selection with the current manufacturer
         this.populateManufacturers();
 
         document.getElementById('update-control-number').innerText = device.controlNumber;
         document.getElementById('update-serial-number').value = device.serialNumber;
         document.getElementById('manufacturer-drop-down').value = device.manufacturer;
 
+        // with the form's manufacturer pre-selected, populate the models and do the same (pre-select), based on the current device's model
         this.populateModels();
 
         document.getElementById('model-drop-down').value = device.model;
         document.getElementById('update-manufacture-date').value = manufactureDate;
 
+        // populate the facility drop down for the update device form, then initialize the form's selection with the current facility
         this.populateFacilities();
 
         document.getElementById('facility-drop-down').value = device.facilityName;
 
+        // with the form's facility then pre-selected, populate the departments and do the same (pre-select), based on the current device's model
         this.populateDepartments();
 
         document.getElementById('department-drop-down').value = device.assignedDepartment;
         document.getElementById('update-notes').value = notes;
 
+        // hide the divs that display the full device details, the list of work orders and the create work order form, while unhiding the update device form
         const deviceRecordDiv = document.getElementById('device-record-div');
         const updateDeviceDiv = document.getElementById('update-device-div');
         const workOrdersDiv = document.getElementById('work-orders-div');
@@ -235,8 +262,14 @@ class ViewDevice extends BindingClass {
 
     }
 
+    /**
+     * Populate the add device form's drop down list of manufacturers with those available
+     */
     async populateManufacturers() {
+        // get the list of manufacturers and their models from the datastore
         const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
+        
+        // the opening html for the manufacturer drop down list element
         let manufacturersHtml = '';
         manufacturersHtml += `<label for="manufacturer-drop-down">Manufacturer</label>
                                 <select class=validated-field id="manufacturer-drop-down" required>
@@ -244,18 +277,30 @@ class ViewDevice extends BindingClass {
                                 `
 
         let manufacturer;
+        // iteratively populate each available option in the drop down list
         for (manufacturer of manufacturersAndModels) {
             manufacturersHtml += `<option value="${manufacturer.manufacturer}">${manufacturer.manufacturer}</option>
                                     `
         }
+
+        // the closing html for the drop down list element
         manufacturersHtml += `</select>`
+
+        // setting the element with our generated HTML
         document.getElementById('manufacturer-drop-down').innerHTML = manufacturersHtml;
     }
 
+    /**
+     * Populate the add device form's drop down list of models with those available for the manufacturer previously selected on the form
+     */
     async populateModels() {
+        // the selected manufacturer
         const selectedManufacturer = document.getElementById('manufacturer-drop-down').value;
+        
+        // get the list of manufacturers and their models from the datastore
         const manufacturersAndModels = this.dataStore.get('manufacturersAndModels');
 
+        // the opening html for the models drop down list element
         let modelsHtml = '';
         modelsHtml += `<label for="model-drop-down">Model</label>
                            <select class=validated-field id="model-drop-down" required>
@@ -264,40 +309,63 @@ class ViewDevice extends BindingClass {
 
         let manufacturer;
         for (manufacturer of manufacturersAndModels) {
+            // find the selected manufacturer in the datastore in order to access it's associated list of models
             if (manufacturer.manufacturer == selectedManufacturer) {
                 let model;
+                // iteratively populate each available option in the drop down list with the list of models for this manufacturer
                 for (model of manufacturer.models) {
                     modelsHtml += `<option value="${model}">${model}</option>
                                     `
                 }
             }
         }
+
+        // the closing html for the drop down list element
         modelsHtml += `</select>`
+
+        // setting the element with our generated HTML
         document.getElementById('model-drop-down').innerHTML = modelsHtml;
     }
 
+    /**
+     * Populate the add device form's drop down list of facilities with those available
+     */
     async populateFacilities() {
+        // get the list of facilities and their departments from the datastore
         const facilitiesAndDepartments = this.dataStore.get('facilitiesAndDepartments');
 
         let facilitiesHtml = '';
+        // the opening html for the facility drop down list element
         facilitiesHtml += `<label for="facility-drop-down">Facility</label>
                                 <select class=validated-field id="facility-drop-down" required>
                                 <option value="">Select a Facility</option>
                                 `
 
         let facility;
+        // iteratively populate each available option in the drop down list
         for (facility of facilitiesAndDepartments) {
             facilitiesHtml += `<option value="${facility.facility}">${facility.facility}</option>
                                     `
         }
+
+        // the closing html for the drop down list element
         facilitiesHtml += `</select>`
+
+        // setting the element with our generated HTML
         document.getElementById('facility-drop-down').innerHTML = facilitiesHtml;
     }
 
+    /**
+     * Populate the add device form's drop down list of departmenst with those available for the facility previously selected on the form
+     */
     async populateDepartments() {
+        // the selected facility
         const selectedFacility = document.getElementById('facility-drop-down').value;
+
+        // get the list of facilites and their departments from the datastore
         const facilitiesAndDepartments = this.dataStore.get('facilitiesAndDepartments');
 
+        // the opening html for the departments drop down list element
         let departmentsHtml = '';
         departmentsHtml += `<label for="department-drop-down">Department</label>
                            <select class=validated-field id="department-drop-down" required>
@@ -305,33 +373,47 @@ class ViewDevice extends BindingClass {
                            `
 
         let facility;
+        // find the selected facility in the datastore in order to access it's associated list of departments
         for (facility of facilitiesAndDepartments) {
             if (facility.facility == selectedFacility) {
                 let department;
+                // iteratively populate each available option in the drop down list with the list of departments for this facility
                 for (department of facility.departments) {
                     departmentsHtml += `<option value="${department}">${department}</option>
                                     `
                 }
             }
         }
+
+        // the closing html for the drop down list element
         departmentsHtml += `</select>`
+
+        // setting the element with our generated HTML
         document.getElementById('department-drop-down').innerHTML = departmentsHtml;
     }
 
+    /**
+     * Method to run when the retire device button is pressed. Calls the HTMVaultService to retire the
+     * device.
+     */
     async submitRetire(evt) {
         evt.preventDefault();
 
+        // an error message to unhide in the event a backend exception occurs and error message is returned
         const errorMessageDisplay = document.getElementById('error-message-device-record-change');
         errorMessageDisplay.innerText = ``;
         errorMessageDisplay.classList.add('hidden');
 
+        // inform the user that the retire device submission is being processed
         const retireButton = document.getElementById('retire-device');
         const origButtonText = retireButton.innerText;
         retireButton.innerText = 'Retiring...';
 
+        // obtain the device id (control number) of the device to pass to the client
         const device = this.dataStore.get('device');
         const deviceControlNumber = device.controlNumber;
 
+        // if the control number is empty, set the value to null (the backend checks for a blank / empty value and throws a corresponding error/exception)
         let controlNumber;
         if (deviceControlNumber.length < 1) {
             controlNumber = "";
@@ -339,11 +421,13 @@ class ViewDevice extends BindingClass {
             controlNumber = deviceControlNumber;
         }
 
+        // the client call to retire the device, if conditions are met (i.e. the backend checks for open work orders, which prevents device retirement)
         const retiredDevice = await this.client.retireDevice(controlNumber, (error) => {
             errorMessageDisplay.innerText = `Error: ${error.message}`
             errorMessageDisplay.classList.remove('hidden');
         });
 
+        // update the datastore following a successful request and update the applicable buttons displayed for the device
         if (retiredDevice != null) {
             this.dataStore.set('device', retiredDevice);
             document.getElementById('retire-device').classList.add('hidden');
@@ -351,23 +435,33 @@ class ViewDevice extends BindingClass {
             document.getElementById('reactivate-device').classList.remove('hidden');
             document.getElementById('create-work-order').classList.add('hidden');
         }
+
+        // reset the retire device button's text
         retireButton.innerText = origButtonText;
     }
 
+    /**
+     * Method to run when the reactivate device button is pressed. Calls the HTMVaultService to reactivate the
+     * device (returns it to an active status).
+     */
     async submitReactivate(evt) {
         evt.preventDefault();
 
+        // an error message to unhide in the event a backend exception occurs and error message is returned
         const errorMessageDisplay = document.getElementById('error-message-device-record-change');
         errorMessageDisplay.innerText = ``;
         errorMessageDisplay.classList.add('hidden');
 
+        // inform the user that the update submission is being processed
         const reactivateButton = document.getElementById('reactivate-device');
         const origButtonText = reactivateButton.innerText;
         reactivateButton.innerText = 'Reactivating...';
 
+        // obtain the device id (control number) of the device to pass to the client
         const device = this.dataStore.get('device');
         const deviceControlNumber = device.controlNumber;
 
+        // if the control number is empty, set the value to null (the backend checks for a blank / empty value and throws a corresponding error/exception)
         let controlNumber;
         if (deviceControlNumber.length < 1) {
             controlNumber = "";
@@ -375,11 +469,13 @@ class ViewDevice extends BindingClass {
             controlNumber = deviceControlNumber;
         }
 
+        // the client call to reactivate the device
         const reactivatedDevice = await this.client.reactivateDevice(controlNumber, (error) => {
             errorMessageDisplay.innerText = `Error: ${error.message}`
             errorMessageDisplay.classList.remove('hidden');
         });
 
+        // if successfull, update the datastore and update the applicable buttons displayed for the device
         if (reactivatedDevice != null) {
             this.dataStore.set('device', reactivatedDevice);
             document.getElementById('retire-device').classList.remove('hidden');
@@ -387,6 +483,8 @@ class ViewDevice extends BindingClass {
             document.getElementById('reactivate-device').classList.add('hidden');
             document.getElementById('create-work-order').classList.remove('hidden');
         }
+
+        // reset the retire device button's text
         reactivateButton.innerText = origButtonText;
     }
 
@@ -422,13 +520,14 @@ class ViewDevice extends BindingClass {
     addWorkOrdersToPage() {
         const workOrders = this.dataStore.get('workOrders')
 
+        // if no work orders, display a message indicating, so the user knows the work order list is not still being retrieved
         if (workOrders == null || workOrders.length == 0) {
             document.getElementById('work-orders').innerHTML = 'No work orders found';
             return;
         }
 
         let workOrderSummaryHtml = '';
-        // table header row
+        // table header row for work order list
         workOrderSummaryHtml += `<table id="work-orders">
                                    <tr>
                                        <th>Work Order ID</th>
@@ -439,6 +538,7 @@ class ViewDevice extends BindingClass {
                                    </tr>`
 
         let workOrderSummary;
+        // iteratively populate the html needed for the table of work orders
         for (workOrderSummary of workOrders) {
             workOrderSummaryHtml += `
                 <tr>
@@ -449,10 +549,18 @@ class ViewDevice extends BindingClass {
                     <td>${workOrderSummary.completionDateTime}</td>
                 </tr>`
         }
+
+        // closing html for table element
         workOrderSummaryHtml += `</table>`
+
+        // update the element with the information
         document.getElementById('work-orders').innerHTML = workOrderSummaryHtml;
     }
 
+    /**
+     * Cancels an update device form by returning the the device details view, including the list of work orders, and the create work order form,
+     * while hiding the update device form
+     */
     async cancelUpdatesDevice() {
         const deviceRecordDiv = document.getElementById('device-record-div');
         const updateDeviceDiv = document.getElementById('update-device-div');
@@ -469,19 +577,23 @@ class ViewDevice extends BindingClass {
      */
     async createWorkOrder() {
 
+        // an error message to unhide in the event a backend exception occurs and error message is returned
         const errorMessageDisplay = document.getElementById('error-message-device-record-change');
         errorMessageDisplay.innerText = ``;
         errorMessageDisplay.classList.add('hidden');
 
+        // a success message to unhide if the endpoint succeeds
         const successMessageDisplay = document.getElementById('success-message');
         successMessageDisplay.innerText = 'Work order successfully created';
         successMessageDisplay.classList.add('hidden');
 
+        // get the device from the datastore, if present
         const device = this.dataStore.get('device');
         if (device == null) {
             return;
         }
 
+        // inform user that create new work order request is being processed
         document.getElementById('add-new-work-order').innerText = 'Adding...';
         const controlNumber = document.getElementById('control-number').innerText;
         const workOrderType = document.getElementById('workOrderType').value;
@@ -490,42 +602,29 @@ class ViewDevice extends BindingClass {
         const urlParams = new URLSearchParams(window.location.search);
         const order = urlParams.get('order');
 
+        // the client call to obtain this device's list of work orders
         const workOrderList = await this.client.createWorkOrder(controlNumber, workOrderType, problemReported, problemFound, order, (error) => {
+            // if there's an error, set the error element with the error returned and unhide the element
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');           
         });
 
+        // if successful in creating the work order, update the datastore with the updated list of work orders, which will cause the view to update accordingly
+        // due to the change listener
         if (!(workOrderList == null)) {
             this.dataStore.set('workOrders', workOrderList);
+            // reset the create work order form for the next potential request
             document.getElementById("create-new-work-order-form").reset();
-            successMessageDisplay.classList.remove('hidden');
 
+            // temporarily display a success message, for the amount of time specified
+            successMessageDisplay.classList.remove('hidden');
             setTimeout(() => {
                 successMessageDisplay.classList.add('hidden');
             }, 3500);
         }
 
+        // reset the create work order button text
         document.getElementById('add-new-work-order').innerText = 'Create New Work Order';
-    }
-
-     /**
-     * Add the header to the page, load the HTMVaultClient, and initialize the page information
-     */
-    mount() {
-        // event listeners for button clicks and drop down selections
-        document.getElementById('retire-device').addEventListener('click', this.submitRetire);
-        document.getElementById('reactivate-device').addEventListener('click', this.submitReactivate);
-        document.getElementById('add-new-work-order').addEventListener('click', this.createWorkOrder);
-        document.getElementById('update-device').addEventListener('click', this.displayUpdateDeviceForm);
-        document.getElementById('submit-updates-device').addEventListener('click', this.submitDeviceUpdates);
-        document.getElementById('cancel-updates-device').addEventListener('click', this.cancelUpdatesDevice);
-        document.getElementById('manufacturer-drop-down').addEventListener('change', this.populateModels);
-        document.getElementById('facility-drop-down').addEventListener('change', this.populateDepartments);
-
-        this.header.addHeaderToPage();
-
-        this.client = new HTMVaultClient();
-        this.clientLoaded();
     }
 }
 
