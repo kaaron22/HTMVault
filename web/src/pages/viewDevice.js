@@ -9,7 +9,7 @@ import DataStore from "../util/DataStore";
 class ViewDevice extends BindingClass {
     constructor() {
         super();
-        // bind the class methods to keep track of state
+        // bind the class methods to this object instance to keep track of state
         this.bindClassMethods(['clientLoaded', 'submitRetire', 'submitReactivate', 'mount', 'addDeviceToPage',
          'addWorkOrdersToPage', 'cancelUpdatesDevice', 'createWorkOrder', 'displayUpdateDeviceForm', 'submitDeviceUpdates',
           'populateManufacturers', 'populateModels', 'populateFacilities', 'populateDepartments'], this);
@@ -67,9 +67,13 @@ class ViewDevice extends BindingClass {
         // the page, due to the change listener in the class constructor
         this.dataStore.set('workOrders', workOrders);
 
+        // pull a list of manufacturers and their associated models for populating the drop down selection on the update
+        // device form
         const manufacturersAndModels = await this.client.getManufacturersAndModels();
         this.dataStore.set('manufacturersAndModels', manufacturersAndModels);
 
+        // pull a list of facilities and their associated departments for populating the drop down selection on the
+        // update device form
         const facilitiesAndDepartments = await this.client.getFacilitiesAndDepartments();
         this.dataStore.set('facilitiesAndDepartments', facilitiesAndDepartments);
     }
@@ -169,10 +173,13 @@ class ViewDevice extends BindingClass {
     async displayUpdateDeviceForm(evt) {
         evt.preventDefault();
 
+        // an error message to unhide in the event a backend exception occurs and error message is returned
         const errorMessageDisplay = document.getElementById('error-message-device-record-change');
         errorMessageDisplay.innerText = ``;
         errorMessageDisplay.classList.add('hidden');
 
+        // reset the create work order form once the button is clicked that begins the update device
+        // process (by displaying the update device form)
         document.getElementById("create-new-work-order-form").reset();
 
         const updateDeviceErrorMessageDisplay = document.getElementById('update-error-message');
