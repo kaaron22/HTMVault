@@ -6,6 +6,7 @@ import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
 import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
+import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.ServiceStatus;
 import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
@@ -57,6 +58,7 @@ class ReactivateDeviceActivityTest {
         assertThrows(DeviceNotFoundException.class, () ->
                         reactivateDeviceActivity.handleRequest(reactivateDeviceRequest),
                 "Expected request with control number not found to result in DeviceNotFoundException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.REACTIVATEDEVICE_DEVICENOTFOUND_COUNT, 1);
     }
 
     @Test
@@ -87,6 +89,7 @@ class ReactivateDeviceActivityTest {
 
         // THEN
         verify(dynamoDBMapper).load(eq(Device.class), anyString());
+        verify(metricsPublisher).addCount(MetricsConstants.REACTIVATEDEVICE_DEVICENOTFOUND_COUNT, 0);
         assertEquals("IN_SERVICE", result.getDevice().getServiceStatus());
 
         // verify no other device information was modified by our method under test

@@ -5,6 +5,8 @@ import com.nashss.se.htmvault.activity.results.ReactivateDeviceResult;
 import com.nashss.se.htmvault.converters.ModelConverter;
 import com.nashss.se.htmvault.dynamodb.DeviceDao;
 import com.nashss.se.htmvault.dynamodb.models.Device;
+import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
+import com.nashss.se.htmvault.metrics.MetricsConstants;
 import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.ServiceStatus;
 
@@ -43,7 +45,18 @@ public class ReactivateDeviceActivity {
         String controlNumber = reactivateDeviceRequest.getControlNumber();
 
         // get device, if it exists
-        Device device = deviceDao.getDevice(controlNumber);
+        Device device;
+        try {
+            device = deviceDao.getDevice(controlNumber);
+            metricsPublisher.addCount(MetricsConstants.REACTIVATEDEVICE_DEVICENOTFOUND_COUNT, 0);
+        } catch (DeviceNotFoundException e) {
+
+            metricsPublisher.addCount(MetricsConstants.REACTIVATEDEVICE_DEVICENOTFOUND_COUNT, 1);
+            log.info("An attempt was made to reactivate a device, but the device ({}) could not be found",
+                    controlNumber);
+            throw new DeviceNotFoundException(String.format("Unable to locate device %s while attempting to " +
+                    "reactivate it", controlNumber));
+        }
 
         device.setServiceStatus(ServiceStatus.IN_SERVICE);
 
