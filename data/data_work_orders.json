@@ -1,0 +1,244 @@
+{
+  "work_orders": [
+    {
+      "PutRequest": {
+        "Item": {
+          "workOrderId": {
+            "S": "WR000123"
+          },
+          "workOrderType": {
+            "S": "ACCEPTANCE_TESTING"
+          },
+          "controlNumber": {
+            "S": "200433212"
+          },
+          "serialNumber": {
+            "S": "G-80023"
+          },
+          "workOrderCompletionStatus": {
+            "S": "CLOSED"
+          },
+          "manufacturerModel": {
+            "S": "{\"manufacturer\":\"Defib Corp\",\"model\":\"X-1000\",\"requiredMaintenanceFrequencyInMonths\":12}"
+          },
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "assignedDepartment": {
+            "S": "ER"
+          },
+          "problemReported": {
+            "S": "No issues, initial acceptance testing required"
+          },
+          "problemFound": {
+            "S": "No issues, initial acceptance testing required"
+          },
+          "createdById": {
+            "S": "htm.vault.test.user@gmail.com"
+          },
+          "createdByName": {
+            "S": "Bill Biomed"
+          },
+          "creationDateTime": {
+            "S": "2021-05-22T10:02:17"
+          },
+          "closedById": {
+            "S": "htm.vault.test.user@gmail.com"
+          },
+          "closedByName": {
+            "S": "Bill Biomed"
+          },
+          "closedDateTime": {
+            "S": "2021-05-22T11:04:25"
+          },
+          "summary": {
+            "S": "Completed initial performance verification per manufacturer's guidelines, service manual B.11. Placed in service."
+          },
+          "completionDateTime": {
+            "S": "2021-05-22T10:58:21"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "workOrderId": {
+            "S": "WR000211"
+          },
+          "assignedDepartment": {
+            "S": "ER"
+          },
+          "closedById": {
+            "S": "htm.vault.test.user@gmail.com"
+          },
+          "closedByName": {
+            "S": "Bill Biomed"
+          },
+          "closedDateTime": {
+            "S": "2021-11-12T10:27:37"
+          },
+          "completionDateTime": {
+            "S": "2021-11-12T10:24:14"
+          },
+          "controlNumber": {
+            "S": "200433212"
+          },
+          "createdById": {
+            "S": "htm.vault.test.user@gmail.com"
+          },
+          "createdByName": {
+            "S": "Bill Biomed"
+          },
+          "creationDateTime": {
+            "S": "2021-11-12T09:33:04"
+          },
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "manufacturerModel": {
+            "S": "{\"manufacturer\":\"Defib Corp\",\"model\":\"X-1000\",\"requiredMaintenanceFrequencyInMonths\":12}"
+          },
+          "problemFound": {
+            "S": "No issues, preventative maintenance due"
+          },
+          "problemReported": {
+            "S": "No issues, preventative maintenance due"
+          },
+          "serialNumber": {
+            "S": "G-80023"
+          },
+          "summary": {
+            "S": "Completed preventative maintenance per manufacturer's requirements, service manual version B.12"
+          },
+          "workOrderCompletionStatus": {
+            "S": "CLOSED"
+          },
+          "workOrderType": {
+            "S": "PREVENTATIVE_MAINTENANCE"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "workOrderId": {
+            "S": "WR000301"
+          },
+          "assignedDepartment": {
+            "S": "ER"
+          },
+          "closedById": {
+            "S": "htm.vault.test.user@gmail.com"
+          },
+          "closedByName": {
+            "S": "Betty Biomed"
+          },
+          "closedDateTime": {
+            "S": "2022-11-18T11:21:32"
+          },
+          "completionDateTime": {
+            "S": "2022-11-18T11:18:41"
+          },
+          "controlNumber": {
+            "S": "200433212"
+          },
+          "createdById": {
+            "S": "htm.vault.test.user@gmail.com"
+          },
+          "createdByName": {
+            "S": "Betty Biomed"
+          },
+          "creationDateTime": {
+            "S": "2022-11-18T10:25:09"
+          },
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "manufacturerModel": {
+            "S": "{\"manufacturer\":\"Defib Corp\",\"model\":\"X-1000\",\"requiredMaintenanceFrequencyInMonths\":12}"
+          },
+          "problemFound": {
+            "S": "No problem, due for routine preventative maintenance"
+          },
+          "problemReported": {
+            "S": "No problem, due for routine preventative maintenance"
+          },
+          "serialNumber": {
+            "S": "G-80023"
+          },
+          "summary": {
+            "S": "Completed routine preventative maintenance per manufacturer's guidelines, service manual version C.02"
+          },
+          "workOrderCompletionStatus": {
+            "S": "CLOSED"
+          },
+          "workOrderType": {
+            "S": "PREVENTATIVE_MAINTENANCE"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "workOrderId": {
+            "S": "WR000384"
+          },
+          "assignedDepartment": {
+            "S": "ER"
+          },
+          "closedById": {
+            "S": "htm.vault.test.user@gmail.com"
+          },
+          "closedByName": {
+            "S": "Betty Biomed"
+          },
+          "closedDateTime": {
+            "S": "2023-06-22T15:08:09"
+          },
+          "completionDateTime": {
+            "S": "2023-06-22T14:51:18"
+          },
+          "controlNumber": {
+            "S": "200433212"
+          },
+          "createdById": {
+            "S": "htm.vault.test.user@gmail.com"
+          },
+          "createdByName": {
+            "S": "Betty Biomed"
+          },
+          "creationDateTime": {
+            "S": "2023-06-22T14:30:31"
+          },
+          "facilityName": {
+            "S": "General Hospital"
+          },
+          "manufacturerModel": {
+            "S": "{\"manufacturer\":\"Defib Corp\",\"model\":\"X-1000\",\"requiredMaintenanceFrequencyInMonths\":12}"
+          },
+          "problemFound": {
+            "S": "Power cord partially separated at plug strain relief, no copper exposed."
+          },
+          "problemReported": {
+            "S": "Power cord wiring exposed"
+          },
+          "serialNumber": {
+            "S": "G-80023"
+          },
+          "summary": {
+            "S": "Replaced power cord, part number PC-120V-20W-15 and performed electrical safety verification. Chassis resistance 0.13 ohms, chassis leakage current ground closed 0 uA, chassis leakage ground open 124 uA. Electrical safety test pass. Returned to service."
+          },
+          "workOrderCompletionStatus": {
+            "S": "CLOSED"
+          },
+          "workOrderType": {
+            "S": "REPAIR"
+          }
+        }
+      }
+    }
+  ]
+}
