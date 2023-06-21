@@ -329,6 +329,21 @@
           }
         }
       }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "manufacturer": {
+            "S": "Dialysis Hemo-Cleanse"
+          },
+          "model": {
+            "S": "T-Series"
+          },
+          "requiredMaintenanceFrequencyInMonths": {
+            "N": "12"
+          }
+        }
+      }
     }
   ]
 }
