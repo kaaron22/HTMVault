@@ -9,6 +9,8 @@ import com.nashss.se.htmvault.dynamodb.models.ManufacturerModel;
 import com.nashss.se.htmvault.dynamodb.models.WorkOrder;
 import com.nashss.se.htmvault.exceptions.DeviceNotFoundException;
 import com.nashss.se.htmvault.exceptions.RetireDeviceWithOpenWorkOrdersException;
+import com.nashss.se.htmvault.metrics.MetricsConstants;
+import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.ServiceStatus;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.test.helper.DeviceTestHelper;
@@ -18,7 +20,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,8 @@ class RetireDeviceActivityTest {
     private DeviceDao deviceDao;
     @Mock
     private WorkOrderDao workOrderDao;
+    @Mock
+    private MetricsPublisher metricsPublisher;
 
     @InjectMocks
     private RetireDeviceActivity retireDeviceActivity;
@@ -54,12 +57,13 @@ class RetireDeviceActivityTest {
                         .withCustomerName("a name")
                         .build();
 
-        when(deviceDao.getDevice(Mockito.anyString())).thenThrow(DeviceNotFoundException.class);
+        when(deviceDao.getDevice(anyString())).thenThrow(DeviceNotFoundException.class);
 
         // WHEN & THEN
         assertThrows(DeviceNotFoundException.class, () ->
                 retireDeviceActivity.handleRequest(retireDeviceRequest),
                 "Expected request with control number not found to result in DeviceNotFoundException thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.RETIREDEVICE_DEVICENOTFOUND_COUNT, 1);
     }
 
     @Test
@@ -90,6 +94,8 @@ class RetireDeviceActivityTest {
                 retireDeviceActivity.handleRequest(retireDeviceRequest),
                 "Expected request to retire a device with open work order(s) to result in " +
                         "RetireDeviceWithOpenWorkOrdersException to be thrown");
+        verify(metricsPublisher).addCount(MetricsConstants.RETIREDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.RETIREDEVICE_WORKORDERSOPEN_COUNT, 1);
     }
 
     @Test
@@ -131,6 +137,8 @@ class RetireDeviceActivityTest {
 
         // THEN
         verify(deviceDao).saveDevice(device);
+        verify(metricsPublisher).addCount(MetricsConstants.RETIREDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.RETIREDEVICE_WORKORDERSOPEN_COUNT, 0);
         assertEquals("RETIRED", result.getDevice().getServiceStatus());
 
         // verify no other device information was modified by our method under test
@@ -167,6 +175,8 @@ class RetireDeviceActivityTest {
 
         // THEN
         verify(deviceDao).saveDevice(device);
+        verify(metricsPublisher).addCount(MetricsConstants.RETIREDEVICE_DEVICENOTFOUND_COUNT, 0);
+        verify(metricsPublisher).addCount(MetricsConstants.RETIREDEVICE_WORKORDERSOPEN_COUNT, 0);
         assertEquals("RETIRED", result.getDevice().getServiceStatus());
 
         // verify no other device information was modified by our method under test

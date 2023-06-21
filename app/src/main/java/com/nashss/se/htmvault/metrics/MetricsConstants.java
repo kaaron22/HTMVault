@@ -31,6 +31,10 @@ public class MetricsConstants {
             "CloseWorkOrder.WorkOrderNotFoundException.Count";
     public static final String CREATEWORKORDER_DEVICENOTFOUND_COUNT =
             "CreateWorkOrder.DeviceNotFoundException.Count";
+    public static final String RETIREDEVICE_WORKORDERSOPEN_COUNT =
+            "RetireDevice.RetireDeviceWithOpenWorkOrdersException.Count";
+    public static final String RETIREDEVICE_DEVICENOTFOUND_COUNT =
+            "RetireDevice.DeviceNotFoundException.Count";
 
     public static final String SERVICE = "Service";
     public static final String SERVICE_NAME = "HTMVault";
