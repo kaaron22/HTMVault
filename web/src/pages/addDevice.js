@@ -17,6 +17,8 @@ class AddDevice extends BindingClass {
 
         // page header, including the home page link and the login/logout button
         this.header = new Header(this.dataStore);
+
+        console.log("add device constructor");
     }
 
     /**

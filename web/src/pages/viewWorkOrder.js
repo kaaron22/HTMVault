@@ -3,51 +3,119 @@ import Header from "../components/header";
 import BindingClass from "../util/bindingClass";
 import DataStore from "../util/DataStore";
 
+/**
+ * Logic needed for the add device page of the website.
+ */
 class ViewWorkOrder extends BindingClass {
     constructor() {
         super();
+
+        // bind the class methods to this object instance to keep track of state
         this.bindClassMethods(['clientLoaded', 'mount', 'addWorkOrderToPage', 'displayUpdateWorkOrderForm', 'submitUpdatesWorkOrder', 'closeWorkOrder'], this);
+
+         // the datastore to store page information
         this.dataStore = new DataStore();
+
+        // the methods to run when an item in the datastore changes state
         this.dataStore.addChangeListener(this.addWorkOrderToPage);
+
+        // page header, including the home page link and the login/logout button
         this.header = new Header(this.dataStore);
+
         console.log("view work order constructor");
     }
 
+    /**
+     * Once the client is loaded, get the work order metadata
+     */
+    async clientLoaded() {
+        // obtain the work order id from the url
+        const urlParams = new URLSearchParams(window.location.search);
+        const workOrderId = urlParams.get('workOrderId');
+
+        // notify user that the work order is being loaded
+        document.getElementById('work-order-id').innerText = "Loading Work Order...";
+        
+        // call the client to get the work order
+        const workOrder = await this.client.getWorkOrder(workOrderId);
+
+        // if the work order is closed, display/hide the appropriate buttons
+        if (workOrder.workOrderCompletionStatus == "CLOSED") {
+            document.getElementById('update-work-order').classList.add('hidden');
+            document.getElementById('close-work-order').classList.add('hidden');
+        }
+
+        // update the datastore        
+        this.dataStore.set('workOrder', workOrder);
+    }
+
+    /**
+     * Add the header to the page, load the HTMVaultClient, and initialize the page information
+     */
+    mount() {
+        document.getElementById('update-work-order').addEventListener('click', this.displayUpdateWorkOrderForm);
+        document.getElementById('submit-updates-work-order').addEventListener('click', this.submitUpdatesWorkOrder);
+        document.getElementById('close-work-order').addEventListener('click', this.closeWorkOrder);
+        document.getElementById('cancel-updates-work-order').addEventListener('click', this.cancelUpdatesWorkOrder);
+
+        this.header.addHeaderToPage();
+
+        this.client = new HTMVaultClient();
+        this.clientLoaded();
+    }
+
+    /**
+     * Method for closing the work order when the corresponding button is clicked
+     */
     async closeWorkOrder(evt) {
         evt.preventDefault();
 
+        // an error message to unhide in the event a backend exception occurs and error message is returned
         const errorMessageDisplay = document.getElementById('error-message');
         errorMessageDisplay.innerText = ``;
         errorMessageDisplay.classList.add('hidden');
 
+        // a success message to unhide if the endpoint succeeds
         const successMessageDisplay = document.getElementById('success-message');
         successMessageDisplay.innerText = 'Work order successfully closed.';
         successMessageDisplay.classList.add('hidden');
 
+        // inform the user that the close work order submission is being processed
         const closeButton = document.getElementById('close-work-order');
         const origButtonText = closeButton.innerText;
         closeButton.innerText = "Closing...";
 
+        // obtain the work order id of the device to pass to the client
         const workOrder = this.dataStore.get('workOrder');
         const workOrderId = workOrder.workOrderId;
+
+
+        // the client call to close the work order, if conditions are met (i.e. the backend checks for proper completion of the work order, which prevents closing if applicable)
         const closedWorkOrder = await this.client.closeWorkOrder(workOrderId, (error) => {
+            // reset the retire device button's text        
             closeButton.innerText = origButtonText;
+
+            // set and display the error message returned
             errorMessageDisplay.innerText = `Error: ${error.message}`;
             errorMessageDisplay.classList.remove('hidden');
         });
 
+        // avoid updating the datastore with a work order if the process failed
         if (null == closedWorkOrder) {
             return;
         }
 
+        // otherwise, update the datastore
         this.dataStore.set('workOrder', closedWorkOrder);
 
+        // temporarily display a success message, for the time specified
         successMessageDisplay.classList.remove('hidden');
         setTimeout(() => {
             successMessageDisplay.classList.add('hidden');
         }, 3500);
     }
 
+    
     async submitUpdatesWorkOrder(evt) {
         evt.preventDefault();
 
@@ -190,18 +258,6 @@ class ViewWorkOrder extends BindingClass {
         workOrderDiv.classList.remove('hidden');
     }
 
-    async clientLoaded() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const workOrderId = urlParams.get('workOrderId');
-        document.getElementById('work-order-id').innerText = "Loading Work Order...";
-        const workOrder = await this.client.getWorkOrder(workOrderId);
-        if (workOrder.workOrderCompletionStatus == "CLOSED") {
-            document.getElementById('update-work-order').classList.add('hidden');
-            document.getElementById('close-work-order').classList.add('hidden');
-        }
-        this.dataStore.set('workOrder', workOrder);
-    }
-
     async addWorkOrderToPage() {
         const workOrder = this.dataStore.get('workOrder');
         if (workOrder == null) {
@@ -237,18 +293,6 @@ class ViewWorkOrder extends BindingClass {
         document.getElementById('closed').innerText = workOrder.closedDateTime;
         document.getElementById('completed').innerText = workOrder.completionDateTime;
         document.getElementById('summary').innerText = workOrder.summary;
-    }
-
-    mount() {
-        document.getElementById('update-work-order').addEventListener('click', this.displayUpdateWorkOrderForm);
-        document.getElementById('submit-updates-work-order').addEventListener('click', this.submitUpdatesWorkOrder);
-        document.getElementById('close-work-order').addEventListener('click', this.closeWorkOrder);
-        document.getElementById('cancel-updates-work-order').addEventListener('click', this.cancelUpdatesWorkOrder);
-
-        this.header.addHeaderToPage();
-
-        this.client = new HTMVaultClient();
-        this.clientLoaded();
     }
 }
 
