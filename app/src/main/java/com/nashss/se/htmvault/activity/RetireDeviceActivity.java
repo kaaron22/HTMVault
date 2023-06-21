@@ -44,7 +44,8 @@ public class RetireDeviceActivity {
 
     /**
      * Handles a request to perform a soft delete of a device (moving it to an inactive status). If the device has
-     * any work orders that are in an open status, a RetireDeviceWithOpenWorkOrdersException will be thrown.
+     * any work orders that are in an open status, a RetireDeviceWithOpenWorkOrdersException will be thrown. If the
+     * device is not found for the provided control number, a DeviceNotFoundException is thrown.
      *
      * @param retireDeviceRequest the retire device request
      * @return the retire device result

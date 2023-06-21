@@ -41,6 +41,7 @@ public class GetFacilitiesAndDepartmentsActivity {
      * Handles a request to get a full list of individual facility/department objects from the database table,
      * converting the list to a list of objects that each contain a facility name and a list of the departments
      * associated with the facility.
+     * Propagates a FacilityDepartmentNotFoundException.
      *
      * @param request the request
      * @return the get facilities and departments result

@@ -41,6 +41,7 @@ public class GetManufacturersAndModelsActivity {
      * Handles a request to get a full list of individual manufacturer/model objects from the database table,
      * converting the list to a list of objects that each contain a manufacturer name and a list of the models
      * associated with the facility.
+     * Propagates a ManufacturerModelNotFoundException.
      *
      * @param request the request
      * @return the get manufacturers and models result

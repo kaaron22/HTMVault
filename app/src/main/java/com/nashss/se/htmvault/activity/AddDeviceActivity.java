@@ -56,7 +56,7 @@ public class AddDeviceActivity {
     /**
      * Creates and adds the device per the request, with checks for valid input (i.e. the serial number is not null or
      * blank and contains only the characters allowed, the manufacturer/model combination is a valid one, etc.).
-     * Throws corresponding exceptions, such as InvalidAttributeValueException, ManufacturerModelNotFoundException, etc.
+     * Throws an InvalidAttributeValueException if an input value is invalid.
      *
      * @param addDeviceRequest the add device request
      * @return the add device result, containing a public device model, converted from the DDB device

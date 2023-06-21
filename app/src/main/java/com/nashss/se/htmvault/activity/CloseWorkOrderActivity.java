@@ -118,7 +118,7 @@ public class CloseWorkOrderActivity {
     }
 
     /**
-     * Advances maintenance stats for the device by checking the database information on thework order specified by
+     * Advances maintenance stats for the device by checking the database information on the work order specified by
      * the provided work order id.
      *
      * If the work order is a preventative maintenance, or the initial acceptance test, the last
@@ -136,9 +136,11 @@ public class CloseWorkOrderActivity {
      * manufacturer requirement following a repair), the compliance-through-date will advance to next June, but the
      * next pm, which was scheduled for next January, will be retained.
      *
-     * The user will be able manually adjust to next June through a separate process, if so desired,
-     * but this process is intended for automation and the device will typically remain on schedule with the rest of
-     * the devices in the department.
+     * For this example scenario, the user would be able manually adjust the next pm due date to as far as next June
+     * through a separate process to be implemented, if so desired, but this process is intended for automation and the
+     * device will typically remain on schedule with the rest of the devices in the department wherein it resides.
+     *
+     * Throws a WorkOrderNotFoundException or DeviceNotFoundException where appropriate.
      *
      * @param workOrderId the work order id of the work order to check for potential updates to the device's
      *                    maintenance stats

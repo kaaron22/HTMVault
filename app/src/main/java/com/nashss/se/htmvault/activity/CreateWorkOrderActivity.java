@@ -53,6 +53,8 @@ public class CreateWorkOrderActivity {
      * order is attached does exist, and that the inputs for creating the work order are valid (i.e. a valid
      * work order type, such as 'preventative maintenance' or 'repair'). Additionally, verifies that required
      * input is not null or blank.
+     * If an attribute is not a valid input for creating the work order, an InvalidAttributeValueException is thrown
+     * If the device that this work order is to be attached to is not found, throws a DeviceNotFoundException
      *
      * @param createWorkOrderRequest the create work order request
      * @return the create work order result
@@ -155,9 +157,9 @@ public class CreateWorkOrderActivity {
     // from project template, modified for project
     /**
      * A helper method to check that the sort order for the resulting, updated list of work orders
-     * that is to be returned, is a valid sort order. Throws an exception if the sort order is invalid,
-     * though a null sort order is handled as the default (descending), for cases when the user does
-     * not explicitly provide one.
+     * that is to be returned, is a valid sort order. Throws an InvalidAttributeValueException if the sort
+     * order is invalid, though a null sort order is handled as the default (descending), for cases when the
+     * user does not explicitly provide one.
      *
      * @param sortOrder the sort order (i.e. descending or ascending by the work order's defined comparator)
      * @return the sort order to use, including descending by default if none selected

@@ -31,7 +31,8 @@ public class GetWorkOrderActivity {
     }
 
     /**
-     * Handles a request to get a work order for the work order id provided.
+     * Handles a request to get a work order for the work order id provided. Propagates a
+     * WorkOrderNotFoundException if the work order for this work order id is not found.
      *
      * @param getWorkOrderRequest the get work order request
      * @return the get work order result

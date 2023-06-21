@@ -34,7 +34,8 @@ public class ReactivateDeviceActivity {
     }
 
     /**
-     * Handles a request to reactivate/un-retire a device that was previously deactivated.
+     * Handles a request to reactivate/un-retire a device that was previously deactivated. Throws a
+     * DeviceNotFoundException if the device is not found for the provided device id.
      *
      * @param reactivateDeviceRequest the reactivate device request
      * @return the reactivate device result
@@ -50,7 +51,6 @@ public class ReactivateDeviceActivity {
             device = deviceDao.getDevice(controlNumber);
             metricsPublisher.addCount(MetricsConstants.REACTIVATEDEVICE_DEVICENOTFOUND_COUNT, 0);
         } catch (DeviceNotFoundException e) {
-
             metricsPublisher.addCount(MetricsConstants.REACTIVATEDEVICE_DEVICENOTFOUND_COUNT, 1);
             log.info("An attempt was made to reactivate a device, but the device ({}) could not be found",
                     controlNumber);

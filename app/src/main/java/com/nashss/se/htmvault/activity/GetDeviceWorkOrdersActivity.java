@@ -65,10 +65,10 @@ public class GetDeviceWorkOrdersActivity {
 
     // from project template, modified for project
     /**
-     * A helper method to check that the sort order for the resulting list of work orders
-     * that is to be returned, is a valid sort order. Throws an exception if the sort order is invalid,
-     * though a null sort order is handled as the default (descending), for cases when the user does
-     * not explicitly provide one.
+     * A helper method to check that the sort order for the resulting, updated list of work orders
+     * that is to be returned, is a valid sort order. Throws an InvalidAttributeValueException if the sort
+     * order is invalid, though a null sort order is handled as the default (descending), for cases when the
+     * user does not explicitly provide one.
      *
      * @param sortOrder the sort order (i.e. descending or ascending by the work order's defined comparator)
      * @return the sort order to use, including descending by default if none selected

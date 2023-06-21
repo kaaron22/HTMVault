@@ -32,7 +32,8 @@ public class GetDeviceActivity {
     }
 
     /**
-     * Handles a request to get a device from the database using the control number provided.
+     * Handles a request to get a device from the database using the control number provided. Propagates a
+     * DeviceNotFoundException thrown by DeviceDao.
      *
      * @param getDeviceRequest the get device request
      * @return the get device result
