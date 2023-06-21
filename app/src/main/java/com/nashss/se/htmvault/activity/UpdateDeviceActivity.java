@@ -70,7 +70,8 @@ public class UpdateDeviceActivity {
             metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
             log.info("The control number provided ({}) while attempting to update a device contained " +
                             "invalid characters.", updateDeviceRequest.getControlNumber());
-            throw new InvalidAttributeValueException("A device id (control number) must be provided");
+            throw new InvalidAttributeValueException("A device id (control number) must be provided in order to " +
+                    "update a device");
         }
 
         // verify the device being updated exists and is found in the database
@@ -82,7 +83,7 @@ public class UpdateDeviceActivity {
             metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_DEVICENOTFOUND_COUNT, 1);
             log.info("An attempt was made to update a device ({}) that could not be found",
                     updateDeviceRequest.getControlNumber());
-            throw new DeviceNotFoundException(String.format("The device with id %s being retired could not be found",
+            throw new DeviceNotFoundException(String.format("The device with id %s being updated could not be found",
                     updateDeviceRequest.getControlNumber()));
         }
 
@@ -113,10 +114,10 @@ public class UpdateDeviceActivity {
             manufacturerModel = manufacturerModelDao.getManufacturerModel(manufacturer, model);
         } catch (ManufacturerModelNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            log.info("The manufacturer/model combination specified ({}/{}) while attempting to add a new " +
+            log.info("The manufacturer/model combination specified ({}/{}) while attempting to update a " +
                     "device is not a valid combination", manufacturer, model);
-            throw new InvalidAttributeValueException("Invalid manufacturer/model specified while attempting to add a " +
-                    "new device to the inventory. " + e.getMessage());
+            throw new InvalidAttributeValueException("Invalid manufacturer/model specified while attempting to " +
+                    "update a device in the inventory. " + e.getMessage());
         }
         int requiredMaintenanceFrequencyInMonths =
                 ifNull(manufacturerModel.getRequiredMaintenanceFrequencyInMonths(), 0);
@@ -134,10 +135,10 @@ public class UpdateDeviceActivity {
             facilityDepartmentDao.getFacilityDepartment(facilityName, assignedDepartment);
         } catch (FacilityDepartmentNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            log.info("The facility/department combination specified ({}/{}) while attempting to add a new " +
+            log.info("The facility/department combination specified ({}/{}) while attempting to update a " +
                     "device is not a valid combination", facilityName, assignedDepartment);
-            throw new InvalidAttributeValueException("Invalid facility/department specified while attempting to add " +
-                    "a new device to the inventory. " + e.getMessage());
+            throw new InvalidAttributeValueException("Invalid facility/department specified while attempting to " +
+                    "update a device in the inventory. " + e.getMessage());
         }
 
         // ensure the optional manufacture date, if provided, has the correct format, and is not a future date
@@ -147,16 +148,17 @@ public class UpdateDeviceActivity {
                 LocalDate manufactureDateParsed = new LocalDateConverter().unconvert(manufactureDate);
                 if (manufactureDateParsed.isAfter(LocalDate.now())) {
                     metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-                    log.info("The optional manufacture date provided while attempting to add a new device " +
+                    log.info("The optional manufacture date provided while attempting to update a device " +
                             "is a future date ({})", manufactureDateParsed);
                     throw new InvalidAttributeValueException(String.format("Cannot provide a future manufacture date " +
-                            "(%s)", manufactureDateParsed));
+                            "(%s) when updating a device", manufactureDateParsed));
                 }
             } catch (DateTimeParseException e) {
                 metricsPublisher.addCount(MetricsConstants.UPDATEDEVICE_INVALIDATTRIBUTEVALUE_COUNT, 1);
-                log.info("The optional manufacture date provided while attempting to add a new device is not " +
-                        "in the correct format of YYYY-MM-DD ({})", manufactureDate);
-                throw new InvalidAttributeValueException("The date provided must be formatted as YYYY-MM-DD");
+                log.info("The optional manufacture date provided while attempting to update a device is " +
+                        "not in the correct format of YYYY-MM-DD ({})", manufactureDate);
+                throw new InvalidAttributeValueException("The date provided must be formatted as YYYY-MM-DD when " +
+                        "submitting a request to update a device");
             }
         }
 

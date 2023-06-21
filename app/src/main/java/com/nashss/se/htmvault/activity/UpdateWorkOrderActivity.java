@@ -14,40 +14,60 @@ import com.nashss.se.htmvault.metrics.MetricsPublisher;
 import com.nashss.se.htmvault.models.WorkOrderAwaitStatus;
 import com.nashss.se.htmvault.models.WorkOrderCompletionStatus;
 import com.nashss.se.htmvault.models.WorkOrderType;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+
+import javax.inject.Inject;
 
 public class UpdateWorkOrderActivity {
     private final WorkOrderDao workorderDao;
     private final MetricsPublisher metricsPublisher;
     private final Logger log = LogManager.getLogger();
 
+    /**
+     * Instantiates a new Update work order activity.
+     *
+     * @param workOrderDao     the work order dao
+     * @param metricsPublisher the metrics publisher
+     */
     @Inject
     public UpdateWorkOrderActivity(WorkOrderDao workOrderDao, MetricsPublisher metricsPublisher) {
         this.workorderDao = workOrderDao;
         this.metricsPublisher = metricsPublisher;
     }
 
+    /**
+     * Handles a request to update a work order.
+     *
+     * @param updateWorkOrderRequest the update work order request
+     * @return the update work order result
+     */
     public UpdateWorkOrderResult handleRequest(final UpdateWorkOrderRequest updateWorkOrderRequest) {
         log.info("Received UpdateWorkOrderRequest {}", updateWorkOrderRequest);
 
         if (null == updateWorkOrderRequest.getWorkOrderId() || updateWorkOrderRequest.getWorkOrderId().isBlank()) {
             metricsPublisher.addCount(MetricsConstants.UPDATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
-            throw new InvalidAttributeValueException("A work order id must be provided");
+            log.info("An attempt was made to update a work order, but the work order id was not provided or was blank");
+            throw new InvalidAttributeValueException("A work order id must be provided in order to process the " +
+                    "update work order request");
         }
 
         // obtain the work order from the database (throws WorkOrderNotFoundException if not found)
         WorkOrder workOrder;
         try {
             workOrder = workorderDao.getWorkOrder(updateWorkOrderRequest.getWorkOrderId());
+            metricsPublisher.addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT, 0);
         } catch (WorkOrderNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.UPDATEWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
-            throw new WorkOrderNotFoundException(e.getMessage());
+            log.info("A work order could not be found for work order id ({}) while attempting to perform a " +
+                    "work order update", updateWorkOrderRequest.getWorkOrderId());
+            throw new WorkOrderNotFoundException(String.format("Could not find a work order for work order id %s " +
+                    e.getMessage(), updateWorkOrderRequest.getWorkOrderId()));
         }
 
         // verify the work order is not closed; if it is, throw an exception (closed work order are no longer

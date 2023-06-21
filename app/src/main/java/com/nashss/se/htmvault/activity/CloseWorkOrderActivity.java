@@ -64,8 +64,8 @@ public class CloseWorkOrderActivity {
             metricsPublisher.addCount(MetricsConstants.CLOSEWORKORDER_WORKORDERNOTFOUND_COUNT, 1);
             log.info("A request was made to close a work order ({}) that could not be found",
                     closeWorkOrderRequest.getWorkOrderId());
-            throw new WorkOrderNotFoundException("Attempted to close a work order that was not found " +
-                    e.getMessage());
+            throw new WorkOrderNotFoundException(String.format("Attempted to close a work order %s that was not " +
+                    "found " + e.getMessage(), closeWorkOrderRequest.getWorkOrderId()));
         }
 
         // if the work order is already closed, there's nothing to do except return the result with the converted

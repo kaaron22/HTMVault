@@ -65,7 +65,7 @@ public class RetireDeviceActivity {
                     controlNumber);
             metricsPublisher.addCount(MetricsConstants.RETIREDEVICE_DEVICENOTFOUND_COUNT, 1);
             throw new DeviceNotFoundException(String.format("Device %s could not be found while attempting to " +
-                    "deactivate it", controlNumber));
+                    "retire/deactivate it", controlNumber));
         }
 
         // get device's work orders, if any

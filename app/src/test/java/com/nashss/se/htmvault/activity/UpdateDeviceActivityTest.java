@@ -305,7 +305,6 @@ class UpdateDeviceActivityTest {
         // need to be updated to no later than 2023-12-31
         device.setNextPmDueDate(LocalDate.of(2024, 3, 31));
 
-
         // an update request and expected updated device
         ManufacturerModel updatedManufacturerModel = new ManufacturerModel();
         updatedManufacturerModel.setManufacturer(manufacturer + "updated");

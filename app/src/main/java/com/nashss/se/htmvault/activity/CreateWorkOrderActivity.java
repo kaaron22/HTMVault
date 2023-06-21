@@ -70,8 +70,8 @@ public class CreateWorkOrderActivity {
             metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 0);
         } catch (DeviceNotFoundException e) {
             metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_DEVICENOTFOUND_COUNT, 1);
-            log.info("Could not find a device in the database matching the control number ({}) to which this work" +
-                    "order should be attached", controlNumber);
+            log.info("Could not find a device in the database matching the control number ({}) to which " +
+                    "this work order should be attached", controlNumber);
             throw new DeviceNotFoundException("Unable to find the device to which the new work order should " +
                     "be attached when attempting to create a new work order. " + e.getMessage());
         }
@@ -88,8 +88,8 @@ public class CreateWorkOrderActivity {
             metricsPublisher.addCount(MetricsConstants.CREATEWORKORDER_INVALIDATTRIBUTEVALUE_COUNT, 1);
             log.info("An attempt was made to create a work order using an invalid work order type ({})",
                     createWorkOrderRequest.getWorkOrderType());
-            throw new InvalidAttributeValueException("The work order type provided must be one of: " +
-                    Arrays.toString(WorkOrderType.values()));
+            throw new InvalidAttributeValueException("The work order type provided when creating a work order must " +
+                    "be one of: " + Arrays.toString(WorkOrderType.values()));
         }
 
         // verify the problem reported is not null or blank
